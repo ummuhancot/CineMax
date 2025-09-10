@@ -1,0 +1,46 @@
+"2025-09-10 11:41:13,451 INFO  [restartedMain] com.cinemax.CineMaxApplication:Starting CineMaxApplication using Java 17.0.16 with PID 21588 (C:\Users\ummuh\OneDrive\Masaüstü\bitirme projesi\CineMax\CineMax\target\classes started by ummuh in C:\Users\ummuh\OneDrive\Masaüstü\bitirme projesi\CineMax\CineMax)
+""2025-09-10 11:41:13,462 INFO  [restartedMain] com.cinemax.CineMaxApplication:No active profile set, falling back to 1 default profile: "default"
+""2025-09-10 11:41:13,555 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+""2025-09-10 11:41:13,556 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+""2025-09-10 11:41:15,480 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+""2025-09-10 11:41:15,536 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Finished Spring Data repository scanning in 34 ms. Found 0 JPA repository interfaces.
+""2025-09-10 11:41:16,645 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat initialized with port 8090 (http)
+""2025-09-10 11:41:16,674 INFO  [restartedMain] org.apache.catalina.core.StandardService:Starting service [Tomcat]
+""2025-09-10 11:41:16,675 INFO  [restartedMain] org.apache.catalina.core.StandardEngine:Starting Servlet engine: [Apache Tomcat/10.1.44]
+""2025-09-10 11:41:16,750 INFO  [restartedMain] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:Initializing Spring embedded WebApplicationContext
+""2025-09-10 11:41:16,751 INFO  [restartedMain] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:Root WebApplicationContext: initialization completed in 3193 ms
+""2025-09-10 11:41:17,628 INFO  [restartedMain] org.hibernate.jpa.internal.util.LogHelper:HHH000204: Processing PersistenceUnitInfo [name: default]
+""2025-09-10 11:41:17,836 INFO  [restartedMain] org.hibernate.Version:HHH000412: Hibernate ORM core version 6.6.26.Final
+""2025-09-10 11:41:18,050 INFO  [restartedMain] org.hibernate.cache.internal.RegionFactoryInitiator:HHH000026: Second-level cache disabled
+""2025-09-10 11:41:19,006 INFO  [restartedMain] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo:No LoadTimeWeaver setup: ignoring JPA class transformer
+""2025-09-10 11:41:19,068 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Starting...
+""2025-09-10 11:41:19,399 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool:HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@181335ba
+""2025-09-10 11:41:19,401 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Start completed.
+""2025-09-10 11:41:19,470 WARN  [restartedMain] org.hibernate.orm.deprecation:HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+""2025-09-10 11:41:19,502 INFO  [restartedMain] org.hibernate.orm.connections.pooling:HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 14.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+""2025-09-10 11:41:20,038 INFO  [restartedMain] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator:HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+""2025-09-10 11:41:20,045 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Initialized JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-10 11:41:21,512 WARN  [restartedMain] org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration:
+
+Using generated security password: d706a334-a3c4-46a8-a0b1-6368d0df407d
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+""2025-09-10 11:41:21,536 INFO  [restartedMain] org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+""2025-09-10 11:41:21,716 INFO  [restartedMain] org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver:Exposing 1 endpoint beneath base path '/actuator'
+""2025-09-10 11:41:21,988 INFO  [restartedMain] org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer:LiveReload server is running on port 35729
+""2025-09-10 11:41:22,158 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat started on port 8090 (http) with context path '/'
+""2025-09-10 11:41:22,185 INFO  [restartedMain] com.cinemax.CineMaxApplication:Started CineMaxApplication in 9.509 seconds (process running for 14.17)
+""2025-09-10 11:41:36,423 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Commencing graceful shutdown. Waiting for active requests to complete
+""2025-09-10 11:41:36,682 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Graceful shutdown complete
+""2025-09-10 11:41:36,691 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Closing JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-10 11:41:36,696 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown initiated...
+""2025-09-10 11:41:36,701 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown completed.
+"
