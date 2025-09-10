@@ -3,12 +3,12 @@ package com.cinemax.entity.enums;
 import lombok.Getter;
 
 @Getter
-public enum RoleType {
-	ADMIN("Admin"), MANAGER("Manager"), CUSTOMER("Customer");
+public enum Gender {
+	MALE("Male"), FEMALE("Female"), OTHER("Other");
 
 	private final String name;
 
-	RoleType(String name) {
+	Gender(String name) {
 		this.name = name;
 	}
 }
