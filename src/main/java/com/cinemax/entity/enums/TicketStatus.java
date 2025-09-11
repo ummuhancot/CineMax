@@ -3,8 +3,7 @@ package com.cinemax.entity.enums;
 public enum TicketStatus {
     RESERVED("Reserved"),
     CANCELLED("Cancelled"),
-    PAID("Paid"),
-    USED("Used");
+    PAID("Paid");
 
     private final String label;
 
@@ -13,4 +12,3 @@ public enum TicketStatus {
     }
 
 }
-//Reserved,Paid,Cancelled

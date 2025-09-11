@@ -3,20 +3,19 @@ package com.cinemax.entity.concretes.business;
 import com.cinemax.entity.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "ticket")
 public class Ticket {
 
     @Id
@@ -35,10 +34,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus ticketStatus;
-
-    //@Enumerated(EnumType.STRING)
-    //private GenreType genreType;
+    private TicketStatus ticketStatus = TicketStatus.RESERVED;
 
     //@Enumerated(EnumType.STRING)
     //private PaymentStatus paymentStatus;
