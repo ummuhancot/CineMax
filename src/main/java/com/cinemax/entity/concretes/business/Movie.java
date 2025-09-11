@@ -7,6 +7,7 @@ import java.util.List;
 
 @Entity
 public class Movie {
+    // test
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
