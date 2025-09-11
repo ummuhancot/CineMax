@@ -48,5 +48,5 @@ public class ShowTime {
 
     @UpdateTimestamp
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt ;
 }
