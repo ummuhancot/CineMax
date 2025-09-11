@@ -40,5 +40,5 @@ public class ShowTime {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt ;
 }
