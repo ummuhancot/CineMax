@@ -4,6 +4,8 @@ import com.cinemax.entity.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,22 +51,12 @@ public class User {
 	@Column(nullable = false)
 	private Boolean builtIn = false;
 
-	@Column(nullable = false)
+	@CreationTimestamp
 	private LocalDateTime createdAt;
 
-	@Column(nullable = false)
+	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
 	@Column
 	private String resetPasswordCode;
-
-	@PrePersist
-	private void onCreate() {
-		this.createdAt = LocalDateTime.now();
-	}
-
-	@PreUpdate
-	private void onUpdate() {
-		this.updatedAt = LocalDateTime.now();
-	}
 }
