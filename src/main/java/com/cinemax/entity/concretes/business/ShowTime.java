@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "showtimes")
@@ -33,14 +34,18 @@ public class ShowTime {
     private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id")
+    @JoinColumn(name = "movie_id",nullable = false)
     @Column(nullable = false)
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hall_id")
+    @JoinColumn(name = "hall_id",nullable = false)
     @Column(nullable = false)
     private Hall hall;
+
+    @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
+
 
     @CreationTimestamp
     @Column(nullable = false)
