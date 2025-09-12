@@ -7,34 +7,51 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity @Table(name="halls")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Entity
+@Table(name = "halls")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Hall {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String name;
-    @Column(nullable=false)
+
+    @Column(nullable = false)
     private Integer seatCapacity;
-    @Column(nullable=false)
+
+    @Column(nullable = false)
     private Boolean isSpecial = false;
 
     @CreationTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "cinema_id", nullable = false)
-//    private Cinema cinema;
-//
-//    // :arrow_right: OneToMany → Showtime
-//    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ShowTime> showtimes;
+    @ManyToMany(mappedBy = "halls", fetch = FetchType.LAZY)
+    private List<Movie> movies;
+
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Ticket> tickets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cinema_id", nullable = false)
+    private Cinema cinema;
+
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ShowTime> showTimes;
 }
