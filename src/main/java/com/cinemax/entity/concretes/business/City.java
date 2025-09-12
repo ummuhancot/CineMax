@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -23,9 +25,10 @@ public class City {
     private Long id;
 
     @Column(nullable = false)
-    @NotNull
-    @Size(max = 30, message = "City name cannot be longer than 30 characters")
     private String name;
+
+	@OneToMany(mappedBy = "city", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<Cinema> cinemas;
 
     //@JoinColumn(name = "country_id")
     //private Country country;

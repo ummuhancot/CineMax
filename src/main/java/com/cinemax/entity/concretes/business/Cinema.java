@@ -25,13 +25,23 @@ public class Cinema {
     @Column(nullable = false)
     private String name;
 
+	@Column(nullable = false, unique = true)
+	private String slug;
+
+	@Column(nullable = false)
+	private String address;
+
+	@Column(nullable = false)
+	private String phoneNumber;
+
+	@Column(nullable = false)
+	private String email;
+
     @CreationTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
@@ -41,4 +51,7 @@ public class Cinema {
 
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Hall> halls;
+
+	@OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Favorite> favorites;
 }

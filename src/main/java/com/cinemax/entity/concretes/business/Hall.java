@@ -1,6 +1,5 @@
 package com.cinemax.entity.concretes.business;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,12 +32,10 @@ public class Hall {
     private Boolean isSpecial = false;
 
     @CreationTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 

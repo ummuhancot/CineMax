@@ -33,17 +33,14 @@ public class ShowTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id",nullable = false)
-    @Column(nullable = false)
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hall_id",nullable = false)
-    @Column(nullable = false)
     private Hall hall;
 
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets;
-
 
     @CreationTimestamp
     @Column(nullable = false)

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @Builder
 public class Payment {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
@@ -32,17 +31,14 @@ public class Payment {
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     private LocalDateTime paymentDate;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     private LocalDateTime updatedAt;
 
     @OneToOne

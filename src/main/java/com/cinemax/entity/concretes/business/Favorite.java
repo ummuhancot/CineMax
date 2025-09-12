@@ -1,9 +1,10 @@
 package com.cinemax.entity.concretes.business;
 
 import com.cinemax.entity.concretes.user.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -20,35 +21,25 @@ import java.time.LocalDateTime;
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @JoinColumn(name = "user_id", nullable = false)
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "user_id", nullable = false)
         private User user;
 
-        @JoinColumn(name = "movie_id", nullable = false)
-        private Movie movies;
 
-        @JoinColumn(name = "cinema_id", nullable = false)
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "movie_id", nullable = false)
+        private Movie movie;
+
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "cinema_id", nullable = false)
         private Cinema cinema;
 
-
+        @CreationTimestamp
         @Column(nullable = false)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
         private LocalDateTime createdAt;
 
-        @Column(nullable = false)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @UpdateTimestamp
         private LocalDateTime updatedAt;
-
-        //service katmanlarında kontrol etmekten daha clean bir yol
-        @PrePersist
-        protected void onCreate() {
-            this.createdAt = LocalDateTime.now();
-            this.updatedAt = LocalDateTime.now();
-        }
-
-        @PreUpdate
-        protected void onUpdate() {
-            this.updatedAt = LocalDateTime.now();
-        }
 
         /**
          FAVORITE
