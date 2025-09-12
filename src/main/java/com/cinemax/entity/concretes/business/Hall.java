@@ -30,4 +30,11 @@ public class Hall {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM yyyy, HH:mm")
     private LocalDateTime updatedAt;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "cinema_id", nullable = false)
+//    private Cinema cinema;
+//
+//    // :arrow_right: OneToMany → Showtime
+//    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ShowTime> showtimes;
 }
