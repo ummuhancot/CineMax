@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,9 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ShowTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
     @Column(nullable = false)
