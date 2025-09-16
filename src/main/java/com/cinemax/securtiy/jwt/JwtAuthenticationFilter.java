@@ -20,8 +20,6 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-// for extra information please read
-//https://www.baeldung.com/spring-onceperrequestfilter
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -40,9 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //1-from every request, we will get JWT
             String jwt = parseJwt(request);
             //validate JWT
-            if(jwt != null && jwtUtils.validateToken(jwt)) {
+            if(jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 //3- we need username to get user information
-                String username = jwtUtils.getUsernameFromToken(jwt);
+                String username = jwtUtils.getEmailFromToken(jwt);
                 //4- check DB and fetch user and upgrade it to userDetails
                 UserDetails userDetails = userDetailService.loadUserByUsername(username);
                 //5- set attribute with username
