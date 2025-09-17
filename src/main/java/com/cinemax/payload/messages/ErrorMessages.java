@@ -9,6 +9,9 @@ public class ErrorMessages {
     public static final String FORGOT_PASSWORD_EMAIL_NOT_FOUND = "No account found with the provided email."; // Verilen e-posta ile hesap bulunamadı
     public static final String RESET_PASSWORD_OLD_PASSWORD_MISMATCH = "Old password does not match."; // Eski şifre eşleşmiyor
     public static final String RESET_PASSWORD_RECENT_PASSWORD_MATCH = "The new password cannot be the same as any of the last 3 passwords."; // Yeni şifre son 3 şifre ile aynı olamaz
+	public static final String EMAIL_ALREADY_EXISTS = "Email already exists for another user";
+	public static final String PHONE_ALREADY_EXISTS = "Phone already exists for another user";
+	public static final String ROLE_NOT_FOUND = "Role: %s not found";
 
     // user - permissions & role
     public static final String NOT_HAVE_EXPECTED_ROLE_USER = "Error: User does not have expected role"; // Kullanıcının beklenen rolü yok
