@@ -1,4 +1,4 @@
-package com.cinemax.securtiy.jwt;
+package com.cinemax.security.jwt;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

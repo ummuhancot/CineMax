@@ -1,4 +1,4 @@
-package com.cinemax.securtiy.service;
+package com.cinemax.security.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -17,27 +16,29 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
+
     private Long id;
 
-    private String username;
+    private String email;
 
     @JsonIgnore
     private String password;
 
-    private Collection<? extends GrantedAuthority> authorities; //rol olan yapılarla çamışılor rolleri tanıtıyor
+    private List<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id,String username, String password,String role){
-        this.id=id;
-        this.username=username;
-        this.password=password;
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(role));
-        this.authorities=grantedAuthorities;
+    public UserDetailsImpl(Long id, String email, String password, String role) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role));
+        this.authorities = authorities;
     }
 
+    // Spring Security username gibi email’i kullanacak
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getUsername() {
+        return email;
     }
 
     @Override
@@ -46,8 +47,8 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
+    public List<GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override

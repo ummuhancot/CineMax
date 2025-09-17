@@ -1,6 +1,6 @@
-package com.cinemax.securtiy.jwt;
+package com.cinemax.security.jwt;
 
-import com.cinemax.securtiy.service.UserDetailsImpl;
+import com.cinemax.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -25,7 +25,7 @@ public class JwtUtils {
 
 	public String generateJwtToken(
 				Authentication authentication) {
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();//class adi UserDetailsImpl olarak guncellendi
 		return Jwts.builder()
 					       .setSubject(userPrincipal.getEmail())
 					       .setIssuedAt(new Date())
