@@ -1,6 +1,6 @@
-package com.cinemax.securtiy.jwt;
+package com.cinemax.security.jwt;
 
-import com.cinemax.securtiy.service.UserDetailsServiceImpl;
+import com.cinemax.security.service.UserDetailServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,11 +24,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    @Autowired
-    private JwtUtils jwtUtils;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailService;
+    private final JwtUtils jwtUtils;
+    private final UserDetailServiceImpl userDetailService;
 
 
     @Override
@@ -39,12 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             //validate JWT
             if(jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                //3- we need username to get user information
-                String username = jwtUtils.getEmailFromToken(jwt);
+                //3- we need email to get user information
+                String email = jwtUtils.getEmailFromToken(jwt);//String username = jwtUtils.getEmailFromToken(jwt);
                 //4- check DB and fetch user and upgrade it to userDetails
-                UserDetails userDetails = userDetailService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailService.loadUserByUsername(email);
                 //5- set attribute with username
-                request.setAttribute("username", username);
+                request.setAttribute("email", email);
                 //6- we load user details information to security context
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
