@@ -19,7 +19,7 @@ public class UserRole {
 	@Enumerated(EnumType.STRING)
 	private RoleType roleType;
 
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	private String name;
 
 }
