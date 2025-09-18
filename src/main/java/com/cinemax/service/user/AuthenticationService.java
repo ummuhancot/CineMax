@@ -1,10 +1,14 @@
 package com.cinemax.service.user;
 
 import com.cinemax.entity.concretes.user.User;
+import com.cinemax.entity.enums.Gender;
+import com.cinemax.exception.ConflictException;
+import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.authentication.LoginRequest;
 import com.cinemax.payload.request.authentication.RegisterRequest;
+import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.response.authentication.AuthenticationResponse;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.repository.user.UserRepository;
@@ -18,6 +22,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Service
@@ -63,4 +69,38 @@ public class AuthenticationService {
 		User userToSave = userMapper.mapRegisterRequestToUser(registerRequest);
 		return userMapper.mapUserToUserResponse(userRepository.save(userToSave));
 	}
+
+public  UserResponse updateAuthenticaticatedUser(UserUpdateRequest request, Principal principal) {
+    String email = principal.getName();
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    if (Boolean.TRUE.equals(user.getBuiltIn())) {
+        throw new ConflictException("Built-in user cannot be updated.");
+
+    }
+    user.setName(request.getName());
+    user.setSurname(request.getSurname());
+    user.setEmail(request.getEmail());
+    user.setPhoneNumber(request.getPhoneNumber());
+
+    if (request.getGender() != null) {
+        user.setGender(Gender.valueOf(request.getGender().toUpperCase()));
+    }
+
+    user.setBirthDate(request.getBirthDate());
+    user.setUpdatedAt(LocalDateTime.now());
+
+    userRepository.save(user);
+
+    return UserResponse.builder()
+            .id(user.getId())
+            .name(user.getName())
+            .surname(user.getSurname())
+            .email(user.getEmail())
+            .phoneNumber(user.getPhoneNumber())
+            .gender(user.getGender().name())
+            .birthDate(user.getBirthDate())
+            .build();
+}
 }
