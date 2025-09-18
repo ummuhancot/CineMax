@@ -1,15 +1,16 @@
 package com.cinemax.controller.user;
 
+import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/users")
@@ -28,5 +29,17 @@ public class UserController {
 				@RequestParam(defaultValue = "desc", required = false) String type) {
 		return ResponseEntity.ok(userService.getAllUsersWithQuery(q, page, size, sort, type));
 	}
+
+
+    @PutMapping("/auth")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','CUSTOMER')")
+    public ResponseEntity<UserResponse> updateAuthenticatedUser(
+            @RequestBody @Valid UserUpdateRequest request,
+            Principal principal){
+
+        UserResponse response = userService.updateAuthenticatedUser(request, principal);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

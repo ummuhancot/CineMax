@@ -34,15 +34,6 @@ public class AuthenticationController {
 		return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.CREATED);
 	}
 
-    @PutMapping("/auth")
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','CUSTOMER')")
-    public ResponseEntity<UserResponse> updateAuthenticatedUser(
-            @RequestBody @Valid UserUpdateRequest request,
-            Principal principal){
-
-        UserResponse response = authenticationService.updateAuthenticaticatedUser(request, principal);
-        return ResponseEntity.ok(response);
-    }
 
 
 

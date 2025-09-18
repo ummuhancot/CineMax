@@ -70,36 +70,5 @@ public class AuthenticationService {
 		return userMapper.mapUserToUserResponse(userRepository.save(userToSave));
 	}
 
-public  UserResponse updateAuthenticaticatedUser(UserUpdateRequest request, Principal principal) {
-    String email = principal.getName();
-    User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-    if (Boolean.TRUE.equals(user.getBuiltIn())) {
-        throw new ConflictException("Built-in user cannot be updated.");
-
-    }
-    user.setName(request.getName());
-    user.setSurname(request.getSurname());
-    user.setEmail(request.getEmail());
-    user.setPhoneNumber(request.getPhoneNumber());
-
-    if (request.getGender() != null) {
-        user.setGender(Gender.valueOf(request.getGender().toUpperCase()));
-    }
-
-    user.setBirthDate(request.getBirthDate());
-    user.setUpdatedAt(LocalDateTime.now());
-
-    userRepository.save(user);
-
-    return UserResponse.builder()
-            .name(user.getName())
-            .surname(user.getSurname())
-            .email(user.getEmail())
-            .phoneNumber(user.getPhoneNumber())
-            .gender(user.getGender().name())
-            .birthDate(user.getBirthDate())
-            .build();
-}
 }

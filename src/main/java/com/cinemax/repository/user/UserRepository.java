@@ -1,6 +1,5 @@
 package com.cinemax.repository.user;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import com.cinemax.entity.concretes.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

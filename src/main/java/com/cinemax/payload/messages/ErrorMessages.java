@@ -21,7 +21,8 @@ public class ErrorMessages {
     public static final String NOT_FOUND_USER_MESSAGE = "Error: User not found with id %s"; // %s id'sine sahip kullanıcı bulunamadı
     public static final String NOT_FOUND_USER_MESSAGE_USERNAME = "Error: User not found with username %s"; // %s kullanıcı adına sahip kullanıcı bulunamadı
     public static final String USERS_FETCH_FAILED = "Failed to fetch users."; // Kullanıcılar getirilemedi
-    public static final String USER_NOT_FOUND = "User not found with the provided id."; // Verilen id ile kullanıcı bulunamadı
+    public static final String USER_NOT_FOUND_ID = "User not found with the provided id %s ."; // Verilen id ile kullanıcı bulunamadı
+    public static final String USER_NOT_FOUND_MAIL = "User not found with the provided mail %s .";
     public static final String AUTH_USER_UPDATE_FORBIDDEN = "Built-in users cannot be updated."; // Dahili kullanıcılar güncellenemez
     public static final String USER_UPDATE_FORBIDDEN = "This user cannot be updated (built-in restriction or insufficient role)."; // Bu kullanıcı güncellenemez (dahili kısıtlama veya yetersiz rol)
     public static final String AUTH_USER_DELETE_FORBIDDEN = "User with unused tickets cannot be deleted."; // Kullanıcının kullanılmamış biletleri varsa silinemez
