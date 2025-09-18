@@ -40,7 +40,10 @@ public class AuthenticationController {
             @RequestBody @Valid UserUpdateRequest request,
             Principal principal){
 
-        UserResponse response = authenticationService.updateAuthenticatedUser(request, principal);
+        UserResponse response = authenticationService.updateAuthenticaticatedUser(request, principal);
         return ResponseEntity.ok(response);
     }
+
+
+
 }

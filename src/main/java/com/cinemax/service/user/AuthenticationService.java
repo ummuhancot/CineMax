@@ -94,7 +94,6 @@ public  UserResponse updateAuthenticaticatedUser(UserUpdateRequest request, Prin
     userRepository.save(user);
 
     return UserResponse.builder()
-            .id(user.getId())
             .name(user.getName())
             .surname(user.getSurname())
             .email(user.getEmail())
