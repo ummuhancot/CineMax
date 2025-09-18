@@ -26,5 +26,6 @@ public class ErrorMessages {
     public static final String USER_UPDATE_FORBIDDEN = "This user cannot be updated (built-in restriction or insufficient role)."; // Bu kullanıcı güncellenemez (dahili kısıtlama veya yetersiz rol)
     public static final String AUTH_USER_DELETE_FORBIDDEN = "User with unused tickets cannot be deleted."; // Kullanıcının kullanılmamış biletleri varsa silinemez
     public static final String USER_DELETE_FAILED = "User deletion failed."; // Kullanıcı silme işlemi başarısız
+	public static final String USER_NOT_FOUND_WITH_QUERY =  "User not found with query: %s at the name, surname, email or phone number" ;
 
 }

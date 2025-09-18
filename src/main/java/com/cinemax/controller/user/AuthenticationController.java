@@ -20,18 +20,18 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-	private final AuthenticationService authenticatonService;
+	private final AuthenticationService authenticationService;
 
 	@PostMapping("/login")
 	public ResponseEntity<AuthenticationResponse> authenticate(
 				@RequestBody @Valid LoginRequest loginRequest) {
-		return ResponseEntity.ok(authenticatonService.authenticate(loginRequest));
+		return ResponseEntity.ok(authenticationService.authenticate(loginRequest));
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity<UserResponse> register(
 				@RequestBody @Valid RegisterRequest registerRequest) {
-		return new ResponseEntity<>(authenticatonService.register(registerRequest), HttpStatus.CREATED);
+		return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.CREATED);
 	}
 
     @PutMapping("/auth")
