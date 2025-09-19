@@ -36,7 +36,11 @@ public class AuthenticationService {
 	private final UniquePropertyValidator uniquePropertyValidator;
 	private final UserMapper userMapper;
 
-	public AuthenticationResponse authenticate(
+    public static UserResponse updatedAuthenticateduser(UserUpdateRequest request, Principal principal) {
+
+    }
+
+    public AuthenticationResponse authenticate(
 				LoginRequest loginRequest) {
 		String email = loginRequest.getEmail();
 		char[] password = loginRequest.getPassword()
@@ -71,4 +75,10 @@ public class AuthenticationService {
 	}
 
 
+    public void updateAuthenticatedUser(UserUpdateRequest request, Principal principal) {
+    }
+
+    public UserResponse updateAuthenticateduser(UserUpdateRequest request, Principal principal) {
+
+    }
 }

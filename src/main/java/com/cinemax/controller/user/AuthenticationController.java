@@ -34,6 +34,20 @@ public class AuthenticationController {
 		return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.CREATED);
 	}
 
+ public ResponseEntity<UserResponse>updatedAuthenticatedUser(
+         @RequestBody
+         UserUpdateRequest request,
+         Principal principal  ){
+
+        UserResponse response = AuthenticationService.updatedAuthenticateduser(request,principal);
+        return ResponseEntity.ok(response);
+ }
+
+    @PutMapping("/auth")
+    public ResponseEntity<UserResponse> updateAuthenticatedUser(@RequestBody UserUpdateRequest request, Principal principal) {
+        UserResponse updatedUser = authenticationService.updateAuthenticateduser(request, principal);
+        return ResponseEntity.ok(updatedUser);
+    }
 
 
 

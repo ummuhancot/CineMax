@@ -101,4 +101,10 @@ public class UserService {
 		userRepository.delete(user);
 		return userMapper.mapUserToUserResponse(user);
 	}
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return userMapper.mapUserToUserResponse(user);
+    }
+
 }
