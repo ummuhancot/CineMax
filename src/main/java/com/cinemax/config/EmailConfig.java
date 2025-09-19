@@ -11,7 +11,7 @@ import java.util.Properties;
 @Configuration // Bu class, Spring için bir configuration class olduğunu belirtir
 public class EmailConfig {
 
-    @Value("${spring.mail.host}") // application.properties içindeki spring.mail.host değerini alır
+    @Value("${spring.mail.host}") // application.properties içindeki  değerini alır
     private String host;
 
     @Value("${spring.mail.port}") // Mail sunucu portu (genelde 587, 465 gibi)
