@@ -29,4 +29,6 @@ public class ErrorMessages {
     public static final String USER_DELETE_FAILED = "User deletion failed."; // Kullanıcı silme işlemi başarısız
 	public static final String USER_NOT_FOUND_WITH_QUERY =  "User not found with query: %s at the name, surname, email or phone number" ;
 
+	public static final String USER_DELETE_FORBIDDEN = "This user cannot be deleted (built-in restriction or insufficient role).";
+	public static final String USER_DELETE_SELF_FORBIDDEN = "You cannot delete your own account.";
 }

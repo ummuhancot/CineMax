@@ -82,4 +82,23 @@ public class UserService {
                 .birthDate(user.getBirthDate())
                 .build();
     }
+
+	public UserResponse deleteUserByIdAsAdminOrManager(
+				Long id,
+				Principal principal) {
+		String email = principal.getName();
+		if (userRepository.findByEmail(email)
+					    .orElseThrow(()->new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_MAIL, email)))
+					    .getId()
+					    .equals(id)) {
+			throw new ConflictException(ErrorMessages.USER_DELETE_SELF_FORBIDDEN);
+		}
+		User user = userRepository.findById(id)
+					            .orElseThrow(()->new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_ID, id)));
+		if (Boolean.TRUE.equals(user.getBuiltIn())) {
+			throw new ConflictException(ErrorMessages.USER_DELETE_FORBIDDEN);
+		}
+		userRepository.delete(user);
+		return userMapper.mapUserToUserResponse(user);
+	}
 }
