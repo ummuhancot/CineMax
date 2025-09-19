@@ -1,4 +1,4 @@
-package com.cinemax.payload.abstracts;
+package com.cinemax.payload.request.abstracts;
 
 import com.cinemax.entity.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonFormat;

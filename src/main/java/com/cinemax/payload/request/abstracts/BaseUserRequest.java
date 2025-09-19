@@ -1,4 +1,4 @@
-package com.cinemax.payload.abstracts;
+package com.cinemax.payload.request.abstracts;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
