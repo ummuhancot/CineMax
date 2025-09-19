@@ -1,20 +1,22 @@
-package com.cinemax.payload.response.user;
+package com.cinemax.payload.response.business;
 
-import com.cinemax.entity.enums.Gender;
-import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import org.springframework.http.HttpStatus;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-public class UserResponse extends BaseUserResponse {
+public class ResponseMessage<T> {
+
+   private T returnBody;
+   private String message;
+   private HttpStatus httpStatus;
 
 
 }
