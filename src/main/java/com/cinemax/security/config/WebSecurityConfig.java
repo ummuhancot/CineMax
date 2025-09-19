@@ -58,8 +58,7 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-
-    @Bean
+    //@Bean -- WARN gösteriyor. school-management te kullanmisiz.
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailServiceImpl);
