@@ -6,6 +6,7 @@ import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
+import com.cinemax.payload.request.authentication.ForgotPasswordRequest;
 import com.cinemax.payload.request.authentication.LoginRequest;
 import com.cinemax.payload.request.authentication.RegisterRequest;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
@@ -13,8 +14,12 @@ import com.cinemax.payload.response.authentication.AuthenticationResponse;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.repository.user.UserRepository;
 import com.cinemax.security.jwt.JwtUtils;
+import com.cinemax.service.EmailService;
 import com.cinemax.service.validator.UniquePropertyValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +41,7 @@ public class AuthenticationService {
 	private final UserRepository userRepository;
 	private final UniquePropertyValidator uniquePropertyValidator;
 	private final UserMapper userMapper;
+	private final EmailService emailService;
 
 	public AuthenticationResponse authenticate(
 				LoginRequest loginRequest) {
@@ -71,4 +78,27 @@ public class AuthenticationService {
 	}
 
 
+	/** U3 - forgotPassword start */
+	public ResponseEntity<?> forgotPassword(@Valid ForgotPasswordRequest request) {
+		//Find the user by email
+		User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+		//If the user exists
+		if(user!=null){
+			//Generate a reset password code
+			String resetPasswordCode = UUID.randomUUID().toString();
+			//Save the reset password code to the user object
+			user.setResetPasswordCode(resetPasswordCode);
+			userRepository.save(user);
+			//Send the reset password code to the user's email
+			sendResetPasswordCode(user.getEmail(), resetPasswordCode);
+		}
+		//Return the HTTP response entity with status OK
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	private void sendResetPasswordCode(String email, String resetPasswordCode){
+		emailService.sendResetPasswordEmail(email, resetPasswordCode);
+	}
+
+	/** U3 - forgotPassword end */
 }

@@ -1,5 +1,6 @@
 package com.cinemax.controller.user;
 
+import com.cinemax.payload.request.authentication.ForgotPasswordRequest;
 import com.cinemax.payload.request.authentication.LoginRequest;
 import com.cinemax.payload.request.authentication.RegisterRequest;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
@@ -8,6 +9,7 @@ import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.service.user.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +36,20 @@ public class AuthenticationController {
 		return new ResponseEntity<>(authenticationService.register(registerRequest), HttpStatus.CREATED);
 	}
 
+	/**
+	 U03 /forgot-password start
+	 post - it will generate and email reset-password code
+	 /api/forgot-password
+	 */
+	public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request){
+		return authenticationService.forgotPassword(request);
+	}
+	/**  U03 /forgot-password end */
 
-
+	/**
+	 U07 /auth
+	 delete - it will delete the authenticated user
+	 /api/users/auth
+	 */
 
 }
