@@ -18,5 +18,9 @@ public class MethodHelper {
                 ));
     }
 
+    public User isUserExist(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_USER_MESSAGE,id)));
+    }
 
 }
