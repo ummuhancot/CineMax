@@ -12,6 +12,7 @@ public class ErrorMessages {
 	public static final String EMAIL_ALREADY_EXISTS = "Email already exists for another user";
 	public static final String PHONE_ALREADY_EXISTS = "Phone already exists for another user";
 	public static final String ROLE_NOT_FOUND = "Role: %s not found";
+    public static final String USER_ALREADY_EXISTS = "User already exists: %s";
 
     // user - permissions & role
     public static final String NOT_HAVE_EXPECTED_ROLE_USER = "Error: User does not have expected role"; // Kullanıcının beklenen rolü yok
