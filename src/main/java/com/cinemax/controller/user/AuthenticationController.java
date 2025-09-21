@@ -13,6 +13,8 @@ import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -41,15 +43,12 @@ public class AuthenticationController {
 	 post - it will generate and email reset-password code
 	 /api/forgot-password
 	 */
+	@PostMapping("/forgot-password")
 	public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request){
 		return authenticationService.forgotPassword(request);
 	}
 	/**  U03 /forgot-password end */
 
-	/**
-	 U07 /auth
-	 delete - it will delete the authenticated user
-	 /api/users/auth
-	 */
+
 
 }

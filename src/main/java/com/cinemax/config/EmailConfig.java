@@ -18,10 +18,10 @@ public class EmailConfig {
     private int port;
 
     @Value("${spring.mail.username}") // Mail kullanıcı adı (örn: cine.max.app.noreply@gmail.com)
-    private String username;//application-mail.properties e eklendi
+    private String username;//.properties e eklendi
 
     @Value("${spring.mail.password}") // Mail şifresi (App Password olacak genelde)
-    private String password;//application-mail.properties e eklendi
+    private String password;//.properties e eklendi
 
     @Value("${spring.mail.properties.mail.smtp.auth}") // SMTP için authentication zorunlu mu?
     private String mailSmtpAuth;
