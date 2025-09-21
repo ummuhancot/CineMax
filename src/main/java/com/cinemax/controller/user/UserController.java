@@ -43,5 +43,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+	/*
+	 U07 /auth
+	 delete - it will delete the authenticated user
+	 /api/users/auth
+	 //giriş yapmış kullanıcıyı siler, islemin sonucunu belirten ResponseEntity return eder
+	*/
+	@DeleteMapping("/auth")
+	public ResponseEntity<?> deleteAuthenticatedUser( @AuthenticationPrincipal UserDetails userDetails){
+		return userService.deleteAuthenticatedUser(userDetails);
+	}
 
 }
