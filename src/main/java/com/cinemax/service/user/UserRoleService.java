@@ -19,4 +19,6 @@ public class UserRoleService {
 		return userRoleRepository.findByRoleType(roleType)
 					       .orElseThrow(()->new ResourceNotFoundException(String.format(ErrorMessages.ROLE_NOT_FOUND, roleType.getName())));
 	}
+
+
 }

@@ -1,5 +1,6 @@
 package com.cinemax.payload.request.authentication;
 
+import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
@@ -7,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.function.Supplier;
 
 @Data
 @AllArgsConstructor

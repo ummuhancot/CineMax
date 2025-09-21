@@ -89,13 +89,19 @@ public class UserService {
 
 	//U7 - Deletes the authenticated user from the user repository
 	public ResponseEntity<?> deleteAuthenticatedUser(UserDetails userDetails) {
-		// Cast the userDetails to User type
-		User user = (User) userDetails;
-		// Check for built-in and related fields in the user object
+		// 1. UserDetails nesnesinden e-posta adresini alın
+		String email = userDetails.getUsername();
+
+		// 2. E-posta adresi ile veritabanından kullanıcıyı bulun
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_MAIL, email)));
+
+		// 3. Built-in kullanıcı kontrolünü yapın
 		checkBuiltInBeforeDeletion(user);
-		// Delete the user from the user repository
+
+		// 4. Kullanıcıyı silin
 		userRepository.delete(user);
-		// Return ResponseEntity with status 200 OK
+
 		return ResponseEntity.ok().build();
 	}
 

@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 public class MethodHelper {
 
     private final UserRepository userRepository;
-    public User loadByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format(ErrorMessages.NOT_FOUND_USER_MESSAGE, email)
-                ));
-    }
+
+   public User loadByEmail(String email){
+      return userRepository.findByEmail(email)
+              .orElseThrow(()->new ResourceNotFoundException(
+                      String.format(ErrorMessages.NOT_FOUND_USER_MESSAGE, email)
+              ));
+   }
+
 
 
 }

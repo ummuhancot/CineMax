@@ -22,7 +22,7 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/admin")
-	@PreAuthorize("hasAnyAuthority('Admin','Manager')")
+	@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
 	public ResponseEntity<Page<UserResponse>> getAllUsersWithQuery(
 				@RequestParam(required = false) String q,
 				@RequestParam(defaultValue = "0", required = false) int page,
