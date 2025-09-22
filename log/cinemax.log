@@ -1,3 +1,4 @@
+
 "2025-09-21 08:55:15,202 INFO  [restartedMain] com.cinemax.CineMaxApplication:Starting CineMaxApplication using Java 17.0.14 with PID 2316 (C:\Users\GUNEY\IdeaProjects\CineMax\target\classes started by GUNEY in C:\Users\GUNEY\IdeaProjects\CineMax)
 ""2025-09-21 08:55:15,217 INFO  [restartedMain] com.cinemax.CineMaxApplication:No active profile set, falling back to 1 default profile: "default"
 ""2025-09-21 08:55:15,347 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
@@ -25,4 +26,86 @@
 ""2025-09-21 09:06:21,507 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Closing JPA EntityManagerFactory for persistence unit 'default'
 ""2025-09-21 09:06:21,512 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown initiated...
 ""2025-09-21 09:06:21,523 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown completed.
+=======
+"2025-09-21 12:03:56,417 INFO  [restartedMain] com.cinemax.CineMaxApplication:Starting CineMaxApplication using Java 17.0.14 with PID 15928 (C:\Users\baba\Desktop\cinemax\CineMax\target\classes started by baba in C:\Users\baba\Desktop\cinemax\CineMax)
+""2025-09-21 12:03:56,425 INFO  [restartedMain] com.cinemax.CineMaxApplication:No active profile set, falling back to 1 default profile: "default"
+""2025-09-21 12:03:56,498 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+""2025-09-21 12:03:56,499 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+""2025-09-21 12:03:57,864 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+""2025-09-21 12:03:57,973 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Finished Spring Data repository scanning in 90 ms. Found 2 JPA repository interfaces.
+""2025-09-21 12:03:58,770 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat initialized with port 8090 (http)
+""2025-09-21 12:03:58,786 INFO  [restartedMain] org.apache.catalina.core.StandardService:Starting service [Tomcat]
+""2025-09-21 12:03:58,787 INFO  [restartedMain] org.apache.catalina.core.StandardEngine:Starting Servlet engine: [Apache Tomcat/10.1.44]
+""2025-09-21 12:03:58,842 INFO  [restartedMain] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:Initializing Spring embedded WebApplicationContext
+""2025-09-21 12:03:58,843 INFO  [restartedMain] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:Root WebApplicationContext: initialization completed in 2344 ms
+""2025-09-21 12:03:59,639 INFO  [restartedMain] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo:No LoadTimeWeaver setup: ignoring JPA class transformer
+""2025-09-21 12:03:59,675 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Starting...
+""2025-09-21 12:03:59,947 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool:HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4038d0e5
+""2025-09-21 12:03:59,950 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Start completed.
+""2025-09-21 12:04:02,560 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Initialized JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 12:04:03,064 INFO  [restartedMain] org.springframework.data.jpa.repository.query.QueryEnhancerFactory:Hibernate is in classpath; If applicable, HQL parser will be used.
+""2025-09-21 12:04:03,641 INFO  [restartedMain] org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:Global AuthenticationManager configured with UserDetailsService bean with name userDetailServiceImpl
+""2025-09-21 12:04:04,255 INFO  [restartedMain] org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver:Exposing 1 endpoint beneath base path '/actuator'
+""2025-09-21 12:04:04,663 INFO  [restartedMain] org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer:LiveReload server is running on port 35729
+""2025-09-21 12:04:04,740 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat started on port 8090 (http) with context path '/'
+""2025-09-21 12:04:04,758 INFO  [restartedMain] com.cinemax.CineMaxApplication:Started CineMaxApplication in 9.062 seconds (process running for 9.9)
+""2025-09-21 12:04:17,104 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Commencing graceful shutdown. Waiting for active requests to complete
+""2025-09-21 12:04:17,203 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Graceful shutdown complete
+""2025-09-21 12:04:17,211 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Closing JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 12:04:17,216 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown initiated...
+""2025-09-21 12:04:17,218 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown completed.
+""2025-09-21 18:59:52,970 INFO  [restartedMain] com.cinemax.CineMaxApplication:Starting CineMaxApplication using Java 17.0.14 with PID 21332 (C:\Users\baba\Desktop\cinemax\CineMax\target\classes started by baba in C:\Users\baba\Desktop\cinemax\CineMax)
+""2025-09-21 18:59:52,974 INFO  [restartedMain] com.cinemax.CineMaxApplication:No active profile set, falling back to 1 default profile: "default"
+""2025-09-21 18:59:53,053 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+""2025-09-21 18:59:53,054 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+""2025-09-21 18:59:54,443 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+""2025-09-21 18:59:54,550 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Finished Spring Data repository scanning in 91 ms. Found 2 JPA repository interfaces.
+""2025-09-21 18:59:55,349 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat initialized with port 8090 (http)
+""2025-09-21 18:59:55,363 INFO  [restartedMain] org.apache.catalina.core.StandardService:Starting service [Tomcat]
+""2025-09-21 18:59:55,363 INFO  [restartedMain] org.apache.catalina.core.StandardEngine:Starting Servlet engine: [Apache Tomcat/10.1.44]
+""2025-09-21 18:59:55,417 INFO  [restartedMain] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:Initializing Spring embedded WebApplicationContext
+""2025-09-21 18:59:55,418 INFO  [restartedMain] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:Root WebApplicationContext: initialization completed in 2362 ms
+""2025-09-21 18:59:56,195 INFO  [restartedMain] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo:No LoadTimeWeaver setup: ignoring JPA class transformer
+""2025-09-21 18:59:56,231 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Starting...
+""2025-09-21 18:59:56,480 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool:HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6111e3cc
+""2025-09-21 18:59:56,482 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Start completed.
+""2025-09-21 18:59:59,091 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Initialized JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 18:59:59,643 INFO  [restartedMain] org.springframework.data.jpa.repository.query.QueryEnhancerFactory:Hibernate is in classpath; If applicable, HQL parser will be used.
+""2025-09-21 19:00:00,225 INFO  [restartedMain] org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:Global AuthenticationManager configured with UserDetailsService bean with name userDetailServiceImpl
+""2025-09-21 19:00:00,817 INFO  [restartedMain] org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver:Exposing 1 endpoint beneath base path '/actuator'
+""2025-09-21 19:00:01,194 INFO  [restartedMain] org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer:LiveReload server is running on port 35729
+""2025-09-21 19:00:01,289 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat started on port 8090 (http) with context path '/'
+""2025-09-21 19:00:01,305 INFO  [restartedMain] com.cinemax.CineMaxApplication:Started CineMaxApplication in 9.035 seconds (process running for 9.788)
+""2025-09-21 19:00:29,400 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Commencing graceful shutdown. Waiting for active requests to complete
+""2025-09-21 19:00:29,502 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Graceful shutdown complete
+""2025-09-21 19:00:29,511 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Closing JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 19:00:29,516 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown initiated...
+""2025-09-21 19:00:29,520 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown completed.
+""2025-09-21 19:23:55,375 INFO  [restartedMain] com.cinemax.CineMaxApplication:Starting CineMaxApplication using Java 17.0.14 with PID 9012 (C:\Users\baba\Desktop\cinemax\CineMax\target\classes started by baba in C:\Users\baba\Desktop\cinemax\CineMax)
+""2025-09-21 19:23:55,378 INFO  [restartedMain] com.cinemax.CineMaxApplication:No active profile set, falling back to 1 default profile: "default"
+""2025-09-21 19:23:55,451 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+""2025-09-21 19:23:55,451 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+""2025-09-21 19:23:56,728 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+""2025-09-21 19:23:56,820 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate:Finished Spring Data repository scanning in 80 ms. Found 2 JPA repository interfaces.
+""2025-09-21 19:23:57,606 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat initialized with port 8090 (http)
+""2025-09-21 19:23:57,626 INFO  [restartedMain] org.apache.catalina.core.StandardService:Starting service [Tomcat]
+""2025-09-21 19:23:57,626 INFO  [restartedMain] org.apache.catalina.core.StandardEngine:Starting Servlet engine: [Apache Tomcat/10.1.44]
+""2025-09-21 19:23:57,678 INFO  [restartedMain] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:Initializing Spring embedded WebApplicationContext
+""2025-09-21 19:23:57,678 INFO  [restartedMain] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:Root WebApplicationContext: initialization completed in 2226 ms
+""2025-09-21 19:23:58,400 INFO  [restartedMain] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo:No LoadTimeWeaver setup: ignoring JPA class transformer
+""2025-09-21 19:23:58,445 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Starting...
+""2025-09-21 19:23:58,666 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool:HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2513d90c
+""2025-09-21 19:23:58,668 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Start completed.
+""2025-09-21 19:24:01,126 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Initialized JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 19:24:01,604 INFO  [restartedMain] org.springframework.data.jpa.repository.query.QueryEnhancerFactory:Hibernate is in classpath; If applicable, HQL parser will be used.
+""2025-09-21 19:24:02,128 INFO  [restartedMain] org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:Global AuthenticationManager configured with UserDetailsService bean with name userDetailServiceImpl
+""2025-09-21 19:24:02,692 INFO  [restartedMain] org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver:Exposing 1 endpoint beneath base path '/actuator'
+""2025-09-21 19:24:03,075 INFO  [restartedMain] org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer:LiveReload server is running on port 35729
+""2025-09-21 19:24:03,152 INFO  [restartedMain] org.springframework.boot.web.embedded.tomcat.TomcatWebServer:Tomcat started on port 8090 (http) with context path '/'
+""2025-09-21 19:24:03,171 INFO  [restartedMain] com.cinemax.CineMaxApplication:Started CineMaxApplication in 8.371 seconds (process running for 8.915)
+""2025-09-21 19:24:11,540 INFO  [SpringApplicationShutdownHook] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Commencing graceful shutdown. Waiting for active requests to complete
+""2025-09-21 19:24:11,638 INFO  [tomcat-shutdown] org.springframework.boot.web.embedded.tomcat.GracefulShutdown:Graceful shutdown complete
+""2025-09-21 19:24:11,644 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean:Closing JPA EntityManagerFactory for persistence unit 'default'
+""2025-09-21 19:24:11,646 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown initiated...
+""2025-09-21 19:24:11,652 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource:HikariPool-1 - Shutdown completed.
 "

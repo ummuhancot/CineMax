@@ -12,6 +12,7 @@ public class ErrorMessages {
 	public static final String EMAIL_ALREADY_EXISTS = "Email already exists for another user";
 	public static final String PHONE_ALREADY_EXISTS = "Phone already exists for another user";
 	public static final String ROLE_NOT_FOUND = "Role: %s not found";
+    public static final String USER_ALREADY_EXISTS = "User already exists: %s";
 
     // user - permissions & role
     public static final String NOT_HAVE_EXPECTED_ROLE_USER = "Error: User does not have expected role"; // Kullanıcının beklenen rolü yok
@@ -29,4 +30,42 @@ public class ErrorMessages {
     public static final String USER_DELETE_FAILED = "User deletion failed."; // Kullanıcı silme işlemi başarısız
 	public static final String USER_NOT_FOUND_WITH_QUERY =  "User not found with query: %s at the name, surname, email or phone number" ;
 
+	public static final String USER_DELETE_FORBIDDEN = "This user cannot be deleted (built-in restriction or insufficient role).";
+	public static final String USER_DELETE_SELF_FORBIDDEN = "You cannot delete your own account.";
+
+    //movie
+    public static final String MOVIES_QUERY_FAILED = "Failed to retrieve movies based on query."; // Sorguya göre filmler getirilemedi. (T-1 & T-6)
+    public static final String MOVIES_MARMARA_PARK_FAILED = "Failed to retrieve movies for Marmara Park cinema."; // Marmara Park sinemasındaki filmler getirilemedi. (T-2)
+    public static final String MOVIES_IMAX_FAILED = "Failed to retrieve movies for IMAX halls."; // IMAX salonlarındaki filmler getirilemedi. (T-3)
+    public static final String IN_THEATER_MOVIES_FAILED = "Failed to retrieve in-theater movies."; // Sinemalarda gösterimde olan filmler getirilemedi. (T-4)
+    public static final String UPCOMING_MOVIES_FAILED = "Failed to retrieve upcoming movies."; // Yakında vizyona girecek filmler getirilemedi. (T-5)
+    public static final String MOVIE_NOT_FOUND = "Movie not found."; // Film bulunamadı. (T-7)
+    public static final String MOVIE_NOT_FOUND_ADMIN = "Movie not found for admin."; // Film (admin için) bulunamadı. (T-8)
+    public static final String MOVIE_CREATE_FAILED = "Failed to create movie."; // Film oluşturulamadı. (T-9)
+    public static final String MOVIE_UPDATE_FAILED = "Failed to update movie."; // Film güncellenemedi. (T-10)
+    public static final String MOVIE_DELETE_FAILED = "Failed to delete movie."; // Film silinemedi. (T-11)
+    public static final String SHOWTIMES_FAILED = "Failed to retrieve showtimes."; // Film seans saatleri getirilemedi. (T-12)
+    public static final String SHOWTIMES_PAST_NOT_DISPLAYED = "Past showtimes are not displayed."; // Önceki tarih ve saatlerin gösterim saatleri görüntülenmez. (T-12)
+
+    //Image
+    public static final String IMAGE_NOT_FOUND = "Image not found."; // Görüntü bulunamadı. (T-1)
+    public static final String IMAGE_UPLOAD_FAILED = "Failed to upload image."; // Görüntü yüklenemedi. (T-2)
+    public static final String IMAGE_DELETE_FAILED = "Failed to delete image."; // Görüntü silinemedi. (T-3)
+    public static final String IMAGE_UPDATE_FAILED = "Failed to update image."; // Görüntü güncellenemedi. (T-4)
+
+    //Cinema
+    public static final String CINEMAS_QUERY_FAILED = "Failed to retrieve cinemas based on city and special halls."; // Şehir ve özel salonlara dayalı sinemalar getirilemedi. (T-1)
+    public static final String FAVORITE_CINEMAS_FAILED = "Failed to retrieve favorite cinemas."; // Kullanıcının favorilerine göre sinemalar getirilemedi. (T-2)
+    public static final String CINEMA_NOT_FOUND = "Cinema not found."; // Sinema salonu bulunamadı. (T-3)
+    public static final String CINEMA_HALLS_FAILED = "Failed to retrieve cinema halls."; // Sinema salonları getirilemedi. (T-4)
+    public static final String SPECIAL_HALLS_FAILED = "Failed to retrieve special halls."; // Tüm özel salonlar getirilemedi. (T-5)
+
+    //ShowTime
+    public static final String SHOWTIME_NOT_FOUND = "Showtime not found."; // Gösteri saati bulunamadı. (T-1)
+
+    //Ticket
+    public static final String CURRENT_TICKETS_FAILED = "Failed to retrieve current tickets."; // Kimliği doğrulanmış kullanıcının kullanmadığı biletler getirilemedi. (T-1)
+    public static final String PASSED_TICKETS_FAILED = "Failed to retrieve passed tickets."; // Kimliği doğrulanmış kullanıcının kullandığı biletler getirilemedi. (T-2)
+    public static final String RESERVE_TICKET_FAILED = "Failed to reserve ticket."; // Bilet ayıramadı. (T-3)
+    public static final String TICKET_CREATE_FAILED = "Failed to create ticket."; // Bilet oluşturulamadı. (T-4)
 }
