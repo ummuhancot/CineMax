@@ -2,9 +2,11 @@ package com.cinemax.controller.user;
 
 import com.cinemax.entity.enums.Gender;
 import com.cinemax.payload.request.user.UserRequest;
+import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.service.user.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,14 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.security.Principal;
 import java.time.LocalDate;
-
-import static ch.qos.logback.core.util.AggregationType.NOT_FOUND;
-import static javax.security.auth.callback.ConfirmationCallback.OK;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,10 +61,9 @@ public class UserControllerTest {
 
 	}
 
-    // ✅ Pozitif senaryo: Geçerli bir kullanıcı isteği gönderildiğinde 201 CREATED dönmeli
+    // ✅ POST saveUser - başarılı
     @Test
     void saveUser_ShouldReturn201Created_WhenRequestIsValid() {
-        // Arrange
         UserRequest request = UserRequest.builder()
                 .name("Ahmet")
                 .surname("Yılmaz")
@@ -88,26 +89,23 @@ public class UserControllerTest {
                 .returnBody(responseBody)
                 .build();
 
-        Principal principal = () -> "admin"; // sahte principal
+        Principal principal = () -> "admin";
 
-        Mockito.when(userService.saveUser(Mockito.any(UserRequest.class), Mockito.eq("Customer"), Mockito.any(Principal.class)))
+        when(userService.saveUser(any(UserRequest.class), eq("Customer"), any(Principal.class)))
                 .thenReturn(responseMessage);
 
-        // Act
         ResponseEntity<ResponseMessage<UserResponse>> response =
                 userController.saveUser(request, "Customer", principal);
 
-        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("User created successfully", response.getBody().getMessage());
         assertEquals("ahmet@example.com", response.getBody().getReturnBody().getEmail());
         assertEquals("Ahmet", response.getBody().getReturnBody().getName());
     }
 
-    // ❌ Negatif senaryo: Aynı e-posta ile kullanıcı kaydı yapılmaya çalışıldığında 400 BAD_REQUEST dönmeli
+    // ❌ POST saveUser - BAD_REQUEST
     @Test
     void saveUser_ShouldReturnBadRequest_WhenEmailAlreadyExists() {
-        // Arrange
         UserRequest request = UserRequest.builder()
                 .name("Ahmet")
                 .surname("Yılmaz")
@@ -126,23 +124,20 @@ public class UserControllerTest {
 
         Principal principal = () -> "admin";
 
-        Mockito.when(userService.saveUser(Mockito.any(UserRequest.class), Mockito.eq("Customer"), Mockito.any(Principal.class)))
+        when(userService.saveUser(any(UserRequest.class), eq("Customer"), any(Principal.class)))
                 .thenReturn(responseMessage);
 
-        // Act
         ResponseEntity<ResponseMessage<UserResponse>> response =
                 userController.saveUser(request, "Customer", principal);
 
-        // Assert
         assertEquals(responseMessage.getHttpStatus(), response.getStatusCode());
         assertEquals(responseMessage.getMessage(), response.getBody().getMessage());
         assertNull(response.getBody().getReturnBody());
     }
 
-    // ⚠ Exception senaryosu: Servis e-posta zaten varsa exception fırlatıyor
+    // ⚠️ POST saveUser - Exception fırlatma
     @Test
     void saveUser_ShouldThrowException_WhenEmailAlreadyExists() {
-        // Arrange
         UserRequest request = UserRequest.builder()
                 .name("Ahmet")
                 .surname("Yılmaz")
@@ -155,10 +150,9 @@ public class UserControllerTest {
 
         Principal principal = () -> "admin";
 
-        Mockito.when(userService.saveUser(Mockito.any(), Mockito.anyString(), Mockito.any()))
+        when(userService.saveUser(any(), Mockito.anyString(), any()))
                 .thenThrow(new IllegalArgumentException("Email already exists"));
 
-        // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
                 userController.saveUser(request, "Customer", principal)
         );
@@ -166,5 +160,82 @@ public class UserControllerTest {
         assertEquals("Email already exists", exception.getMessage());
     }
 
+    // ✅ GET /{id}/auth - Olumlu ve Olumsuz Senaryolar
+    @Test
+    @WithMockUser(authorities = {"Admin"})
+    void getUserById_ShouldReturnUser_WhenAuthorized() {
+        UserResponse mockUser = UserResponse.builder()
+                .name("Ali")
+                .surname("Veli")
+                .email("ali@test.com")
+                .phoneNumber("12345")
+                .birthDate(null)
+                .gender(null)
+                .build();
+
+        ResponseMessage<BaseUserResponse> mockResponse = ResponseMessage.<BaseUserResponse>builder()
+                .message("User fetched successfully")
+                .returnBody(mockUser) // UserResponse, BaseUserResponse’dan türediği için sorun olmaz
+                .build();
+
+        Principal mockPrincipal = () -> "admin@test.com";
+
+        when(userService.findUserById(eq(1L), any(Principal.class)))
+                .thenReturn(mockResponse);
+
+        ResponseMessage<BaseUserResponse> result =
+                userController.getUserById(1L, mockPrincipal);
+
+        BaseUserResponse baseResponse = result.getReturnBody();
+
+        assertEquals("User fetched successfully", result.getMessage());
+        assertEquals("Ali", baseResponse.getName());
+        assertEquals("Veli", baseResponse.getSurname());
+        assertEquals("ali@test.com", baseResponse.getEmail());
+        assertEquals("12345", baseResponse.getPhoneNumber());
+    }
+
+    // ❌ Olumsuz Senaryo 1: Kullanıcı yetkili değil (AccessDenied)
+    @Test
+    @WithMockUser(authorities = {"Customer"}) // Admin değil
+    void getUserById_ShouldThrowAccessDenied_WhenNotAuthorized() {
+        Principal mockPrincipal = () -> "customer@test.com";
+
+        assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> {
+            userController.getUserById(1L, mockPrincipal);
+        });
+    }
+
+    // ❌ Olumsuz Senaryo 2: Kullanıcı bulunamadığında
+    @Test
+    @WithMockUser(authorities = {"Admin"})
+    void getUserById_ShouldThrowException_WhenUserNotFound() {
+        Principal mockPrincipal = () -> "admin@test.com";
+
+        when(userService.findUserById(eq(999L), any(Principal.class)))
+                .thenThrow(new IllegalArgumentException("User not found"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            userController.getUserById(999L, mockPrincipal);
+        });
+
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    // ❌ Olumsuz Senaryo 3: Servis hatası / exception fırlatması
+    @Test
+    @WithMockUser(authorities = {"Admin"})
+    void getUserById_ShouldThrowException_WhenServiceFails() {
+        Principal mockPrincipal = () -> "admin@test.com";
+
+        when(userService.findUserById(eq(1L), any(Principal.class)))
+                .thenThrow(new RuntimeException("Database error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userController.getUserById(1L, mockPrincipal);
+        });
+
+        assertEquals("Database error", exception.getMessage());
+    }
 
 }
