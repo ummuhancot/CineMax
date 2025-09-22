@@ -35,7 +35,6 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    // Spring Security username gibi email’i kullanacak
     @Override
     public String getUsername() {
         return email;
