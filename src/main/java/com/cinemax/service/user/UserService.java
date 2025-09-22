@@ -6,6 +6,7 @@ import com.cinemax.entity.enums.Gender;
 import com.cinemax.entity.enums.RoleType;
 import com.cinemax.exception.BadRequestException;
 import com.cinemax.exception.ConflictException;
+import com.cinemax.exception.InvalidUserDataException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
@@ -124,7 +125,7 @@ public class UserService {
 		return userMapper.mapUserToUserResponse(user);
 	}
 
-    public ResponseMessage<UserResponse> saveUser(@Valid UserRequest userRequest, String userRole,Principal principal) {
+    public ResponseMessage<UserResponse> saveUser(@Valid UserRequest userRequest, String userRole, Principal principal) {
         String emailToCreate = userRequest.getEmail();
 
         // Eğer kullanıcı zaten varsa hata fırlat
@@ -132,23 +133,26 @@ public class UserService {
             throw new ConflictException(String.format(ErrorMessages.USER_ALREADY_EXISTS, emailToCreate));
         });
 
-        uniquePropertyValidator.checkDuplication(
-                userRequest.getEmail(),
-                userRequest.getPhoneNumber()
-        );
+        try {
+            uniquePropertyValidator.checkDuplication(
+                    userRequest.getEmail(),
+                    userRequest.getPhoneNumber()
+            );
+        } catch (InvalidUserDataException ex) {
+            throw new BadRequestException(ErrorMessages.REGISTER_VALIDATION_FAILED);
+        }
+
         User userToSave = userMapper.mapUserRequestToUser(userRequest, userRole);
 
         User savedUser = userRepository.save(userToSave);
 
         UserResponse userResponse = userMapper.mapUserToUserResponse(savedUser);
 
-        ResponseMessage<UserResponse> response = ResponseMessage.<UserResponse>builder()
+        return ResponseMessage.<UserResponse>builder()
                 .message(SuccessMessages.AUTH_USER_CREATED_SUCCESS + " " + SuccessMessages.USER_AUTH_FETCHED_SUCCESS)
                 .returnBody(userResponse)
                 .httpStatus(HttpStatus.CREATED)
                 .build();
-        return response;
-
     }
 
 

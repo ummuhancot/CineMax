@@ -56,7 +56,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.deleteUserByIdAsAdminOrManager(id , principal));
 	}
 
-    @PostMapping("/auth")
+    @PostMapping("/auth/{userRole}")
     @PreAuthorize("hasAnyAuthority('Admin', 'Manager',Customer)")
     public ResponseEntity<ResponseMessage<UserResponse>> saveUser(
             @RequestBody @Valid UserRequest userRequest,
