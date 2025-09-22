@@ -2,6 +2,7 @@ package com.cinemax.service.user;
 
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.Gender;
+import com.cinemax.entity.enums.RoleType;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -42,6 +44,8 @@ public class AuthenticationService {
 	private final UniquePropertyValidator uniquePropertyValidator;
 	private final UserMapper userMapper;
 	private final EmailService emailService;
+	private final PasswordEncoder passwordEncoder;
+	private final UserRoleService userRoleService;
 
 	public AuthenticationResponse authenticate(
 				LoginRequest loginRequest) {
@@ -70,13 +74,12 @@ public class AuthenticationService {
 
 	}
 
-	public UserResponse register(
-				RegisterRequest registerRequest) {
-		uniquePropertyValidator.checkDuplication(registerRequest.getEmail(), registerRequest.getPhoneNumber());
-		User userToSave = userMapper.mapRegisterRequestToUser(registerRequest);
-		return userMapper.mapUserToUserResponse(userRepository.save(userToSave));
-	}
-
+	 public UserResponse register(
+	 RegisterRequest registerRequest) {
+	 uniquePropertyValidator.checkDuplication(registerRequest.getEmail(), registerRequest.getPhoneNumber());
+	 User userToSave = userMapper.mapRegisterRequestToUser(registerRequest);
+	 return userMapper.mapUserToUserResponse(userRepository.save(userToSave));
+	 }
 
 	/** U3 - forgotPassword start */
 	public ResponseEntity<?> forgotPassword(@Valid ForgotPasswordRequest request) {

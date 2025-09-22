@@ -15,6 +15,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
+
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
 	@Value("${backendapi.app.jwtSecret}")
@@ -25,7 +27,7 @@ public class JwtUtils {
 
 	public String generateJwtToken(
 				Authentication authentication) {
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();//class adi UserDetailsImpl olarak guncellendi
+		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 		return Jwts.builder()
 					       .setSubject(userPrincipal.getEmail())
 					       .setIssuedAt(new Date())
@@ -35,6 +37,7 @@ public class JwtUtils {
 					       .claim("userId", userPrincipal.getId())
 					       .compact();
 	}
+
 
 	private Key getSigninKey() {
 		byte[] keyBytes = jwtSecret.getBytes();
@@ -54,6 +57,7 @@ public class JwtUtils {
 					       .getSubject();
 	}
 
+	//
 	public boolean validateJwtToken(
 				String authToken) {
 		try {

@@ -3,6 +3,7 @@ package com.cinemax.service.user;
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.concretes.user.UserRole;
 import com.cinemax.entity.enums.Gender;
+import com.cinemax.exception.BuiltInUserException;
 import com.cinemax.entity.enums.RoleType;
 import com.cinemax.exception.BadRequestException;
 import com.cinemax.exception.ConflictException;
@@ -26,6 +27,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -106,6 +109,37 @@ public class UserService {
                 .build();
     }
 
+
+	//U7 - Deletes the authenticated user from the user repository
+	public ResponseEntity<?> deleteAuthenticatedUser(UserDetails userDetails) {
+		// 1. UserDetails nesnesinden e-posta adresini alın
+		String email = userDetails.getUsername();
+
+		// 2. E-posta adresi ile veritabanından kullanıcıyı bulun
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_MAIL, email)));
+
+		// 3. Built-in kullanıcı kontrolünü yapın
+		checkBuiltInBeforeDeletion(user);
+
+		// 4. Kullanıcıyı silin
+		userRepository.delete(user);
+
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Kullanıcının built-in (sistem tarafından oluşturulmuş) olup olmadığını kontrol eder.
+	 * Eğer built-in ise silme işlemi engellenir ve uygun exception fırlatılır.
+	 *
+	 * @param user Silinmek istenen kullanıcı
+	 * @throws com.cinemax.exception.BuiltInUserException Kullanıcı built-in ise fırlatılır
+	 */
+	private void checkBuiltInBeforeDeletion(User user) {
+		if (Boolean.TRUE.equals(user.getBuiltIn())) {
+			throw new BuiltInUserException(ErrorMessages.USER_BUILT_IN);
+		}
+	}
 	public UserResponse deleteUserByIdAsAdminOrManager(
 				Long id,
 				Principal principal) {
@@ -214,6 +248,6 @@ public class UserService {
     }
 
 
-
-
 }
+
+

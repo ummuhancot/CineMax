@@ -1,6 +1,7 @@
 package com.cinemax.security.jwt;
 
 import com.cinemax.security.service.UserDetailServiceImpl;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,14 +25,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
+    @Autowired
+    private JwtUtils jwtUtils;
 
-    private final JwtUtils jwtUtils;
-    private final UserDetailServiceImpl userDetailService;
+    @Autowired
+    private UserDetailServiceImpl userDetailService;
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         try {
             //1-from every request, we will get JWT
             String jwt = parseJwt(request);
@@ -41,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtUtils.getEmailFromToken(jwt);//String username = jwtUtils.getEmailFromToken(jwt);
                 //4- check DB and fetch user and upgrade it to userDetails
                 UserDetails userDetails = userDetailService.loadUserByUsername(email);
-                //5- set attribute with username
+                //5- set attribute with email
                 request.setAttribute("email", email);
                 //6- we load user details information to security context
                 UsernamePasswordAuthenticationToken authentication =
@@ -62,4 +67,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/login") || path.startsWith("/api/register") || path.startsWith("/api/forgot-password") || path.startsWith("/v3/api-docs");
+    }
+
 }

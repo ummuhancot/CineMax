@@ -23,6 +23,7 @@ public class UserRoleService {
 					       .orElseThrow(()->new ResourceNotFoundException(String.format(ErrorMessages.ROLE_NOT_FOUND, roleType.getName())));
 	}
 
+
     public UserRole getUserRole(RoleType roleType){
         return (UserRole) userRoleRepository.findByUserRoleType(roleType)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.ROLE_NOT_FOUND,roleType.getName())));
@@ -38,6 +39,5 @@ public class UserRoleService {
         iterable.forEach(list::add);
         return list;
     }
-
 
 }
