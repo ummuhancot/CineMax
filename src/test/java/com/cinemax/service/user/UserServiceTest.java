@@ -7,6 +7,7 @@ import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.messages.SuccessMessages;
+import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.cinemax.payload.response.business.ResponseMessage;
@@ -193,4 +194,95 @@ class UserServiceTest {
         assertThrows(ResourceNotFoundException.class,
                 () -> userService.findUserById(2L, principal));
     }
+
+    // ✅ updateAuthenticatedUser – başarı (gender lower-case de kabul edilir)
+    @Test
+    void updateAuthenticatedUser_ShouldUpdateAndReturnResponse_WhenValid_andLowercaseGender() {
+        // arrange
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("Yeni");
+        req.setSurname("Isim");
+        req.setEmail("new@test.com");
+        req.setPhoneNumber("999");
+        req.setGender("male"); // lower-case
+        req.setBirthDate(LocalDate.of(1995, 5, 20));
+
+        // act
+        UserResponse resp = userService.updateAuthenticatedUser(req, principal);
+
+        // assert
+        assertEquals("Yeni", resp.getName());
+        assertEquals("Isim", resp.getSurname());
+        assertEquals("new@test.com", resp.getEmail());
+        assertEquals("999", resp.getPhoneNumber());
+        assertEquals(Gender.MALE, resp.getGender());
+        assertEquals(LocalDate.of(1995, 5, 20), resp.getBirthDate());
+        verify(userRepository).save(any(User.class));
+    }
+
+    // ✅ updateAuthenticatedUser – gender null ise değiştirme (null dönebilir)
+    @Test
+    void updateAuthenticatedUser_ShouldKeepGenderNull_WhenRequestGenderIsNull() {
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        // Başlangıçta cinsiyeti null yapalım ki net görelim
+        user.setGender(null);
+
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("Ayşe");
+        req.setSurname("Yılmaz");
+        req.setEmail("ayse@test.com");
+        req.setPhoneNumber("555");
+        req.setGender(null); // null
+        req.setBirthDate(LocalDate.of(2000, 1, 1));
+
+        UserResponse resp = userService.updateAuthenticatedUser(req, principal);
+
+        assertNull(resp.getGender());
+        assertEquals("Ayşe", resp.getName());
+    }
+
+    // ❌ updateAuthenticatedUser – kullanıcı bulunamaz
+    @Test
+    void updateAuthenticatedUser_ShouldThrowNotFound_WhenUserByEmailMissing() {
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.empty());
+
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("A");
+        req.setSurname("B");
+        req.setEmail("e@e.com");
+        req.setPhoneNumber("1");
+        req.setGender("FEMALE");
+        req.setBirthDate(LocalDate.now());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.updateAuthenticatedUser(req, principal));
+
+        verify(userRepository, never()).save(any());
+    }
+
+    // ❌ updateAuthenticatedUser – builtIn true ise Conflict
+    @Test
+    void updateAuthenticatedUser_ShouldThrowConflict_WhenUserIsBuiltIn() {
+        user.setBuiltIn(true);
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(user));
+
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("A");
+        req.setSurname("B");
+        req.setEmail("e@e.com");
+        req.setPhoneNumber("1");
+        req.setGender("MALE");
+        req.setBirthDate(LocalDate.now());
+
+        assertThrows(ConflictException.class,
+                () -> userService.updateAuthenticatedUser(req, principal));
+
+        verify(userRepository, never()).save(any());
+    }
+
 }

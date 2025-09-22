@@ -1,6 +1,7 @@
 package com.cinemax.controller.user;
 
 import com.cinemax.entity.enums.Gender;
+import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.cinemax.payload.response.business.ResponseMessage;
@@ -236,6 +237,67 @@ public class UserControllerTest {
         });
 
         assertEquals("Database error", exception.getMessage());
+    }
+
+    // ✅ PUT /auth – başarılı senaryo
+    @Test
+    void updateAuthenticatedUser_ShouldReturnOk_WithUpdatedBody() {
+        // arrange
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("Ali");
+        req.setSurname("Veli");
+        req.setEmail("ali@veli.com");
+        req.setPhoneNumber("(555) 555-5555");
+        req.setGender("MALE");
+        req.setBirthDate(LocalDate.of(1995, 5, 20));
+
+        UserResponse serviceResp = UserResponse.builder()
+                .name("Ali")
+                .surname("Veli")
+                .email("ali@veli.com")
+                .phoneNumber("(555) 555-5555")
+                .birthDate(LocalDate.of(1995, 5, 20))
+                .gender(Gender.MALE)
+                .build();
+
+        Principal principal = () -> "user@example.com";
+
+        when(userService.updateAuthenticatedUser(any(UserUpdateRequest.class), any(Principal.class)))
+                .thenReturn(serviceResp);
+
+        // act
+        ResponseEntity<UserResponse> response =
+                userController.updateAuthenticatedUser(req, principal);
+
+        // assert
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Ali", response.getBody().getName());
+        assertEquals("Veli", response.getBody().getSurname());
+        assertEquals(Gender.MALE, response.getBody().getGender());
+        assertEquals("ali@veli.com", response.getBody().getEmail());
+    }
+
+    // ❌ PUT /auth – servis hata fırlatırsa (ör. built-in kullanıcı güncellenemez)
+    @Test
+    void updateAuthenticatedUser_ShouldPropagateException_WhenServiceThrows() {
+        UserUpdateRequest req = new UserUpdateRequest();
+        req.setName("Ali");
+        req.setSurname("Veli");
+        req.setEmail("ali@veli.com");
+        req.setPhoneNumber("(555) 555-5555");
+        req.setGender("MALE");
+        req.setBirthDate(LocalDate.of(1995, 5, 20));
+
+        Principal principal = () -> "user@example.com";
+
+        when(userService.updateAuthenticatedUser(any(UserUpdateRequest.class), any(Principal.class)))
+                .thenThrow(new com.cinemax.exception.ConflictException("User cannot be updated"));
+
+        com.cinemax.exception.ConflictException ex =
+                assertThrows(com.cinemax.exception.ConflictException.class,
+                        () -> userController.updateAuthenticatedUser(req, principal));
+
+        assertEquals("User cannot be updated", ex.getMessage());
     }
 
 }
