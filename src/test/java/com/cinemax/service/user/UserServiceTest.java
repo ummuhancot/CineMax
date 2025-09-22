@@ -5,6 +5,7 @@ import com.cinemax.entity.enums.Gender;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.UserMapper;
+import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.messages.SuccessMessages;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -115,8 +117,14 @@ class UserServiceTest {
 
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(user));
 
-        assertThrows(ConflictException.class,
+        ConflictException exception = assertThrows(ConflictException.class,
                 () -> userService.saveUser(request, "Customer", principal));
+
+        // Hata mesajı kontrolü
+        assertEquals(
+                String.format(ErrorMessages.USER_ALREADY_EXISTS, "admin@test.com"),
+                exception.getMessage()
+        );
 
         verify(userRepository).findByEmail("admin@test.com");
         verify(userRepository, never()).save(any());
@@ -125,7 +133,6 @@ class UserServiceTest {
     // ✅ getAllUsersWithQuery
     @Test
     void getAllUsersWithQuery_ShouldReturnPageOfUserResponse() {
-        // Arrange
         PageRequest mockPageRequest = PageRequest.of(0, 10, Sort.by("id").ascending());
         when(pageableHelper.getPageable(0, 10, "id", "asc")).thenReturn(mockPageRequest);
 
@@ -139,14 +146,11 @@ class UserServiceTest {
         UserResponse userResponse = UserResponse.builder().name("Ali").build();
         when(userMapper.mapUserToUserResponse(user)).thenReturn(userResponse);
 
-        // Act
         Page<UserResponse> result = userService.getAllUsersWithQuery("", 0, 10, "id", "asc");
 
-        // Assert
         assertEquals(1, result.getTotalElements());
         assertEquals("Ali", result.getContent().get(0).getName());
     }
-
 
     // ✅ findUserById başarılı
     @Test
