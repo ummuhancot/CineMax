@@ -1,24 +1,19 @@
 package com.cinemax.payload.response.user;
 
 import com.cinemax.entity.enums.Gender;
+import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDate;
 
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-public class UserResponse {
+public class UserResponse extends BaseUserResponse {
 
-	private String name;
-	private String surname;
-	private String email;
-	private String phoneNumber;
-	private LocalDate birthDate;
-	private Gender gender;
+
 }
