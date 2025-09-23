@@ -53,7 +53,7 @@ public class User {
 	private UserRole userRole;
 
 	@Column(nullable = false)
-	private Boolean builtIn = false;
+	private boolean builtIn = false;
 
 	@CreationTimestamp
 	private LocalDateTime createdAt;

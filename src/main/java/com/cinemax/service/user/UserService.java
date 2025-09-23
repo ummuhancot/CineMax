@@ -1,14 +1,9 @@
 package com.cinemax.service.user;
 
 import com.cinemax.entity.concretes.user.User;
-import com.cinemax.entity.concretes.user.UserRole;
 import com.cinemax.entity.enums.Gender;
-import com.cinemax.exception.BuiltInUserException;
 import com.cinemax.entity.enums.RoleType;
-import com.cinemax.exception.BadRequestException;
-import com.cinemax.exception.ConflictException;
-import com.cinemax.exception.InvalidUserDataException;
-import com.cinemax.exception.ResourceNotFoundException;
+import com.cinemax.exception.*;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.messages.SuccessMessages;
@@ -19,7 +14,6 @@ import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.repository.user.UserRepository;
-import com.cinemax.repository.user.UserRoleRepository;
 import com.cinemax.service.helper.MethodHelper;
 import com.cinemax.service.helper.PageableHelper;
 import com.cinemax.service.validator.UniquePropertyValidator;
@@ -27,20 +21,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +72,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_MAIL,email)));
 
-        if (Boolean.TRUE.equals(user.getBuiltIn())) {
+        if (user.isBuiltIn()) {
             throw new ConflictException(ErrorMessages.USER_UPDATE_FORBIDDEN);
 
         }
@@ -136,7 +127,7 @@ public class UserService {
 	 * @throws com.cinemax.exception.BuiltInUserException Kullanıcı built-in ise fırlatılır
 	 */
 	private void checkBuiltInBeforeDeletion(User user) {
-		if (Boolean.TRUE.equals(user.getBuiltIn())) {
+		if (user.isBuiltIn()) {
 			throw new BuiltInUserException(ErrorMessages.USER_BUILT_IN);
 		}
 	}
@@ -152,7 +143,7 @@ public class UserService {
 		}
 		User user = userRepository.findById(id)
 					            .orElseThrow(()->new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_ID, id)));
-		if (Boolean.TRUE.equals(user.getBuiltIn())) {
+		if (user.isBuiltIn()) {
 			throw new ConflictException(ErrorMessages.USER_DELETE_FORBIDDEN);
 		}
 		userRepository.delete(user);
@@ -224,7 +215,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (Boolean.TRUE.equals(user.getBuiltIn())) {
+        if (user.isBuiltIn()) {
             throw new BadRequestException("This user cannot be updated (builtIn = true)");
         }
 

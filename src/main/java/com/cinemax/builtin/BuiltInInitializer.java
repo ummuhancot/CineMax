@@ -2,6 +2,7 @@ package com.cinemax.builtin;
 
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.concretes.user.UserRole;
+import com.cinemax.entity.enums.Gender;
 import com.cinemax.entity.enums.RoleType;
 import com.cinemax.repository.user.UserRoleRepository;
 import com.cinemax.service.user.UserRoleService;
@@ -58,6 +59,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .phoneNumber("(123) 456-7890")
                     .password(passwordEncoder.encode("Admin123!"))
                     .birthDate(LocalDate.of(1985, 1, 1))
+			        .gender(Gender.OTHER)
                     .userRole(userRoleService.getByRoleType(RoleType.ADMIN))
                     .builtIn(true)
                     .build();
@@ -71,6 +73,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .phoneNumber("(123) 456-7891")
                     .password(passwordEncoder.encode("Manager123!"))
                     .birthDate(LocalDate.of(1988, 5, 10))
+			        .gender(Gender.OTHER)
                     .userRole(userRoleService.getByRoleType(RoleType.MANAGER))
                     .builtIn(true)
                     .build();
@@ -84,6 +87,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .phoneNumber("(123) 456-7892")
                     .password(passwordEncoder.encode("Customer123!"))
                     .birthDate(LocalDate.of(1995, 8, 15))
+			        .gender(Gender.OTHER)
                     .userRole(userRoleService.getByRoleType(RoleType.CUSTOMER))
                     .builtIn(true)
                     .build();

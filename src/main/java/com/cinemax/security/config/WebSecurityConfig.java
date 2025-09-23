@@ -41,6 +41,7 @@ public class WebSecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
+			    .authenticationProvider(authenticationProvider())
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -48,6 +49,7 @@ public class WebSecurityConfig {
     }
 
     // @Bean anotasyonunu kaldırdık ve SecurityFilterChain'den de çağrısını sildik. -kontrol spring de
+	@Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailServiceImpl);

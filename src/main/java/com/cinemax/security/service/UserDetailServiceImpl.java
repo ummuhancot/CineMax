@@ -19,12 +19,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         // email üzerinden kullanıcı çekiyoruz
         User user = methodHelper.loadByEmail(email);
 
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getUserRole().getRoleType().getName()
-        );
+        return new UserDetailsImpl(user);
     }
 
 }

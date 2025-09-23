@@ -59,7 +59,14 @@ public class AuthenticationControllerTest {
 	@Test
 	void register_ShouldReturnResponseEntityWithUserResponse_WhenRegisterRequestIsValid() {
 		RegisterRequest registerRequest = new RegisterRequest("name", "surname", "password", "email", "phoneNumber", LocalDate.of(1995, 11, 11), Gender.MALE);
-		UserResponse expectedResponse = new UserResponse("name", "surname", "email", "phoneNumber", LocalDate.of(1995, 11, 11), Gender.MALE);
+		UserResponse expectedResponse = UserResponse.builder()
+					                                .name("name")
+					                                .surname("surname")
+					                                .email("email")
+					                                .phoneNumber("phoneNumber")
+					                                .birthDate(LocalDate.of(1995, 11, 11))
+					                                .gender(Gender.MALE)
+					                                .build();
 
 		when(authenticationService.register(registerRequest)).thenReturn(expectedResponse);
 
