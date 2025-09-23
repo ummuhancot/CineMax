@@ -14,10 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -30,7 +29,7 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/admin")
-	@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+	@PreAuthorize("hasAnyAuthority('Admin','Manager')")
 	public ResponseEntity<Page<UserResponse>> getAllUsersWithQuery(
 				@RequestParam(required = false) String q,
 				@RequestParam(defaultValue = "0", required = false) int page,
@@ -42,7 +41,7 @@ public class UserController {
 
 
     @PutMapping("/auth")
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<UserResponse> updateAuthenticatedUser(
             @RequestBody @Valid UserUpdateRequest request,
             Principal principal){
@@ -70,7 +69,7 @@ public class UserController {
 	}
 
     @PostMapping("/auth/{userRole}")
-    @PreAuthorize("hasAnyAuthority('Admin', 'Manager',Customer)")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Manager','Customer')")
     public ResponseEntity<ResponseMessage<UserResponse>> saveUser(
             @RequestBody @Valid UserRequest userRequest,
             @PathVariable String userRole,

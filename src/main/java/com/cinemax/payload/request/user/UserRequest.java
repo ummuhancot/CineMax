@@ -2,14 +2,12 @@ package com.cinemax.payload.request.user;
 
 
 import com.cinemax.payload.request.abstracts.BaseUserRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@NoArgsConstructor
 @SuperBuilder
 public class UserRequest extends BaseUserRequest {
 

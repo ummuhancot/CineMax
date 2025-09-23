@@ -1,15 +1,12 @@
 package com.cinemax.payload.response.user;
 
-import com.cinemax.entity.enums.Gender;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)

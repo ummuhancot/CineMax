@@ -1,5 +1,6 @@
 package com.cinemax.security.service;
 
+import com.cinemax.entity.concretes.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,13 +27,14 @@ public class UserDetailsImpl implements UserDetails {
 
     private List<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String email, String password, String role) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
+    public UserDetailsImpl(
+			    User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role));
-        this.authorities = authorities;
+        authorities.add(new SimpleGrantedAuthority(user.getUserRole().getName()));
+        this.authorities = new ArrayList<>(authorities);
     }
 
     @Override
