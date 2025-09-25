@@ -1,6 +1,15 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.payload.request.business.MovieRequest;
+import com.cinemax.payload.response.business.MovieResponse;
+import com.cinemax.service.bussines.MovieService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,4 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
 public class MovieController {
+
+    private final MovieService movieService;
+
+    @PostMapping("/save")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> movieSave(
+            @Valid @RequestBody MovieRequest movieRequest){
+        MovieResponse response = movieService.save(movieRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
 }
