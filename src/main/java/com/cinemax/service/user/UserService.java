@@ -11,7 +11,6 @@ import com.cinemax.payload.request.authentication.ResetPasswordRequest;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
-import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.repository.user.UserRepository;
 import com.cinemax.service.helper.MethodHelper;
@@ -150,7 +149,7 @@ public class UserService {
 		return userMapper.mapUserToUserResponse(user);
 	}
 
-    public ResponseMessage<UserResponse> saveUser(@Valid UserRequest userRequest, String userRole, Principal principal) {
+    public UserResponse saveUser(@Valid UserRequest userRequest, String userRole, Principal principal) {
         String emailToCreate = userRequest.getEmail();
 
         // Eğer kullanıcı zaten varsa hata fırlat
@@ -171,17 +170,11 @@ public class UserService {
 
         User savedUser = userRepository.save(userToSave);
 
-        UserResponse userResponse = userMapper.mapUserToUserResponse(savedUser);
-
-        return ResponseMessage.<UserResponse>builder()
-                .message(SuccessMessages.AUTH_USER_CREATED_SUCCESS + " " + SuccessMessages.USER_AUTH_FETCHED_SUCCESS)
-                .returnBody(userResponse)
-                .httpStatus(HttpStatus.CREATED)
-                .build();
+        return userMapper.mapUserToUserResponse(savedUser);
     }
 
 
-    public ResponseMessage<BaseUserResponse> findUserById(Long id, Principal principal) {
+    public BaseUserResponse findUserById(Long id, Principal principal) {
         String email = principal.getName();
         if (userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -192,11 +185,7 @@ public class UserService {
         }
 
         User user = methodHelper.isUserExist(id);
-        return ResponseMessage.<BaseUserResponse>builder()
-                .message(SuccessMessages.USER_FETCHED_SUCCESS)
-                .returnBody(userMapper.mapUserToUserResponse(user))
-                .httpStatus(HttpStatus.OK)
-                .build();
+        return userMapper.mapUserToUserResponse(user);
     }
     @Transactional
     public void resetPassword(String email, ResetPasswordRequest request) {

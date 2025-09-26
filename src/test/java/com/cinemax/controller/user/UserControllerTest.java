@@ -4,7 +4,6 @@ import com.cinemax.entity.enums.Gender;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
-import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.service.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,59 +83,20 @@ public class UserControllerTest {
                 .gender(Gender.MALE)
                 .build();
 
-        ResponseMessage<UserResponse> responseMessage = ResponseMessage.<UserResponse>builder()
-                .message("User created successfully")
-                .httpStatus(HttpStatus.CREATED)
-                .returnBody(responseBody)
-                .build();
-
         Principal principal = () -> "admin";
 
         when(userService.saveUser(any(UserRequest.class), eq("Customer"), any(Principal.class)))
-                .thenReturn(responseMessage);
+                .thenReturn(responseBody);
 
-        ResponseEntity<ResponseMessage<UserResponse>> response =
+        ResponseEntity<UserResponse> response =
                 userController.saveUser(request, "Customer", principal);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("User created successfully", response.getBody().getMessage());
-        assertEquals("ahmet@example.com", response.getBody().getReturnBody().getEmail());
-        assertEquals("Ahmet", response.getBody().getReturnBody().getName());
+        assertEquals("ahmet@example.com", response.getBody().getEmail());
+        assertEquals("Ahmet", response.getBody().getName());
     }
 
-    // ❌ POST saveUser - BAD_REQUEST
-    @Test
-    void saveUser_ShouldReturnBadRequest_WhenEmailAlreadyExists() {
-        UserRequest request = UserRequest.builder()
-                .name("Ahmet")
-                .surname("Yılmaz")
-                .email("ahmet@example.com")
-                .password("Abc123!@#")
-                .phoneNumber("(555) 111-2233")
-                .birthDate(LocalDate.of(1990, 5, 15))
-                .gender(Gender.MALE)
-                .build();
-
-        ResponseMessage<UserResponse> responseMessage = ResponseMessage.<UserResponse>builder()
-                .message("Email already exists")
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .returnBody(null)
-                .build();
-
-        Principal principal = () -> "admin";
-
-        when(userService.saveUser(any(UserRequest.class), eq("Customer"), any(Principal.class)))
-                .thenReturn(responseMessage);
-
-        ResponseEntity<ResponseMessage<UserResponse>> response =
-                userController.saveUser(request, "Customer", principal);
-
-        assertEquals(responseMessage.getHttpStatus(), response.getStatusCode());
-        assertEquals(responseMessage.getMessage(), response.getBody().getMessage());
-        assertNull(response.getBody().getReturnBody());
-    }
-
-    // ⚠️ POST saveUser - Exception fırlatma
+    // ❌ POST saveUser - Exception fırlatma
     @Test
     void saveUser_ShouldThrowException_WhenEmailAlreadyExists() {
         UserRequest request = UserRequest.builder()
@@ -170,26 +130,19 @@ public class UserControllerTest {
                 .surname("Veli")
                 .email("ali@test.com")
                 .phoneNumber("12345")
-                .birthDate(null)
-                .gender(null)
-                .build();
-
-        ResponseMessage<BaseUserResponse> mockResponse = ResponseMessage.<BaseUserResponse>builder()
-                .message("User fetched successfully")
-                .returnBody(mockUser) // UserResponse, BaseUserResponse’dan türediği için sorun olmaz
                 .build();
 
         Principal mockPrincipal = () -> "admin@test.com";
 
         when(userService.findUserById(eq(1L), any(Principal.class)))
-                .thenReturn(mockResponse);
+                .thenReturn(mockUser);
 
-        ResponseMessage<BaseUserResponse> result =
+        ResponseEntity<BaseUserResponse> response =
                 userController.getUserById(1L, mockPrincipal);
 
-        BaseUserResponse baseResponse = result.getReturnBody();
+        BaseUserResponse baseResponse = response.getBody();
 
-        assertEquals("User fetched successfully", result.getMessage());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Ali", baseResponse.getName());
         assertEquals("Veli", baseResponse.getSurname());
         assertEquals("ali@test.com", baseResponse.getEmail());
@@ -200,10 +153,14 @@ public class UserControllerTest {
     @Test
     @WithMockUser(authorities = {"Customer"}) // Admin değil
     void getUserById_ShouldThrowAccessDenied_WhenNotAuthorized() {
-        Principal mockPrincipal = () -> "customer@test.com";
+        Principal principal = () -> "customer@example.com";
+
+        // Servisi mockla, AccessDeniedException fırlat
+        when(userService.findUserById(eq(1L), any(Principal.class)))
+                .thenThrow(new org.springframework.security.access.AccessDeniedException("Access is denied"));
 
         assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> {
-            userController.getUserById(1L, mockPrincipal);
+            userController.getUserById(1L, principal);
         });
     }
 

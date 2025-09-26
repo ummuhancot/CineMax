@@ -5,7 +5,6 @@ import com.cinemax.payload.request.authentication.ResetPasswordRequest;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
-import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.service.user.UserService;
 import jakarta.validation.Valid;
@@ -70,11 +69,11 @@ public class UserController {
 
     @PostMapping("/auth/{userRole}")
     @PreAuthorize("hasAnyAuthority('Admin', 'Manager','Customer')")
-    public ResponseEntity<ResponseMessage<UserResponse>> saveUser(
+    public ResponseEntity<UserResponse> saveUser(
             @RequestBody @Valid UserRequest userRequest,
             @PathVariable String userRole,
             Principal principal) {
-        ResponseMessage<UserResponse> response = userService.saveUser(userRequest, userRole,principal);
+    UserResponse response = userService.saveUser(userRequest, userRole, principal);
 
         // HTTP 201 ile response döndür
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -82,8 +81,11 @@ public class UserController {
 
     @GetMapping("/{id}/auth")
     @PreAuthorize("hasAnyAuthority('Admin', 'Manager')")
-    public ResponseMessage<BaseUserResponse> getUserById(@PathVariable Long id,Principal principal){
-        return userService.findUserById(id,principal);
+    public ResponseEntity<BaseUserResponse> getUserById(
+            @PathVariable Long id,
+            Principal principal) {
+        BaseUserResponse response = userService.findUserById(id, principal);
+        return ResponseEntity.ok(response); // HTTP 200
     }
     @PostMapping("/reset-password")
     public void resetPassword(@AuthenticationPrincipal(expression = "username") String email,
