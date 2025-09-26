@@ -49,6 +49,9 @@ public class ErrorMessages {
     public static final String SHOWTIMES_FAILED = "Failed to retrieve showtimes."; // Film seans saatleri getirilemedi. (T-12)
     public static final String SHOWTIMES_PAST_NOT_DISPLAYED = "Past showtimes are not displayed."; // Önceki tarih ve saatlerin gösterim saatleri görüntülenmez. (T-12)
 
+    public static final String POSTER_NOT_FOUND = "Movie update failed: Poster not found.";
+    public static final String SLUG_ALREADY_EXISTS = "Movie update failed: Slug already exists.";
+
     //Image
     public static final String IMAGE_NOT_FOUND = "Image not found."; // Görüntü bulunamadı. (T-1)
     public static final String IMAGE_UPLOAD_FAILED = "Failed to upload image."; // Görüntü yüklenemedi. (T-2)

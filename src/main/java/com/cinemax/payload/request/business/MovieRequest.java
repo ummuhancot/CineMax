@@ -45,15 +45,6 @@ public class MovieRequest {
     @NotBlank(message = "Genre cannot be null")
     private String genre;
 
-    @NotEmpty(message = "Cast list cannot be empty")
-    private List<String> cast;
-
-    @NotEmpty(message = "Formats list cannot be empty")
-    private List<String> formats;
-
-    @NotEmpty(message = "Halls list cannot be empty")
-    private List<Long> hallIds; // ManyToMany ilişkisi için, service’de Hall entity’lerine çevrilecek
-
     @NotNull(message = "Poster ID cannot be null")
     private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
 

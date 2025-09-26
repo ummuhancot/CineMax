@@ -3,6 +3,7 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.MovieMapper;
 import com.cinemax.payload.messages.ErrorMessages;
@@ -19,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import static com.cinemax.payload.messages.ErrorMessages.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +44,6 @@ public class MovieService {
             throw new ResourceNotFoundException(ErrorMessages.MOVIE_CREATE_FAILED + " Slug already exists.");
         }
 
-        // 2️⃣ Hall entitylerini bul
-        List<Hall> halls = hallRepository.findAllById(request.getHallIds());
-        if (halls.size() != request.getHallIds().size()) {
-            throw new ResourceNotFoundException(ErrorMessages.MOVIE_CREATE_FAILED + " One or more halls not found.");
-        }
 
         // 3️⃣ Poster entityyi bul
         Image poster = imageRepository.findById(request.getPosterId())
@@ -56,7 +52,6 @@ public class MovieService {
         // 4️⃣ DTO → Entity mapleme
         Movie movie = movieMapper.mapMovieRequestToMovie(request);
         movie.setSlug(slug);
-        movie.setHalls(halls);
         movie.setPoster(poster);
 
         // 5️⃣ Kaydet
@@ -67,7 +62,33 @@ public class MovieService {
     }
 
 
+    @Transactional
+    public MovieResponse updateMovie(Long id, MovieRequest request) {
+        // 1️⃣ Film var mı kontrol et
+        Movie existingMovie = movieRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + id));
 
+        // 2️⃣ Slug üret ve duplicate kontrol
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = MovieMapper.generateSlug(request.getTitle());
+        }
+        if (!slug.equals(existingMovie.getSlug()) && movieRepository.existsBySlug(slug)) {
+            throw new ConflictException(SLUG_ALREADY_EXISTS);
+        }
 
+        // 3️⃣ Poster kontrolü
+        Image poster = imageRepository.findById(request.getPosterId())
+                .orElseThrow(() -> new ResourceNotFoundException(POSTER_NOT_FOUND));
+
+        // 4️⃣ Alanları güncelle (null kontrolü yok, tüm alanlar set edilecek)
+        movieMapper.updateMovieFromRequest(existingMovie, request);
+        existingMovie.setSlug(slug);
+        existingMovie.setPoster(poster);
+
+        // 5️⃣ DB’ye kaydet ve response dön
+        Movie updatedMovie = movieRepository.save(existingMovie);
+        return movieMapper.mapMovieToMovieResponse(updatedMovie);
+    }
 
 }
