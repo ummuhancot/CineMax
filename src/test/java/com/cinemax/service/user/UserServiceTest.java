@@ -10,7 +10,6 @@ import com.cinemax.payload.messages.SuccessMessages;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
 import com.cinemax.payload.response.abstracts.BaseUserResponse;
-import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.payload.response.user.UserResponse;
 import com.cinemax.repository.user.UserRepository;
 import com.cinemax.service.helper.MethodHelper;
@@ -103,11 +102,11 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(userToSave);
         when(userMapper.mapUserToUserResponse(userToSave)).thenReturn(userResponse);
 
-        ResponseMessage<UserResponse> response = userService.saveUser(request, "Customer", principal);
+        // ✅ artık ResponseEntity değil sadece UserResponse bekliyoruz
+        UserResponse response = userService.saveUser(request, "Customer", principal);
 
-        assertEquals(HttpStatus.CREATED, response.getHttpStatus());
-        assertEquals("Ahmet", response.getReturnBody().getName());
-        assertEquals("ahmet@test.com", response.getReturnBody().getEmail());
+        assertEquals("Ahmet", response.getName());
+        assertEquals("ahmet@test.com", response.getEmail());
     }
 
     // ❌ saveUser e-posta zaten var
@@ -170,11 +169,10 @@ class UserServiceTest {
 
         when(userMapper.mapUserToUserResponse(targetUser)).thenReturn(mappedResponse);
 
-        ResponseMessage<BaseUserResponse> response = userService.findUserById(2L, principal);
+        var response = userService.findUserById(2L, principal);
 
-        assertEquals(SuccessMessages.USER_FETCHED_SUCCESS, response.getMessage());
-        assertEquals("Ayşe", response.getReturnBody().getName());
-        assertEquals("ayse@test.com", response.getReturnBody().getEmail());
+        assertEquals("Ayşe", response.getName());
+        assertEquals("ayse@test.com", response.getEmail());
     }
 
     // ❌ findUserById kendini çekmeye çalışırsa

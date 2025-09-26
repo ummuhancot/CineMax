@@ -9,7 +9,6 @@ import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.messages.SuccessMessages;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
-import com.cinemax.payload.response.business.ResponseMessage;
 import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
