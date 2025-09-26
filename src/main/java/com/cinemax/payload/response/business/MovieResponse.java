@@ -24,9 +24,6 @@ public class MovieResponse {
     private String specialHalls;
     private String director;
     private String genre;
-    private List<String> cast;
-    private List<String> formats;
-    private List<Long> hallIds;
     private Long posterId;
     private MovieStatus status;
 }

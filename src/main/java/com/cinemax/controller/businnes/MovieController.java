@@ -1,5 +1,6 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.service.bussines.MovieService;
@@ -8,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -29,4 +27,15 @@ public class MovieController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> updateMovie(
+            @PathVariable Long id,
+            @RequestBody MovieRequest movieRequest) {
+
+        MovieResponse updatedMovie = movieService.updateMovie(id, movieRequest);
+        return ResponseEntity.ok(updatedMovie);
+    }
+
 }

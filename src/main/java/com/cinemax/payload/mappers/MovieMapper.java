@@ -28,9 +28,6 @@ public class MovieMapper {
                 .rating(request.getRating())
                 .director(request.getDirector())
                 .genre(request.getGenre())
-                .cast(request.getCast())
-                .formats(request.getFormats())
-                .status(request.getStatus() != null ? request.getStatus() : null) // service tarafında default atanacak
                 .build();
     }
 
@@ -39,13 +36,6 @@ public class MovieMapper {
      */
     public MovieResponse mapMovieToMovieResponse(Movie movie) {
         if (movie == null) return null;
-
-        List<Long> hallIds = null;
-        if (movie.getHalls() != null) {
-            hallIds = movie.getHalls().stream()
-                    .map(Hall::getId)
-                    .collect(Collectors.toList());
-        }
 
         Long posterId = movie.getPoster() != null ? movie.getPoster().getId() : null;
 
@@ -58,9 +48,6 @@ public class MovieMapper {
                 .rating(movie.getRating())
                 .director(movie.getDirector())
                 .genre(movie.getGenre())
-                .cast(movie.getCast())
-                .formats(movie.getFormats())
-                .hallIds(hallIds)
                 .posterId(posterId)
                 .status(movie.getStatus())
                 .build();
@@ -80,5 +67,20 @@ public class MovieMapper {
                 .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
                 .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
     }
+    public void updateMovieFromRequest(Movie movie, MovieRequest request) {
+        if (movie == null || request == null) return;
+
+        movie.setTitle(request.getTitle());
+        movie.setSummary(request.getSummary());
+        movie.setReleaseDate(request.getReleaseDate());
+        movie.setDuration(request.getDuration());
+        movie.setRating(request.getRating());
+        movie.setDirector(request.getDirector());
+        movie.setGenre(request.getGenre());
+        if (request.getStatus() != null) {
+            movie.setStatus(request.getStatus());
+        }
+    }
+
 }
 
