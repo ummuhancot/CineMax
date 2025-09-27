@@ -1,8 +1,8 @@
 package com.cinemax.controller.businnes;
 
-import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
+import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.service.bussines.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,20 @@ public class MovieController {
 
         MovieResponse updatedMovie = movieService.updateMovie(id, movieRequest);
         return ResponseEntity.ok(updatedMovie);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> deleteMovie(@PathVariable Long id){
+        MovieResponse deletedMovie = movieService.deleteById(id);
+        return ResponseEntity.ok(deletedMovie);
+    }
+
+    @GetMapping("/{id}/show-times")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Manager','Customer')")
+    public ResponseEntity<MovieShowTimesResponse> getShowTimes(@PathVariable Long id) {
+        MovieShowTimesResponse response = movieService.getUpcomingShowTimes(id);
+        return ResponseEntity.ok(response);
     }
 
 }
