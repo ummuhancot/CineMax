@@ -3,16 +3,21 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.MovieMapper;
+import com.cinemax.payload.mappers.MovieShowTimesMapper;
+import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.messages.SuccessMessages;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
+import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
+import com.cinemax.repository.businnes.ShowTimeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -20,6 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import static com.cinemax.payload.messages.ErrorMessages.*;
 
 @Service
@@ -29,7 +37,10 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final HallRepository hallRepository;
     private final ImageRepository imageRepository;
+    private final ShowTimeRepository showTimeRepository;
     private final MovieMapper movieMapper;
+    private final ShowTimeMapper showTimeMapper;
+    private final MovieShowTimesMapper movieShowTimesMapper;
 
 
     @Transactional
@@ -91,4 +102,21 @@ public class MovieService {
         return movieMapper.mapMovieToMovieResponse(updatedMovie);
     }
 
+    public MovieResponse deleteById(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException(ErrorMessages.MOVIE_DELETE_FAILED + id));
+        return movieMapper.mapMovieToMovieResponse(movie);
+    }
+
+    public MovieShowTimesResponse getUpcomingShowTimes(Long movieId) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + movieId + " not found"));
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        List<ShowTime> showTimes = showTimeRepository.findUpcomingShowTimes(movieId, today, now);
+
+        return movieShowTimesMapper.mapMovieWithShowTimesToResponse(movie, showTimes);
+    }
 }
