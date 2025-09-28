@@ -4,6 +4,7 @@ import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.concretes.business.ShowTime;
+import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.MovieMapper;
@@ -139,6 +140,18 @@ public class MovieService {
                 .stream()
                 .map(movieMapper::mapMovieToMovieResponse)
                 .toList();
+    }
+    // Sadece status ile
+    public Page<MovieResponse> getMoviesInTheaters(Pageable pageable) {
+        return movieRepository.findByStatus(MovieStatus.IN_THEATERS, pageable)
+                .map(movieMapper::mapMovieToMovieResponse);
+    }
+
+    // Hem status hem releaseDate ile
+    public Page<MovieResponse> getMoviesInTheatersWithDateCheck(Pageable pageable) {
+        LocalDate today = LocalDate.now();
+        return movieRepository.findByStatusAndReleaseDateBefore(MovieStatus.IN_THEATERS, today, pageable)
+                .map(movieMapper::mapMovieToMovieResponse);
     }
 
 
