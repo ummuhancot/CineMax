@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
@@ -50,6 +52,16 @@ public class MovieController {
     public ResponseEntity<MovieShowTimesResponse> getShowTimes(@PathVariable Long id) {
         MovieShowTimesResponse response = movieService.getUpcomingShowTimes(id);
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/{hall}")
+    public List<MovieResponse> getMoviesByHall(
+            @PathVariable String hall,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title") String sort,
+            @RequestParam(defaultValue = "ASC") String type
+    ) {
+        return movieService.getMoviesByHall(hall, page, size, sort, type);
     }
 
 }
