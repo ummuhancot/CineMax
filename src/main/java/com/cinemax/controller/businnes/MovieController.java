@@ -24,14 +24,35 @@ public class MovieController {
 
     private final MovieService movieService;
 
+    // T-6: arama + paging
+    @GetMapping
+    public ResponseEntity<Page<MovieResponse>> getMovies(
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @RequestParam(value = "sort", defaultValue = "title") String sort,
+            @RequestParam(value = "type", defaultValue = "asc") String type
+    ) {
+        return ResponseEntity.ok(movieService.search(q, page, size, sort, type));
+    }
+
+    // T-5: coming-soon
+    @GetMapping("/coming-soon")
+    public ResponseEntity<Page<MovieResponse>> getComingSoon(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @RequestParam(value = "sort", defaultValue = "releaseDate") String sort,
+            @RequestParam(value = "type", defaultValue = "asc") String type
+    ) {
+        return ResponseEntity.ok(movieService.getComingSoon(page, size, sort, type));
+    }
+
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> movieSave(
             @Valid @RequestBody MovieRequest movieRequest){
         MovieResponse response = movieService.save(movieRequest);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
@@ -39,7 +60,6 @@ public class MovieController {
     public ResponseEntity<MovieResponse> updateMovie(
             @PathVariable Long id,
             @RequestBody MovieRequest movieRequest) {
-
         MovieResponse updatedMovie = movieService.updateMovie(id, movieRequest);
         return ResponseEntity.ok(updatedMovie);
     }
@@ -57,6 +77,7 @@ public class MovieController {
         MovieShowTimesResponse response = movieService.getUpcomingShowTimes(id);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/{hall}")
     public List<MovieResponse> getMoviesByHall(
             @PathVariable String hall,
@@ -67,6 +88,7 @@ public class MovieController {
     ) {
         return movieService.getMoviesByHall(hall, page, size, sort, type);
     }
+
     // 1) Sadece status ile kontrol
     @GetMapping("/in-theaters")
     public ResponseEntity<Page<MovieResponse>> getMoviesInTheaters(
@@ -82,13 +104,17 @@ public class MovieController {
     ) {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
+
+    // /{id} (public detay – sadece sayısal id)
+    @GetMapping("/{id:\\d+}")
+    public ResponseEntity<MovieResponse> getMovieById(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getMovieById(id));
+    }
+
+    // T-8: /{id}/admin (Admin only)
+    @GetMapping("/{id:\\d+}/admin")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> getMovieByIdAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getMovieById(id));
+    }
 }
-
-
-
-
-
-
-
-
-
