@@ -5,22 +5,34 @@ import com.cinemax.entity.enums.MovieStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
 @Repository
-public interface MovieRepository extends JpaRepository<Movie, Long> {
+public interface MovieRepository extends
+        JpaRepository<Movie, Long>,
+        JpaSpecificationExecutor<Movie> { // Specification + paging/sorting
 
     boolean existsBySlug(String slug);
+
     Page<Movie> findByHalls_Name(String hallName, Pageable pageable);
-    // 1) Sadece status ile (vizyonda olanlar)
+
+    // Vizyonda olanlar (status)
     Page<Movie> findByStatus(MovieStatus status, Pageable pageable);
 
-    // 2) Hem status hem tarih ile (vizyonda olup gösterim tarihi başlamış olanlar)
+    // Vizyonda olup gösterim tarihi başlamış olanlar (status + tarih, "in-theaters/active")
     Page<Movie> findByStatusAndReleaseDateBefore(
             MovieStatus status,
             LocalDate today,
+            Pageable pageable
+    );
+
+    // T-5: Yakında vizyona girecekler (status + ileri tarih)
+    Page<Movie> findByStatusAndReleaseDateAfter(
+            MovieStatus status,
+            LocalDate after,
             Pageable pageable
     );
 }
