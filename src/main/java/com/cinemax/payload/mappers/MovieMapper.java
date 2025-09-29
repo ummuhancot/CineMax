@@ -53,6 +53,30 @@ public class MovieMapper {
                 .build();
     }
 
+    /**
+     * (EKLENDİ) Basit entity → response map’i
+     * T-6 listesindeki Page<Map> dönüşümünde kullanılabilir.
+     */
+    //toResponse(...) metodu
+
+    public MovieResponse toResponse(Movie m) {
+        if (m == null) return null;
+        return MovieResponse.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .slug(m.getSlug())
+                .summary(m.getSummary())
+                .releaseDate(m.getReleaseDate())
+                .duration(m.getDuration())
+                .rating(m.getRating())
+                .status(m.getStatus())
+                .director(m.getDirector())
+                .genre(m.getGenre())
+                .specialHalls(m.getSpecialHalls()) // entity’de varsa set edilir
+                // posterId alanı gerekiyorsa:
+                // .posterId(m.getPoster() != null ? m.getPoster().getId() : null)
+                .build();
+    }
 
     /**
      * Title'dan URL dostu slug üretir.
@@ -67,6 +91,7 @@ public class MovieMapper {
                 .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
                 .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
     }
+
     public void updateMovieFromRequest(Movie movie, MovieRequest request) {
         if (movie == null || request == null) return;
 
@@ -81,6 +106,4 @@ public class MovieMapper {
             movie.setStatus(request.getStatus());
         }
     }
-
 }
-

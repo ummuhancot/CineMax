@@ -20,11 +20,19 @@ import com.cinemax.repository.businnes.ShowTimeRepository;
 import com.cinemax.repository.spec.MovieSpecifications;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
+
+import org.springframework.data.jpa.domain.Specification;      // <-- T-6 için eklendi
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +53,7 @@ public class MovieService {
     private final MovieMapper movieMapper;
     private final ShowTimeMapper showTimeMapper;
     private final MovieShowTimesMapper movieShowTimesMapper;
+
 
     /* T-6: /api/movies?q=&page=&size=&sort=&type= */
     public Page<MovieResponse> search(String q,
@@ -71,12 +80,14 @@ public class MovieService {
                 .map(movieMapper::mapMovieToMovieResponse);
     }
 
+
     /* /api/movies/{id} ve /{id}/admin */
     public MovieResponse getMovieById(Long id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + id));
         return movieMapper.mapMovieToMovieResponse(movie);
     }
+
 
     // --- Var olan CRUD ve diğer metotlar (değiştirilmedi) ---
     @Transactional
@@ -86,6 +97,8 @@ public class MovieService {
         if (movieRepository.existsBySlug(slug)) {
             throw new ResourceNotFoundException(ErrorMessages.MOVIE_CREATE_FAILED + " Slug already exists.");
         }
+
+
         Image poster = imageRepository.findById(request.getPosterId())
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.MOVIE_CREATE_FAILED + " Poster not found."));
         Movie movie = movieMapper.mapMovieRequestToMovie(request);
@@ -107,6 +120,7 @@ public class MovieService {
         }
         Image poster = imageRepository.findById(request.getPosterId())
                 .orElseThrow(() -> new ResourceNotFoundException(POSTER_NOT_FOUND));
+
 
         movieMapper.updateMovieFromRequest(existingMovie, request);
         existingMovie.setSlug(slug);
@@ -131,6 +145,7 @@ public class MovieService {
         return movieShowTimesMapper.mapMovieWithShowTimesToResponse(movie, showTimes);
     }
 
+
     public List<MovieResponse> getMoviesByHall(String hall, int page, int size, String sort, String type) {
         Sort.Direction direction = type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
@@ -139,6 +154,7 @@ public class MovieService {
                 .map(movieMapper::mapMovieToMovieResponse)
                 .toList();
     }
+
 
     public Page<MovieResponse> getMoviesInTheaters(Pageable pageable) {
         return movieRepository.findByStatus(MovieStatus.IN_THEATERS, pageable)

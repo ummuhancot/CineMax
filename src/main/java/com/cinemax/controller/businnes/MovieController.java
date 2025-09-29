@@ -24,33 +24,39 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    // T-6: arama + paging
+
+    /* =========================
+       T-6: /api/movies (q + paging)
+       Örn: GET /api/movies?q=maria&page=0&size=10&sort=title&type=desc
+       ========================= */
     @GetMapping
     public ResponseEntity<Page<MovieResponse>> getMovies(
             @RequestParam(value = "q", required = false) String q,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer size,
-            @RequestParam(value = "sort", defaultValue = "title") String sort,
-            @RequestParam(value = "type", defaultValue = "asc") String type
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+            @RequestParam(value = "sort", required = false, defaultValue = "title") String sort,
+            @RequestParam(value = "type", required = false, defaultValue = "asc") String type
     ) {
         return ResponseEntity.ok(movieService.search(q, page, size, sort, type));
     }
 
-    // T-5: coming-soon
+    /* =========================
+       T-5: /api/movies/coming-soon
+       Örn: GET /api/movies/coming-soon?page=0&size=10&sort=releaseDate&type=asc
+       ========================= */
     @GetMapping("/coming-soon")
     public ResponseEntity<Page<MovieResponse>> getComingSoon(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer size,
-            @RequestParam(value = "sort", defaultValue = "releaseDate") String sort,
-            @RequestParam(value = "type", defaultValue = "asc") String type
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+            @RequestParam(value = "sort", required = false, defaultValue = "releaseDate") String sort,
+            @RequestParam(value = "type", required = false, defaultValue = "asc") String type
     ) {
         return ResponseEntity.ok(movieService.getComingSoon(page, size, sort, type));
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> movieSave(
-            @Valid @RequestBody MovieRequest movieRequest){
+    public ResponseEntity<MovieResponse> movieSave(@Valid @RequestBody MovieRequest movieRequest) {
         MovieResponse response = movieService.save(movieRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -66,13 +72,13 @@ public class MovieController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> deleteMovie(@PathVariable Long id){
+    public ResponseEntity<MovieResponse> deleteMovie(@PathVariable Long id) {
         MovieResponse deletedMovie = movieService.deleteById(id);
         return ResponseEntity.ok(deletedMovie);
     }
 
     @GetMapping("/{id}/show-times")
-    @PreAuthorize("hasAnyAuthority('Admin', 'Manager','Customer')")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<MovieShowTimesResponse> getShowTimes(@PathVariable Long id) {
         MovieShowTimesResponse response = movieService.getUpcomingShowTimes(id);
         return ResponseEntity.ok(response);
@@ -104,6 +110,7 @@ public class MovieController {
     ) {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
+
 
     // /{id} (public detay – sadece sayısal id)
     @GetMapping("/{id:\\d+}")
