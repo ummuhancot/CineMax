@@ -25,35 +25,6 @@ public class MovieController {
     private final MovieService movieService;
 
 
-    /* =========================
-       T-6: /api/movies (q + paging)
-       Örn: GET /api/movies?q=maria&page=0&size=10&sort=title&type=desc
-       ========================= */
-    @GetMapping
-    public ResponseEntity<Page<MovieResponse>> getMovies(
-            @RequestParam(value = "q", required = false) String q,
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
-            @RequestParam(value = "sort", required = false, defaultValue = "title") String sort,
-            @RequestParam(value = "type", required = false, defaultValue = "asc") String type
-    ) {
-        return ResponseEntity.ok(movieService.search(q, page, size, sort, type));
-    }
-
-    /* =========================
-       T-5: /api/movies/coming-soon
-       Örn: GET /api/movies/coming-soon?page=0&size=10&sort=releaseDate&type=asc
-       ========================= */
-    @GetMapping("/coming-soon")
-    public ResponseEntity<Page<MovieResponse>> getComingSoon(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
-            @RequestParam(value = "sort", required = false, defaultValue = "releaseDate") String sort,
-            @RequestParam(value = "type", required = false, defaultValue = "asc") String type
-    ) {
-        return ResponseEntity.ok(movieService.getComingSoon(page, size, sort, type));
-    }
-
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> movieSave(@Valid @RequestBody MovieRequest movieRequest) {
@@ -112,16 +83,4 @@ public class MovieController {
     }
 
 
-    // /{id} (public detay – sadece sayısal id)
-    @GetMapping("/{id:\\d+}")
-    public ResponseEntity<MovieResponse> getMovieById(@PathVariable Long id) {
-        return ResponseEntity.ok(movieService.getMovieById(id));
-    }
-
-    // T-8: /{id}/admin (Admin only)
-    @GetMapping("/{id:\\d+}/admin")
-    @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> getMovieByIdAdmin(@PathVariable Long id) {
-        return ResponseEntity.ok(movieService.getMovieById(id));
-    }
 }
