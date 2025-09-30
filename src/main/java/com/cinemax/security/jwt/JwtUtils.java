@@ -77,7 +77,7 @@ public class JwtUtils {
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("JWT token is empty or invalid: {}", e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error("JWT token validation error: {}", e.getMessage());
+			LOGGER.error("JWT token validation error: {}", e.getMessage());//LOG
 		}
 		return false;
 	}
