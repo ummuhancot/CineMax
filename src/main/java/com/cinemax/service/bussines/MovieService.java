@@ -17,7 +17,6 @@ import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
 import com.cinemax.repository.businnes.ShowTimeRepository;
-import com.cinemax.repository.spec.MovieSpecifications;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import org.springframework.data.jpa.domain.Specification;      // <-- T-6 için eklendi
-import org.springframework.http.HttpStatus;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,39 +52,6 @@ public class MovieService {
     private final ShowTimeMapper showTimeMapper;
     private final MovieShowTimesMapper movieShowTimesMapper;
 
-
-    /* T-6: /api/movies?q=&page=&size=&sort=&type= */
-    public Page<MovieResponse> search(String q,
-                                      Integer page,
-                                      Integer size,
-                                      String sort,
-                                      String type) {
-        Sort.Direction direction = "DESC".equalsIgnoreCase(type) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
-        Specification<Movie> spec = MovieSpecifications.nameOrDescriptionContains(q);
-        return movieRepository.findAll(spec, pageable)
-                .map(movieMapper::mapMovieToMovieResponse);
-    }
-
-    /* T-5: /api/movies/coming-soon */
-    public Page<MovieResponse> getComingSoon(Integer page,
-                                             Integer size,
-                                             String sort,
-                                             String type) {
-        Sort.Direction direction = "DESC".equalsIgnoreCase(type) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
-        LocalDate today = LocalDate.now();
-        return movieRepository.findByStatusAndReleaseDateAfter(MovieStatus.COMING_SOON, today, pageable)
-                .map(movieMapper::mapMovieToMovieResponse);
-    }
-
-
-    /* /api/movies/{id} ve /{id}/admin */
-    public MovieResponse getMovieById(Long id) {
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + id));
-        return movieMapper.mapMovieToMovieResponse(movie);
-    }
 
 
     // --- Var olan CRUD ve diğer metotlar (değiştirilmedi) ---
