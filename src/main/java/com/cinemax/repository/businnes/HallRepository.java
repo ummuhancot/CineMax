@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HallRepository extends JpaRepository<Hall, Long> {
+
+    boolean existsByNameAndCinemaId(String name, Long cinemaId);
+
 }
