@@ -16,4 +16,10 @@ public interface CinemaRepository extends JpaRepository<Cinema, Long> {
             "WHERE (:city IS NULL OR LOWER(c.city.name) = LOWER(:city)) " +
             "AND (:specialHall IS NULL OR EXISTS (SELECT h FROM Hall h WHERE h.cinema = c AND LOWER(h.type) = LOWER(:specialHall)))")
     Optional<List<Cinema>> findCinemasByCityAndSpecialHall(String city, String specialHall);
+
+    // Belirli bir şehre ait tüm sinemaları getir
+    List<Cinema> findByCityId(Long cityId);
+
+    // Şehre ait belirli sinema var mı kontrol et
+    boolean existsByIdAndCityId(Long cinemaId, Long cityId);
 }
