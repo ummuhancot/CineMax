@@ -78,5 +78,9 @@ public class ErrorMessages {
     public static final String CITY_NOT_FOUND = "City not found with name: %s";
     public static final String CITY_NAME_CANNOT_BE_EMPTY = "City name cannot be empty";
 
+    //hall
+    public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut
+
+
 
 }
