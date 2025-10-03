@@ -73,4 +73,10 @@ public class ErrorMessages {
     public static final String PASSED_TICKETS_FAILED = "Failed to retrieve passed tickets."; // Kimliği doğrulanmış kullanıcının kullandığı biletler getirilemedi. (T-2)
     public static final String RESERVE_TICKET_FAILED = "Failed to reserve ticket."; // Bilet ayıramadı. (T-3)
     public static final String TICKET_CREATE_FAILED = "Failed to create ticket."; // Bilet oluşturulamadı. (T-4)
+
+    //City
+    public static final String CITY_NOT_FOUND = "City not found with name: %s";
+    public static final String CITY_NAME_CANNOT_BE_EMPTY = "City name cannot be empty";
+
+
 }

@@ -1,11 +1,15 @@
 package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.Cinema;
+import com.cinemax.entity.concretes.business.City;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.CinemaMapper;
 import com.cinemax.payload.messages.ErrorMessages;
+import com.cinemax.payload.request.business.CinemaRequest;
+import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.repository.businnes.CinemaRepository;
+import com.cinemax.repository.businnes.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +21,10 @@ public class CinemaService {
 
     private final CinemaRepository cinemaRepository;
     private final CinemaMapper cinemaMapper;
-
+    private final CityRepository cityRepository;
 
     // GET /api/cinemas?city=&specialHall=
-    public List<CinemaResponse> getCinemas(String city, String specialHall) {
+    public List<CinemaHallResponse> getCinemas(String city, String specialHall) {
         List<Cinema> cinemas;
 
         if (city != null || specialHall != null) {
@@ -48,7 +52,7 @@ public class CinemaService {
         // DTO dönüşümü: sinema + özel salon bilgileri
         try {
             return cinemas.stream()
-                    .map(cinemaMapper::convertCinemaToResponse)
+                    .map(cinemaMapper::convertCinemaAndHallToResponse)
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessages.CINEMA_HALLS_FAILED + " Detay: " + e.getMessage());
@@ -56,6 +60,17 @@ public class CinemaService {
     }
 
 
+    public CinemaResponse createCinema(CinemaRequest request) {
+        City city = cityRepository.findByNameIgnoreCase(request.getCityName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ErrorMessages.CITY_NOT_FOUND, request.getCityName())
+                ));
 
+        Cinema cinema = cinemaMapper.convertRequestToCinema(request);
+        cinema.setCity(city);
 
+        Cinema savedCinema = cinemaRepository.save(cinema);
+
+        return cinemaMapper.convertCinemaToResponse(savedCinema);
+    }
 }
