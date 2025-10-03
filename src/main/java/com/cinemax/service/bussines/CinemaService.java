@@ -10,6 +10,7 @@ import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.repository.businnes.CinemaRepository;
 import com.cinemax.repository.businnes.CityRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +73,26 @@ public class CinemaService {
         Cinema savedCinema = cinemaRepository.save(cinema);
 
         return cinemaMapper.convertCinemaToResponse(savedCinema);
+    }
+
+    // Şube kapatma (silme) ve silineni döndürme
+    public Cinema deleteCinema(Long cityId, Long cinemaId) {
+        // Şehir var mı?
+        if (!cityRepository.existsById(cityId)) {
+            throw new EntityNotFoundException("City not found with id: " + cityId);
+        }
+
+        // Sinema var mı ve o şehre mi ait?
+        Cinema cinema = cinemaRepository.findById(cinemaId)
+                .orElseThrow(() -> new EntityNotFoundException("Cinema not found with id: " + cinemaId));
+
+        if (!cinema.getCity().getId().equals(cityId)) {
+            throw new EntityNotFoundException("Cinema with id " + cinemaId + " does not belong to city " + cityId);
+        }
+
+        // Önce nesneyi sakla, sonra sil
+        cinemaRepository.delete(cinema);
+
+        return cinema; // Silinen nesne dönülüyor
     }
 }

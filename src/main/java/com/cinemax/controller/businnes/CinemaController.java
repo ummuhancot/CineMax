@@ -1,5 +1,6 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.payload.request.business.CinemaRequest;
 import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
@@ -39,5 +40,16 @@ public class CinemaController {
         return ResponseEntity.status(201).body(response);
     }
 
+    //Delete cinema yapınca şehir kalıyor bir şehirde birden fazla şube olabilir şube kapatılırsa sadece cinema silinecek
+    // DELETE /api/city/auth/{cityId}/cinema/{cinemaId}
+    @DeleteMapping("/{cityId}/auth/{cinemaId}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public ResponseEntity<Cinema> deleteCinema(
+            @PathVariable Long cityId,
+            @PathVariable Long cinemaId
+    ) {
+        Cinema deletedCinema = cinemaService.deleteCinema(cityId, cinemaId);
+        return ResponseEntity.ok(deletedCinema);
+    }
 
 }

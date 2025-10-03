@@ -3,8 +3,12 @@ package com.cinemax.payload.mappers;
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.payload.request.business.HallRequest;
+import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.payload.response.business.HallResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class HallMapper {

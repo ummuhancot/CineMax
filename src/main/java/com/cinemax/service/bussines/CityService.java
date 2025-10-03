@@ -1,11 +1,14 @@
 package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.City;
+import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.CityMapper;
 import com.cinemax.payload.request.business.CityRequest;
 import com.cinemax.payload.response.business.CityResponse;
+import com.cinemax.payload.response.business.CityWithCinemasResponse;
 import com.cinemax.repository.businnes.CityRepository;
 import com.cinemax.service.helper.CityHelper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +29,30 @@ public class CityService {
         City savedCity = cityRepository.save(city);
         // Entity → Response
         return cityMapper.mapEntityToResponse(savedCity);
+    }
+
+    public CityWithCinemasResponse getCityWithCinemas(Long cityId) {
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + cityId));
+
+        return CityWithCinemasResponse.builder()
+                .id(city.getId())
+                .name(city.getName())
+                .cinemas(cityMapper.mapToCinemaResponseList(city.getCinemas())) // burası artık DTO listesi döndürüyor
+                .build();
+    }
+
+    // Şehir kapatma (silme) ve silineni döndürme
+    public City deleteCity(Long cityId) {
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new EntityNotFoundException("City not found with id: " + cityId));
+
+        // önce nesneyi sakla
+        City deletedCity = city;
+
+        // sonra sil
+        cityRepository.delete(city);
+
+        return deletedCity;
     }
 }
