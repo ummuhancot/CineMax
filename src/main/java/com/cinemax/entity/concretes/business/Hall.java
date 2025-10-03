@@ -31,6 +31,10 @@ public class Hall {
     @Column(nullable = false)
     private Boolean isSpecial = false;
 
+
+    @Column(nullable = false)
+    private String type;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

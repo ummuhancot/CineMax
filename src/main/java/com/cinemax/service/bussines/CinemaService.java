@@ -1,0 +1,61 @@
+package com.cinemax.service.bussines;
+
+import com.cinemax.entity.concretes.business.Cinema;
+import com.cinemax.exception.ResourceNotFoundException;
+import com.cinemax.payload.mappers.CinemaMapper;
+import com.cinemax.payload.messages.ErrorMessages;
+import com.cinemax.payload.response.business.CinemaResponse;
+import com.cinemax.repository.businnes.CinemaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CinemaService {
+
+    private final CinemaRepository cinemaRepository;
+    private final CinemaMapper cinemaMapper;
+
+
+    // GET /api/cinemas?city=&specialHall=
+    public List<CinemaResponse> getCinemas(String city, String specialHall) {
+        List<Cinema> cinemas;
+
+        if (city != null || specialHall != null) {
+            // Filtre uygulanmış, uygun sinema yoksa exception
+            try {
+                cinemas = cinemaRepository.findCinemasByCityAndSpecialHall(city, specialHall)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                ErrorMessages.CINEMAS_QUERY_FAILED +
+                                        " Girilen şehir: " + city + ", özel salon: " + specialHall
+                        ));
+            } catch (Exception e) {
+                throw new ResourceNotFoundException(
+                        ErrorMessages.CINEMAS_QUERY_FAILED + " Detay: " + e.getMessage()
+                );
+            }
+        } else {
+            // Tüm sinemaları al, liste boşsa exception
+            cinemas = cinemaRepository.findAll();
+            if (cinemas.isEmpty()) {
+                throw new ResourceNotFoundException(
+                        ErrorMessages.CINEMA_NOT_FOUND + " Veritabanında kayıtlı sinema yok."
+                );
+            }
+        }
+        // DTO dönüşümü: sinema + özel salon bilgileri
+        try {
+            return cinemas.stream()
+                    .map(cinemaMapper::convertCinemaToResponse)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessages.CINEMA_HALLS_FAILED + " Detay: " + e.getMessage());
+        }
+    }
+
+
+
+
+}
