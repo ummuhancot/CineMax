@@ -7,7 +7,7 @@ public enum HallType {
     IMAX("IMAX"),
     VIP("VIP"),
     STANDARD("Standard"),
-    THREE_D("3D");
+    THREE_D("3D salon");
 
     private final String label;
 

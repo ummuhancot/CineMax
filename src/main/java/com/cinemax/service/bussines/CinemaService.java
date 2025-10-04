@@ -2,24 +2,30 @@ package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.City;
+import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.enums.HallType;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceAlreadyExistsException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.CinemaMapper;
+import com.cinemax.payload.mappers.HallMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.CinemaRequest;
 import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
+import com.cinemax.payload.response.business.HallResponse;
 import com.cinemax.repository.businnes.CinemaRepository;
 import com.cinemax.repository.businnes.CityRepository;
+import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.service.validator.UniquePropertyCinemaValidator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.cinemax.payload.mappers.MovieMapper.generateSlug;
 
@@ -31,6 +37,8 @@ public class CinemaService {
     private final CinemaMapper cinemaMapper;
     private final CityRepository cityRepository;
     private final UniquePropertyCinemaValidator uniquePropertyCinemaValidator;
+    private final HallRepository hallRepository;
+    private final HallMapper hallMapper;
 
     // GET /api/cinemas?city=&specialHall=
     /**
@@ -175,4 +183,12 @@ public class CinemaService {
                 .email(cinema.getEmail())
                 .build();
     }
+
+    public List<HallResponse> getHallsByCinemaId(Long cinemaId) {
+        List<Hall> halls = hallRepository.findByCinemaId(cinemaId);
+        return halls.stream()
+                .map(hallMapper::convertHallToResponse)
+                .collect(Collectors.toList());
+    }
+
 }
