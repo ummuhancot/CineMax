@@ -1,5 +1,6 @@
 package com.cinemax.entity.concretes.business;
 
+import com.cinemax.entity.enums.HallType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,8 +33,9 @@ public class Hall {
     private Boolean isSpecial = false;
 
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;
+    private HallType type;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

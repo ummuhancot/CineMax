@@ -24,14 +24,12 @@ public class CinemaController {
     // GET /api/cinemas/city-hall?city=&specialHall=
     @GetMapping("/city-hall")
     @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
-    public ResponseEntity<List<CinemaHallResponse>> getCinemasByCityAndSpecialHall(
+    public List<CinemaHallResponse> getCinemas(
             @RequestParam(required = false) String city,
-            @RequestParam(required = false) String specialHall) {
-
-        List<CinemaHallResponse> cinemas = cinemaService.getCinemas(city, specialHall);
-        return ResponseEntity.ok(cinemas);
+            @RequestParam(required = false) String specialHall
+    ) {
+        return cinemaService.getCinemas(city, specialHall);
     }
-
 
     // POST /api/cinemas
     @PostMapping("/save")

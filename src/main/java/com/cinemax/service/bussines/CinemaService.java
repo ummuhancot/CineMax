@@ -2,6 +2,7 @@ package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.City;
+import com.cinemax.entity.enums.HallType;
 import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceAlreadyExistsException;
 import com.cinemax.exception.ResourceNotFoundException;
@@ -32,40 +33,35 @@ public class CinemaService {
     private final UniquePropertyCinemaValidator uniquePropertyCinemaValidator;
 
     // GET /api/cinemas?city=&specialHall=
+    /**
+     * Get cinemas filtered by optional city and special hall type.
+     * @param city optional city name
+     * @param specialHall optional special hall type as string
+     * @return list of CinemaHallResponse
+     */
     public List<CinemaHallResponse> getCinemas(String city, String specialHall) {
-        List<Cinema> cinemas;
+        HallType type = null;
 
-        if (city != null || specialHall != null) {
-            // Filtre uygulanmış, uygun sinema yoksa exception
+        // Convert string to enum, throw error if invalid
+        if (specialHall != null && !specialHall.isBlank()) {
             try {
-                cinemas = cinemaRepository.findCinemasByCityAndSpecialHall(city, specialHall)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                ErrorMessages.CINEMAS_QUERY_FAILED +
-                                        " Girilen şehir: " + city + ", özel salon: " + specialHall
-                        ));
-            } catch (Exception e) {
-                throw new ResourceNotFoundException(
-                        ErrorMessages.CINEMAS_QUERY_FAILED + " Detay: " + e.getMessage()
-                );
-            }
-        } else {
-            // Tüm sinemaları al, liste boşsa exception
-            cinemas = cinemaRepository.findAll();
-            if (cinemas.isEmpty()) {
-                throw new ResourceNotFoundException(
-                        ErrorMessages.CINEMA_NOT_FOUND + " Veritabanında kayıtlı sinema yok."
+                type = HallType.valueOf(specialHall.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        String.format(ErrorMessages.INVALID_HALL_TYPE, specialHall)
                 );
             }
         }
-        // DTO dönüşümü: sinema + özel salon bilgileri
-        try {
-            return cinemas.stream()
-                    .map(cinemaMapper::convertCinemaAndHallToResponse)
-                    .toList();
-        } catch (Exception e) {
-            throw new RuntimeException(ErrorMessages.CINEMA_HALLS_FAILED + " Detay: " + e.getMessage());
-        }
+
+        // Fetch cinemas with optional filters
+        List<Cinema> cinemas = cinemaRepository.findCinemasByCityAndSpecialHall(city, type);
+
+        // Map to DTO and return, boş olsa bile
+        return cinemas.stream()
+                .map(cinemaMapper::convertCinemaAndHallToResponse)
+                .toList();
     }
+
 
 
     public CinemaResponse createCinema(CinemaRequest request) {

@@ -34,7 +34,7 @@ public class CityController {
 
     //Delete city yapınca sinema da siliniyor yapınca
     // DELETE /api/city/auth/{cityId}
-    @DeleteMapping("/{cityId}")
+    @DeleteMapping("/delete/{cityId}")
     @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<City> deleteCity(@PathVariable Long cityId) {
         City deletedCity = cityService.deleteCity(cityId);
