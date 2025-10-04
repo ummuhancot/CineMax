@@ -50,4 +50,18 @@ public class HallService {
     }
 
 
+    public HallResponse deleteHall(Long hallId) {
+        // Find the hall or throw exception if not found
+        Hall hall = hallRepository.findById(hallId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ErrorMessages.HALL_NOT_FOUND, hallId)
+                ));
+
+        // Delete the hall
+        hallRepository.delete(hall);
+
+        // Convert to response and return deleted hall data
+        return hallMapper.convertHallToResponse(hall);
+    }
+
 }
