@@ -82,6 +82,7 @@ public class CinemaController {
     @PreAuthorize("hasAnyAuthority('Admin','Manager')")
     public List<HallResponse> getHallsByCinema(@PathVariable("id") Long cinemaId) {
         return cinemaService.getHallsByCinemaId(cinemaId);
+
     }
 
 }
