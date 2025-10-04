@@ -14,6 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CityService {
@@ -37,11 +40,7 @@ public class CityService {
         City city = cityRepository.findById(cityId)
                 .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + cityId));
 
-        return CityWithCinemasResponse.builder()
-                .id(city.getId())
-                .name(city.getName())
-                .cinemas(cityMapper.mapToCinemaResponseList(city.getCinemas())) // burası artık DTO listesi döndürüyor
-                .build();
+        return cityMapper.mapToCityWithCinemasResponse(city);
     }
 
     // Şehir kapatma (silme) ve silineni döndürme
@@ -73,4 +72,12 @@ public class CityService {
         // Response’a map et (cinema listesi dahil)
         return cityMapper.mapEntityToResponse(updatedCity);
     }
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<CityWithCinemasResponse> getAllCitiesWithCinemas() {
+        List<City> cities = cityRepository.findAll();
+        return cities.stream()
+                .map(cityMapper::mapToCityWithCinemasResponse)
+                .collect(Collectors.toList());
+    }
+
 }

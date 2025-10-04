@@ -5,6 +5,7 @@ import com.cinemax.entity.concretes.business.City;
 import com.cinemax.payload.request.business.CityRequest;
 import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.payload.response.business.CityResponse;
+import com.cinemax.payload.response.business.CityWithCinemasResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,23 +13,32 @@ import java.util.stream.Collectors;
 
 @Component
 public class CityMapper {
+
     // CityRequest -> City (Entity)
     public City mapRequestToEntity(CityRequest cityRequest) {
         return City.builder()
                 .name(cityRequest.getName())
-                .address(cityRequest.getAddress())
                 .build();
     }
 
     // City (Entity) -> CityResponse (DTO)
     public CityResponse mapEntityToResponse(City city) {
-        CityResponse cityResponse = new CityResponse();
-        cityResponse.setId(city.getId());
-        cityResponse.setName(city.getName());
-        cityResponse.setAddress(city.getAddress());
-        return cityResponse;
+        return CityResponse.builder()
+                .id(city.getId())
+                .name(city.getName())
+                .build();
     }
 
+    // City (Entity) -> CityWithCinemasResponse (DTO with cinemas)
+    public CityWithCinemasResponse mapToCityWithCinemasResponse(City city) {
+        return CityWithCinemasResponse.builder()
+                .id(city.getId())
+                .name(city.getName())
+                .cinemas(mapToCinemaResponseList(city.getCinemas()))
+                .build();
+    }
+
+    // Cinema list -> CinemaResponse list
     public List<CinemaResponse> mapToCinemaResponseList(List<Cinema> cinemas) {
         return cinemas.stream()
                 .map(cinema -> CinemaResponse.builder()
@@ -39,9 +49,9 @@ public class CityMapper {
                 .collect(Collectors.toList());
     }
 
-    // Entity güncelleme (update)
+    // Entity güncelleme (Update)
     public void updateEntityFromRequest(City city, CityRequest request) {
         city.setName(request.getName());
-        city.setAddress(city.getAddress());
     }
 }
+

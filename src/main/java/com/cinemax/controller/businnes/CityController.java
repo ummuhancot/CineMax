@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/cities")
 @RequiredArgsConstructor
@@ -49,6 +51,13 @@ public class CityController {
     ) {
         CityResponse updatedCity = cityService.updateCity(id, request);
         return ResponseEntity.ok(updatedCity);
+    }
+
+    @GetMapping("/getAllcity-movie")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
+    public ResponseEntity<List<CityWithCinemasResponse>> getAllCitiesWithCinemas() {
+        List<CityWithCinemasResponse> responses = cityService.getAllCitiesWithCinemas();
+        return ResponseEntity.ok(responses);
     }
 
 }
