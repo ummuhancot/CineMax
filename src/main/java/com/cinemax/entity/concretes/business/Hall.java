@@ -1,5 +1,6 @@
 package com.cinemax.entity.concretes.business;
 
+import com.cinemax.config.HallTypeConverter;
 import com.cinemax.entity.enums.HallType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,7 @@ public class Hall {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Convert(converter = HallTypeConverter.class)
     private HallType type;
 
     @CreationTimestamp

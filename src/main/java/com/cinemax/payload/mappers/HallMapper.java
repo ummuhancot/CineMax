@@ -44,4 +44,15 @@ public class HallMapper {
                 .build();
     }
 
+
+    public HallResponse mapHallToResponse(Hall hall) {
+        return HallResponse.builder()
+                .id(hall.getId())
+                .name(hall.getName())
+                .seatCapacity(hall.getSeatCapacity())
+                .isSpecial(hall.getType() == HallType.VIP || hall.getType() == HallType.THREE_D)
+                .type(hall.getType() != null ? hall.getType().getLabel() : null) // enum label kullanıyoruz
+                .cinemaName(hall.getCinema() != null ? hall.getCinema().getName() : null)
+                .build();
+    }
 }
