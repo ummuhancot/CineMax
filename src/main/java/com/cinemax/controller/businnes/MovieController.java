@@ -82,5 +82,25 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
 
-
+    // T-6: /api/movies?q=&page=&size=&sort=&type=
+    @GetMapping
+    public ResponseEntity<Page<MovieResponse>> getMovies(
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "type", required = false) String type
+    ) {
+        return ResponseEntity.ok(movieService.getMovies(q, page, size, sort, type));
+    }
+    // T-5: /api/movies/coming-soon
+    @GetMapping("/coming-soon")
+    public ResponseEntity<Page<MovieResponse>> getComingSoon(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "type", required = false) String type
+    ) {
+        return ResponseEntity.ok(movieService.getComingSoon(page, size, sort, type));
+    }
 }

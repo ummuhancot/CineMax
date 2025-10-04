@@ -2,10 +2,12 @@ package com.cinemax.controller.user;
 
 import com.cinemax.controller.businnes.MovieController;
 import com.cinemax.exception.ResourceNotFoundException;
+
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.payload.response.business.ShowTimeResponse;
+
 import com.cinemax.service.bussines.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 class MovieControllerTest {
 
@@ -230,4 +236,52 @@ class MovieControllerTest {
         assertEquals("Movie not found", exception.getMessage());
         verify(movieService, times(1)).deleteById(movieId);
     }
+
+    // ------------------- LIST & COMING-SOON (T-6 / T-5) -------------------
+
+    @Test
+    void getMovies_queryPagingSorting_returnsOk() {
+        MovieResponse m1 = MovieResponse.builder()
+                .title("Avatar")
+                .slug("avatar")
+                .build();
+
+        Page<MovieResponse> page = new PageImpl<>(List.of(m1));
+
+        when(movieService.getMovies("avatar", 0, 10, "title", "asc"))
+                .thenReturn(page);
+
+        ResponseEntity<Page<MovieResponse>> response =
+                movieController.getMovies("avatar", 0, 10, "title", "asc");
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals("Avatar", response.getBody().getContent().get(0).getTitle());
+
+        verify(movieService).getMovies("avatar", 0, 10, "title", "asc");
+    }
+
+    @Test
+    void getComingSoon_returnsOkWithUpcomingMovies() {
+        MovieResponse m1 = MovieResponse.builder().title("Dune 3").slug("dune-3").build();
+        MovieResponse m2 = MovieResponse.builder().title("Joker 3").slug("joker-3").build();
+
+        Page<MovieResponse> page = new PageImpl<>(List.of(m1, m2));
+
+        when(movieService.getComingSoon(0, 5, "releaseDate", "asc"))
+                .thenReturn(page);
+
+        ResponseEntity<Page<MovieResponse>> response =
+                movieController.getComingSoon(0, 5, "releaseDate", "asc");
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertEquals("Dune 3", response.getBody().getContent().get(0).getTitle());
+        assertEquals("Joker 3", response.getBody().getContent().get(1).getTitle());
+
+        verify(movieService).getComingSoon(0, 5, "releaseDate", "asc");
+    }
+
 }

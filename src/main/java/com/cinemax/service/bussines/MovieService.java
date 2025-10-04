@@ -131,4 +131,34 @@ public class MovieService {
         return movieRepository.findByStatusAndReleaseDateBefore(MovieStatus.IN_THEATERS, today, pageable)
                 .map(movieMapper::mapMovieToMovieResponse);
     }
+
+
+
+    private Pageable buildPageable(int page, int size, String sortField, String sortDirection) {
+        Sort sort;
+        if (sortDirection.equalsIgnoreCase("ASC")) {
+            sort = Sort.by(sortField).ascending();
+        } else {
+            sort = Sort.by(sortField).descending();
+        }
+        return PageRequest.of(page, size, sort);
+    }
+
+    // T-6
+    public Page<MovieResponse> getMovies(String q, Integer page, Integer size, String sort, String type) {
+        Pageable pageable = buildPageable(page, size, sort, type);
+        Page<Movie> result = movieRepository.searchByTitleOrSummary(q, pageable);
+        return result.map(movieMapper::mapMovieToMovieResponse);
+}
+
+    // T-5 (coming-soon)
+    public Page<MovieResponse> getComingSoon(Integer page, Integer size, String sort, String type) {
+        Pageable pageable = buildPageable(page, size, sort, type);
+        // "coming soon" = henüz vizyonda olmayan ve yakında çıkacak statüler (ComingSoon, Presale),
+        // ayrıca bugünden sonrası.
+        List<MovieStatus> statuses = List.of(MovieStatus.COMING_SOON, MovieStatus.PRESALE);
+        Page<Movie> result = movieRepository.findByStatusInAndReleaseDateAfter(
+                statuses, LocalDate.now(), pageable);
+        return result.map(movieMapper::mapMovieToMovieResponse);
+    }
 }

@@ -16,6 +16,7 @@ public class ShowTimeMapper {
 
         ShowTimeResponse response = new ShowTimeResponse();
         response.setId(showTime.getId());
+
         response.setStartDateTime(LocalDateTime.of(showTime.getDate(), showTime.getStartTime()));
         response.setEndDateTime(LocalDateTime.of(showTime.getDate(), showTime.getEndTime()));
         response.setHallName(showTime.getHall() != null ? showTime.getHall().getName() : null);
