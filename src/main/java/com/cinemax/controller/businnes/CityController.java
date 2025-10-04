@@ -41,4 +41,14 @@ public class CityController {
         return ResponseEntity.ok(deletedCity);
     }
 
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<CityResponse> updateCity(
+            @PathVariable Long id,
+            @Valid @RequestBody CityRequest request
+    ) {
+        CityResponse updatedCity = cityService.updateCity(id, request);
+        return ResponseEntity.ok(updatedCity);
+    }
+
 }
