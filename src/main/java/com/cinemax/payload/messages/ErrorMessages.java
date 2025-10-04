@@ -101,6 +101,7 @@ public class ErrorMessages {
 
     //hall
     public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut
+    public static final String HALL_NOT_FOUND = "Hall not found. ID: %s";
 
     //favorite
     public static final String USER_NOT_FOUND = "User not found with email: %s";

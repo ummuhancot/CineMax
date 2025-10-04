@@ -7,10 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/halls")
@@ -24,5 +21,13 @@ public class HallController {
     public ResponseEntity<HallResponse> saveHall(@RequestBody @Valid HallRequest request) {
         HallResponse response = hallService.saveHall(request);
         return ResponseEntity.status(201).body(response);
+    }
+
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<HallResponse> getHallById(@PathVariable Long id) {
+        HallResponse hallResponse = hallService.getHallById(id);
+        return ResponseEntity.ok(hallResponse);
     }
 }
