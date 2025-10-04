@@ -55,4 +55,9 @@ public class SuccessMessages {
     public static final String PASSED_TICKETS_SUCCESS = "Passed tickets retrieved successfully."; // Kimliği doğrulanmış kullanıcının kullandığı biletler başarıyla getirildi. (T-2)
     public static final String RESERVE_TICKET_SUCCESS = "Ticket reserved successfully."; // Bilet başarıyla ayrıldı. (T-3)
     public static final String TICKET_CREATE_SUCCESS = "Ticket created successfully."; // Bilet başarıyla oluşturuldu. (T-4)
+
+    //favorite
+    public static final String FAVORITE_MOVIE_ADDED = "User '%s' has added '%s' to favorites successfully!";
+    public static final String FAVORITE_MOVIE_REMOVED = "'%s' has been removed from your favorites successfully!";
+
 }

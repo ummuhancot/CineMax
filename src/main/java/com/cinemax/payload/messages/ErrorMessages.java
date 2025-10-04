@@ -102,6 +102,9 @@ public class ErrorMessages {
     //hall
     public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut
 
+    //favorite
+    public static final String USER_NOT_FOUND = "User not found with email: %s";
+    public static final String MOVIE_NOT_IN_FAVORITES = "The movie is not in user's favorites.";
 
 
 }
