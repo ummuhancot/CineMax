@@ -55,4 +55,29 @@ public class HallMapper {
                 .cinemaName(hall.getCinema() != null ? hall.getCinema().getName() : null)
                 .build();
     }
+
+    @SuppressWarnings("unused")
+    public Hall updateHallFromRequest(Hall hall, HallRequest request, Cinema cinema) {
+        HallType hallType = null;
+
+        if (request.getType() != null && !request.getType().isBlank()) {
+            try {
+                hallType = HallType.valueOf(request.getType().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid hall type: " + request.getType());
+            }
+        }
+
+        hall.setName(request.getName());
+        hall.setSeatCapacity(request.getSeatCapacity());
+        hall.setIsSpecial(request.getIsSpecial());
+        hall.setType(hallType);
+        hall.setCinema(cinema);
+
+        return hall;
+    }
+
+
+
+
 }
