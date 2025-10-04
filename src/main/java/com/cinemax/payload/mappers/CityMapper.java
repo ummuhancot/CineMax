@@ -16,6 +16,7 @@ public class CityMapper {
     public City mapRequestToEntity(CityRequest cityRequest) {
         return City.builder()
                 .name(cityRequest.getName())
+                .address(cityRequest.getAddress())
                 .build();
     }
 
@@ -24,6 +25,7 @@ public class CityMapper {
         CityResponse cityResponse = new CityResponse();
         cityResponse.setId(city.getId());
         cityResponse.setName(city.getName());
+        cityResponse.setAddress(city.getAddress());
         return cityResponse;
     }
 
@@ -35,5 +37,11 @@ public class CityMapper {
                         .address(cinema.getAddress())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    // Entity güncelleme (update)
+    public void updateEntityFromRequest(City city, CityRequest request) {
+        city.setName(request.getName());
+        city.setAddress(city.getAddress());
     }
 }

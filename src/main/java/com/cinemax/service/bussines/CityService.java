@@ -9,6 +9,8 @@ import com.cinemax.payload.response.business.CityWithCinemasResponse;
 import com.cinemax.repository.businnes.CityRepository;
 import com.cinemax.service.helper.CityHelper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +56,21 @@ public class CityService {
         cityRepository.delete(city);
 
         return deletedCity;
+    }
+
+
+    @Transactional
+    public CityResponse updateCity(Long cityId, CityRequest request) {
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new ResourceNotFoundException("City with id " + cityId + " not found"));
+
+        // Mapper kullanarak entity güncellemesi
+        cityMapper.updateEntityFromRequest(city, request);
+
+        // Repo save
+        City updatedCity = cityRepository.save(city);
+
+        // Response’a map et (cinema listesi dahil)
+        return cityMapper.mapEntityToResponse(updatedCity);
     }
 }
