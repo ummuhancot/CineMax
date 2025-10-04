@@ -61,9 +61,13 @@ public class ErrorMessages {
     //Cinema
     public static final String CINEMAS_QUERY_FAILED = "Failed to retrieve cinemas based on city and special halls."; // Şehir ve özel salonlara dayalı sinemalar getirilemedi. (T-1)
     public static final String FAVORITE_CINEMAS_FAILED = "Failed to retrieve favorite cinemas."; // Kullanıcının favorilerine göre sinemalar getirilemedi. (T-2)
-    public static final String CINEMA_NOT_FOUND = "Cinema not found."; // Sinema salonu bulunamadı. (T-3)
+    public static final String CINEMA_NOT_FOUND = "Cinema with id %d not found."; // Sinema salonu bulunamadı. (T-3)
     public static final String CINEMA_HALLS_FAILED = "Failed to retrieve cinema halls."; // Sinema salonları getirilemedi. (T-4)
     public static final String SPECIAL_HALLS_FAILED = "Failed to retrieve special halls."; // Tüm özel salonlar getirilemedi. (T-5)
+    public static final String CINEMA_EMAIL_EXISTS = "Cinema with email '%s' already exists.";
+    public static final String CINEMA_PHONE_EXISTS = "Cinema with phone number '%s' already exists.";
+    public static final String CINEMA_NOT_IN_CITY = "Cinema with id %d does not belong to city %d.";
+    public static final String CINEMA_ALREADY_EXISTS_WITH_SLUG = "Cinema already exists with slug: %s";
 
     //ShowTime
     public static final String SHOWTIME_NOT_FOUND = "Showtime not found."; // Gösteri saati bulunamadı. (T-1)
@@ -75,7 +79,7 @@ public class ErrorMessages {
     public static final String TICKET_CREATE_FAILED = "Failed to create ticket."; // Bilet oluşturulamadı. (T-4)
 
     //City
-    public static final String CITY_NOT_FOUND = "City not found with name: %s";
+    public static final String CITY_NOT_FOUND = "City not found";
     public static final String CITY_NAME_CANNOT_BE_EMPTY = "City name cannot be empty";
 
     //hall

@@ -7,6 +7,7 @@ import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.service.bussines.CinemaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class CinemaController {
     @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<CinemaResponse> createCinema(@RequestBody @Valid CinemaRequest request) {
         CinemaResponse response = cinemaService.createCinema(request);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     //Delete cinema yapınca şehir kalıyor bir şehirde birden fazla şube olabilir şube kapatılırsa sadece cinema silinecek
