@@ -29,5 +29,8 @@ public interface CinemaRepository extends JpaRepository<Cinema, Long> {
 
     boolean existsBySlug(String slug);
 
+    Optional<Cinema> findByEmailIgnoreCase(String email);
+    Optional<Cinema> findByPhoneNumber(String phoneNumber);
+
 
 }

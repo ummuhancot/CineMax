@@ -1,6 +1,7 @@
 package com.cinemax.payload.mappers;
 
 import com.cinemax.entity.concretes.business.Cinema;
+import com.cinemax.entity.concretes.business.City;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.payload.request.business.CinemaRequest;
 import com.cinemax.payload.response.business.CinemaHallResponse;
@@ -73,6 +74,19 @@ public class CinemaMapper {
                 .email(cinema.getEmail())
                 .cityName(cinema.getCity() != null ? cinema.getCity().getName() : null)
                 .build();
+    }
+
+    /**
+     * Update mapper
+     * Mevcut Cinema entity'sini request verileri ile günceller.
+     */
+    public void updateCinemaFields(Cinema cinema, CinemaRequest request, City city, String newSlug) {
+        if (request.getName() != null) cinema.setName(request.getName());
+        if (city != null) cinema.setCity(city);
+        if (request.getAddress() != null) cinema.setAddress(request.getAddress());
+        if (request.getPhoneNumber() != null) cinema.setPhoneNumber(request.getPhoneNumber());
+        if (request.getEmail() != null) cinema.setEmail(request.getEmail());
+        if (newSlug != null) cinema.setSlug(newSlug);
     }
 
 

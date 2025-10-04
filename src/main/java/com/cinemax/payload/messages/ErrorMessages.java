@@ -68,6 +68,21 @@ public class ErrorMessages {
     public static final String CINEMA_PHONE_EXISTS = "Cinema with phone number '%s' already exists.";
     public static final String CINEMA_NOT_IN_CITY = "Cinema with id %d does not belong to city %d.";
     public static final String CINEMA_ALREADY_EXISTS_WITH_SLUG = "Cinema already exists with slug: %s";
+    public static final String CINEMA_SLUG_EXISTS = "Cinema already exists with slug: %s";
+
+    // 🔹 Genel hata mesajları
+    public static final String BAD_REQUEST_MESSAGE = "Invalid request.";
+    public static final String RESOURCE_NOT_FOUND = "Resource not found.";
+    public static final String ACCESS_DENIED_MESSAGE = "Access denied.";
+    public static final String CINEMA_DUPLICATE_ENTRY = "Cinema with given details already exists.";
+
+    // 🔹 Database & Constraint
+    public static final String DUPLICATE_KEY_VIOLATION = "Duplicate key value violates unique constraint.";
+    public static final String DATABASE_ERROR = "Unexpected database error occurred.";
+
+    // 🔹 Validation
+    public static final String INVALID_INPUT = "Invalid input data.";
+    public static final String REQUIRED_FIELD_MISSING = "Required field is missing: %s";
 
     //ShowTime
     public static final String SHOWTIME_NOT_FOUND = "Showtime not found."; // Gösteri saati bulunamadı. (T-1)

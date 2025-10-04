@@ -3,6 +3,7 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.City;
 import com.cinemax.exception.ConflictException;
+import com.cinemax.exception.ResourceAlreadyExistsException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.CinemaMapper;
 import com.cinemax.payload.messages.ErrorMessages;
@@ -13,6 +14,7 @@ import com.cinemax.repository.businnes.CinemaRepository;
 import com.cinemax.repository.businnes.CityRepository;
 import com.cinemax.service.validator.UniquePropertyCinemaValidator;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -121,5 +123,45 @@ public class CinemaService {
         cinemaRepository.delete(cinema);
 
         return cinema; // Silinen nesne dönülüyor
+    }
+
+    @Transactional
+    public CinemaResponse updateCinema(Long cinemaId, CinemaRequest request) {
+        // 1. Mevcut Cinema'yı bul
+        Cinema cinema = cinemaRepository.findById(cinemaId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ErrorMessages.CINEMA_NOT_FOUND, cinemaId)
+                ));
+
+        // 2. City kontrolü
+        City city = cityRepository.findByNameIgnoreCase(request.getCityName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(ErrorMessages.CITY_NOT_FOUND, request.getCityName())
+                ));
+
+        // 3. Email ve telefon benzersizliğini kontrol et
+        if (!cinema.getEmail().equalsIgnoreCase(request.getEmail())) {
+            uniquePropertyCinemaValidator.validateUniqueEmailAndPhone(request.getEmail(), null);
+        }
+        if (!cinema.getPhoneNumber().equals(request.getPhoneNumber())) {
+            uniquePropertyCinemaValidator.validateUniqueEmailAndPhone(null, request.getPhoneNumber());
+        }
+
+        // 4. Slug benzersizliği kontrolü
+        String newSlug = cinemaMapper.generateSlug(request.getName(), request.getCityName());
+        if (!cinema.getSlug().equals(newSlug) && cinemaRepository.existsBySlug(newSlug)) {
+            throw new ResourceAlreadyExistsException(
+                    String.format(ErrorMessages.CINEMA_SLUG_EXISTS, newSlug)
+            );
+        }
+
+        // 5. Cinema entity'sini güncelle
+        cinemaMapper.updateCinemaFields(cinema, request, city, newSlug);
+
+        // 6. Kaydet
+        Cinema updatedCinema = cinemaRepository.save(cinema);
+
+        // 7. Response oluştur
+        return cinemaMapper.convertCinemaToResponse(updatedCinema);
     }
 }

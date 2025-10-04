@@ -31,5 +31,41 @@ public class UniquePropertyCinemaValidator {
     }
 
 
+    /**
+     * ✅ UPDATE işlemi için:
+     * Güncellenen Cinema haricinde aynı email veya phone number başka bir kayıt tarafından kullanılıyor mu kontrol eder.
+     * @param cinemaId güncellenen kaydın ID'si
+     * @param email yeni email
+     * @param phoneNumber yeni telefon numarası
+     */
+    public void validateUniqueEmailAndPhoneForUpdate(Long cinemaId, String email, String phoneNumber)
+            throws ResourceAlreadyExistsException {
+
+        // Email başka bir sinemada varsa hata ver
+        if (cinemaRepository.existsByEmailIgnoreCase(email)) {
+            Long existingId = cinemaRepository.findByEmailIgnoreCase(email)
+                    .map(c -> c.getId())
+                    .orElse(null);
+
+            if (existingId != null && !existingId.equals(cinemaId)) {
+                throw new ResourceAlreadyExistsException(
+                        String.format(ErrorMessages.CINEMA_EMAIL_EXISTS, email)
+                );
+            }
+        }
+
+        // Phone başka bir sinemada varsa hata ver
+        if (cinemaRepository.existsByPhoneNumber(phoneNumber)) {
+            Long existingId = cinemaRepository.findByPhoneNumber(phoneNumber)
+                    .map(c -> c.getId())
+                    .orElse(null);
+
+            if (existingId != null && !existingId.equals(cinemaId)) {
+                throw new ResourceAlreadyExistsException(
+                        String.format(ErrorMessages.CINEMA_PHONE_EXISTS, phoneNumber)
+                );
+            }
+        }
+    }
 
 }
