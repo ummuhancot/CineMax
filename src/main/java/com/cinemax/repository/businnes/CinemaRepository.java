@@ -22,4 +22,12 @@ public interface CinemaRepository extends JpaRepository<Cinema, Long> {
 
     // Şehre ait belirli sinema var mı kontrol et
     boolean existsByIdAndCityId(Long cinemaId, Long cityId);
+
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsBySlug(String slug);
+
+
 }

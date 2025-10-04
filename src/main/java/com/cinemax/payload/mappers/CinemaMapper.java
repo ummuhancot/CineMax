@@ -45,16 +45,22 @@ public class CinemaMapper {
     public Cinema convertRequestToCinema(CinemaRequest request) {
         return Cinema.builder()
                 .name(request.getName())
-                .slug(generateSlug(request.getName()))
+                .slug(generateSlug(request.getName(), request.getCityName()))
                 .address(request.getAddress())
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .build();
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase().replaceAll("[^a-z0-9]+", "-");
+    public String generateSlug(String name, String cityName) {
+        return (name + "-" + cityName)
+                .toLowerCase()
+                .trim()
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
     }
+
+
 
     // Entity → Response
     public CinemaResponse convertCinemaToResponse(Cinema cinema) {
@@ -68,5 +74,6 @@ public class CinemaMapper {
                 .cityName(cinema.getCity() != null ? cinema.getCity().getName() : null)
                 .build();
     }
+
 
 }

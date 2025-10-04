@@ -2,6 +2,7 @@ package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.City;
+import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.CinemaMapper;
 import com.cinemax.payload.messages.ErrorMessages;
@@ -10,11 +11,14 @@ import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.repository.businnes.CinemaRepository;
 import com.cinemax.repository.businnes.CityRepository;
+import com.cinemax.service.validator.UniquePropertyCinemaValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.cinemax.payload.mappers.MovieMapper.generateSlug;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class CinemaService {
     private final CinemaRepository cinemaRepository;
     private final CinemaMapper cinemaMapper;
     private final CityRepository cityRepository;
+    private final UniquePropertyCinemaValidator uniquePropertyCinemaValidator;
 
     // GET /api/cinemas?city=&specialHall=
     public List<CinemaHallResponse> getCinemas(String city, String specialHall) {
@@ -62,32 +67,54 @@ public class CinemaService {
 
 
     public CinemaResponse createCinema(CinemaRequest request) {
+        // Şehir kontrolü
         City city = cityRepository.findByNameIgnoreCase(request.getCityName())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format(ErrorMessages.CITY_NOT_FOUND, request.getCityName())
                 ));
 
+        // Email ve phone number benzersizlik kontrolü
+        uniquePropertyCinemaValidator.validateUniqueEmailAndPhone(
+                request.getEmail(),
+                request.getPhoneNumber()
+        );
+
+        // Slug oluştur
+        String slug = cinemaMapper.generateSlug(request.getName(), request.getCityName());
+
+        // Slug benzersizlik kontrolü
+        if (cinemaRepository.existsBySlug(slug)) {
+            throw new ConflictException(
+                    String.format(ErrorMessages.CINEMA_ALREADY_EXISTS_WITH_SLUG, slug)
+            );
+        }
+
+        // Request → Entity mapping
         Cinema cinema = cinemaMapper.convertRequestToCinema(request);
+        cinema.setSlug(slug);
         cinema.setCity(city);
 
+        // Kaydet
         Cinema savedCinema = cinemaRepository.save(cinema);
 
+        // Entity → Response mapping
         return cinemaMapper.convertCinemaToResponse(savedCinema);
     }
+
 
     // Şube kapatma (silme) ve silineni döndürme
     public Cinema deleteCinema(Long cityId, Long cinemaId) {
         // Şehir var mı?
         if (!cityRepository.existsById(cityId)) {
-            throw new EntityNotFoundException("City not found with id: " + cityId);
+            throw new EntityNotFoundException(String.format(ErrorMessages.CITY_NOT_FOUND));
         }
 
         // Sinema var mı ve o şehre mi ait?
         Cinema cinema = cinemaRepository.findById(cinemaId)
-                .orElseThrow(() -> new EntityNotFoundException("Cinema not found with id: " + cinemaId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.CINEMA_NOT_FOUND));
 
         if (!cinema.getCity().getId().equals(cityId)) {
-            throw new EntityNotFoundException("Cinema with id " + cinemaId + " does not belong to city " + cityId);
+            throw new EntityNotFoundException(ErrorMessages.CINEMA_NOT_IN_CITY);
         }
 
         // Önce nesneyi sakla, sonra sil
