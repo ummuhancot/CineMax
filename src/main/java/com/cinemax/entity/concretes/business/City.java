@@ -27,8 +27,6 @@ public class City {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String address;
 
 	@OneToMany(mappedBy = "city", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<Cinema> cinemas;
