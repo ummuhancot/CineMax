@@ -30,4 +30,13 @@ public class HallController {
         HallResponse hallResponse = hallService.getHallById(id);
         return ResponseEntity.ok(hallResponse);
     }
+
+    @DeleteMapping("/deleted/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<HallResponse> deleteHall(@PathVariable Long id) {
+        HallResponse deletedHall = hallService.deleteHall(id);
+        return ResponseEntity.ok(deletedHall);
+    }
+
+
 }
