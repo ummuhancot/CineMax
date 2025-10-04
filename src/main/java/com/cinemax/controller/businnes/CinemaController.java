@@ -4,6 +4,7 @@ import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.payload.request.business.CinemaRequest;
 import com.cinemax.payload.response.business.CinemaHallResponse;
 import com.cinemax.payload.response.business.CinemaResponse;
+import com.cinemax.payload.response.business.HallResponse;
 import com.cinemax.service.bussines.CinemaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -67,4 +68,21 @@ public class CinemaController {
     public ResponseEntity<CinemaResponse> getCinemaById(@PathVariable Long id) {
         return ResponseEntity.ok(cinemaService.getCinemaById(id));
     }
+
+    // GET /api/cinemas/{id}/halls
+    /**
+     * Belirtilen sinema ID'sine ait salonları listeler.
+     *
+     * Bu endpoint yalnızca "Admin" ve "Manager" yetkisine sahip kullanıcılar tarafından erişilebilir.
+     *
+     * @param cinemaId Listesi alınacak sinemanın ID'si
+     * @return Sinemaya ait salonların HallResponse listesi
+     */
+    @GetMapping("/{id}/halls")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public List<HallResponse> getHallsByCinema(@PathVariable("id") Long cinemaId) {
+        return cinemaService.getHallsByCinemaId(cinemaId);
+
+    }
+
 }
