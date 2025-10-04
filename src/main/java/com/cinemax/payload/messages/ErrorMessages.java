@@ -69,6 +69,8 @@ public class ErrorMessages {
     public static final String CINEMA_NOT_IN_CITY = "Cinema with id %d does not belong to city %d.";
     public static final String CINEMA_ALREADY_EXISTS_WITH_SLUG = "Cinema already exists with slug: %s";
     public static final String CINEMA_SLUG_EXISTS = "Cinema already exists with slug: %s";
+    public static final String CINEMAS_NOT_FOUND = "Cinemas not found. Entered city: %s, special hall: %s";
+    public static final String INVALID_HALL_TYPE = "Invalid special hall type: %s";
 
     // 🔹 Genel hata mesajları
     public static final String BAD_REQUEST_MESSAGE = "Invalid request.";

@@ -2,27 +2,35 @@ package com.cinemax.payload.mappers;
 
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.Hall;
+import com.cinemax.entity.enums.HallType;
 import com.cinemax.payload.request.business.HallRequest;
-import com.cinemax.payload.response.business.CinemaResponse;
 import com.cinemax.payload.response.business.HallResponse;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class HallMapper {
 
     // Request DTO → Entity
     public Hall convertRequestToHall(HallRequest request, Cinema cinema) {
+        HallType hallType = null;
+
+        if (request.getType() != null && !request.getType().isBlank()) {
+            try {
+                hallType = HallType.valueOf(request.getType().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid hall type: " + request.getType());
+            }
+        }
+
         return Hall.builder()
                 .name(request.getName())
                 .seatCapacity(request.getSeatCapacity())
                 .isSpecial(request.getIsSpecial())
-                .type(request.getType())
+                .type(hallType) // artık enum olarak set ediliyor
                 .cinema(cinema)
                 .build();
     }
+
 
     // Entity → Response DTO
     public HallResponse convertHallToResponse(Hall hall) {
@@ -31,8 +39,9 @@ public class HallMapper {
                 .name(hall.getName())
                 .seatCapacity(hall.getSeatCapacity())
                 .isSpecial(hall.getIsSpecial())
-                .type(hall.getType())
-                .cinemaName(hall.getCinema().getName())
+                .type(hall.getType() != null ? hall.getType().getLabel() : null) // enum label kullanıyoruz
+                .cinemaName(hall.getCinema() != null ? hall.getCinema().getName() : null)
                 .build();
     }
+
 }
