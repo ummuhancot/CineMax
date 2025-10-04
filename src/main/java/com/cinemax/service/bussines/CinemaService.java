@@ -23,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -188,6 +189,23 @@ public class CinemaService {
         List<Hall> halls = hallRepository.findByCinemaId(cinemaId);
         return halls.stream()
                 .map(hallMapper::convertHallToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Belirli bir sinemadaki tüm özel salonları döndürür.
+     * VIP veya THREE_D gibi özel salonlar özel sayılır.
+     * Veritabanındaki enum isimleri farklı yazılsa bile güvenli çalışır.
+     */
+    public List<HallResponse> getSpecialHallsByCinemaId(Long cinemaId) {
+        // Özel salon türleri
+        List<HallType> specialTypes = Arrays.asList(HallType.VIP, HallType.THREE_D);
+
+        // Repository’den direkt özel salonları çekiyoruz
+        return hallRepository.findByCinemaIdAndTypeIn(cinemaId, specialTypes)
+                .stream()
+                .map(hallMapper::mapHallToResponse)
                 .collect(Collectors.toList());
     }
 

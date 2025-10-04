@@ -85,4 +85,15 @@ public class CinemaController {
 
     }
 
+    /**
+     * Belirli sinemadaki tüm özel salonları listeler.
+     *
+     * GET /api/cinemasspecial-halls/{cinemaId}
+     */
+    @GetMapping("/specialhalls/{cinemaId}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
+    public List<HallResponse> getSpecialHallsByCinema(@PathVariable Long cinemaId) {
+        return cinemaService.getSpecialHallsByCinemaId(cinemaId);
+    }
+
 }
