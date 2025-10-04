@@ -26,7 +26,7 @@ public class CityController {
     }
 
     @GetMapping("/city-cinema/{id}")
-    @PreAuthorize("hasAuthority('Admin','Manager','Customer')")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<CityWithCinemasResponse> getCityWithCinemas(@PathVariable Long id) {
         CityWithCinemasResponse response = cityService.getCityWithCinemas(id);
         return ResponseEntity.ok(response);

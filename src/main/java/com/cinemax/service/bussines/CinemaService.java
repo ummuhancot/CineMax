@@ -160,4 +160,19 @@ public class CinemaService {
         // 7. Response oluştur
         return cinemaMapper.convertCinemaToResponse(updatedCinema);
     }
+
+    @Transactional
+    public CinemaResponse getCinemaById(Long id) {
+        Cinema cinema = cinemaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cinema not found with id: " + id));
+
+        return CinemaResponse.builder()
+                .id(cinema.getId())
+                .name(cinema.getName())
+                .cityName(cinema.getCity().getName()) // City entity üzerinden aldığını varsayıyorum
+                .address(cinema.getAddress())
+                .phoneNumber(cinema.getPhoneNumber())
+                .email(cinema.getEmail())
+                .build();
+    }
 }

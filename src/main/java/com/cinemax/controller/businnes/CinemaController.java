@@ -63,4 +63,8 @@ public class CinemaController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CinemaResponse> getCinemaById(@PathVariable Long id) {
+        return ResponseEntity.ok(cinemaService.getCinemaById(id));
+    }
 }
