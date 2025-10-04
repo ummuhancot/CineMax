@@ -53,4 +53,16 @@ public class CinemaController {
         return ResponseEntity.ok(deletedCinema);
     }
 
+    //Update cinema
+    //email ve phoneNumber de değiştirebilir
+    //frontend tarafında güncelleme kısmına bastığında dike eski bilgiler gelir yeni bilgilerle değiştirilir
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public ResponseEntity<CinemaResponse> updateCinema(
+            @PathVariable Long id,
+            @RequestBody @Valid CinemaRequest request) {
+        CinemaResponse response = cinemaService.updateCinema(id, request);
+        return ResponseEntity.ok(response);
+    }
+
 }
