@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -227,7 +229,23 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllAdminsAndManagers() {
+        // Role filtresi ile sadece ADMIN ve MANAGER kullanıcıları çek
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserRole().getRoleType().name().equals("ADMIN") ||
+                        user.getUserRole().getRoleType().name().equals("MANAGER"))
+                .map(userMapper::mapUserToUserResponse)
+                .collect(Collectors.toList());
+    }
 
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllCustomers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserRole().getRoleType() == RoleType.CUSTOMER)
+                .map(userMapper::mapUserToUserResponse)
+                .collect(Collectors.toList());
+    }
 }
 
 
