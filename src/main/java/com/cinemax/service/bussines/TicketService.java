@@ -53,39 +53,45 @@ public class TicketService {
         // Koltuk çakışması
         if (ticketRepository.existsByShowTime_IdAndSeatNo(req.getShowTimeId(), req.getSeatNo())) {
             throw new ConflictException("Seat already reserved/sold");
+        }
 
-            /**
-             * T-3: GET /api/tickets/reserve/{id}?seatNo=...
-             * - default: {id} = showTimeId
-             * - useMovieId=true ise {id} = movieId, en yakın seans bulunur
-             */
+        Ticket t = new Ticket();
+        t.setUser(user);
+        t.setShowTime(showTime);
+        t.setSeatNo(req.getSeatNo());
+        t.setStatus(TicketStatus.SOLD);
+        t.setReservedAt(LocalDateTime.now());
 
-            public TicketResponse reserveByGet (Long id, String seatNo,boolean useMovieId, Principal principal){
-                if (seatNo == null || seatNo.trim().isEmpty())
-                    throw new IllegalArgumentException("seatNo is required");
+        return ticketMapper.toResponse(ticketRepository.save(t));
+    }
 
-                User user = getAuthUser(principal);
+    /**
+     * T-3: GET /api/tickets/reserve/{id}?seatNo=...
+     * - default: {id} = showTimeId
+     * - useMovieId=true ise {id} = movieId, en yakın seans bulunur
+     */
+    public TicketResponse reserveByGet (Long id, String seatNo,boolean useMovieId, Principal principal){
+        if (seatNo == null || seatNo.trim().isEmpty())
+            throw new IllegalArgumentException("seatNo is required");
 
-                ShowTime target = !useMovieId
-                        ? showTimeRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("ShowTime not found with id=" + id))
-                        : showTimeRepository.findNearestUpcomingByMovieId(id, LocalDateTime.now())
-                        .orElseThrow(() -> new ResourceNotFoundException("No upcoming showtime for movieId=" + id));
+        User user = getAuthUser(principal);
 
-                if (ticketRepository.existsByShowTime_IdAndSeatNo(target.getId(), seatNo))
-                    throw new ConflictException("Seat already reserved/sold");
+        ShowTime target = !useMovieId
+                ? showTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ShowTime not found with id=" + id))
+                : showTimeRepository.findNearestUpcomingByMovieId(id, LocalDateTime.now())
+                .orElseThrow(() -> new ResourceNotFoundException("No upcoming showtime for movieId=" + id));
 
-                Ticket t = new Ticket();
-                t.setUser(user);
-                t.setShowTime(target);
-                t.setSeatNo(seatNo);
-                t.setStatus(TicketStatus.RESERVED);
-                t.setReservedAt(LocalDateTime.now());
+        if (ticketRepository.existsByShowTime_IdAndSeatNo(target.getId(), seatNo))
+            throw new ConflictException("Seat already reserved/sold");
 
-                return ticketMapper.toResponse(ticketRepository.save(t));
+        Ticket t = new Ticket();
+        t.setUser(user);
+        t.setShowTime(target);
+        t.setSeatNo(seatNo);
+        t.setStatus(TicketStatus.RESERVED);
+        t.setReservedAt(LocalDateTime.now());
 
-            }
-
-
-
-
+        return ticketMapper.toResponse(ticketRepository.save(t));
+    }
+}

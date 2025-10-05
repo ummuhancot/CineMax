@@ -18,7 +18,7 @@ public class ShowTimeService {
     public ShowTimeResponse getDetails(Long id) {
         ShowTime s = showTimeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ShowTime not found with id=" + id));
-        return showTimeMapper.toResponse(s);
+        return showTimeMapper.mapShowTimeToResponse(s);
     }
 }
 
