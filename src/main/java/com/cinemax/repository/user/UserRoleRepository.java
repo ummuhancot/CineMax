@@ -14,6 +14,4 @@ public interface UserRoleRepository extends CrudRepository<UserRole, Long> {
 	Optional<UserRole> findByRoleType(
 				RoleType roleType);
 
-    @Query("select r from UserRole r WHERE r.roleType = ?1")
-    Optional<Object> findByUserRoleType(RoleType roleType);
 }
