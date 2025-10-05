@@ -56,7 +56,6 @@ public class UserMapper {
                 .phoneNumber(userRequest.getPhoneNumber())
                 .birthDate(userRequest.getBirthDate())
                 .gender(userRequest.getGender())
-                .userRole(userRoleService.getUserRole(RoleType.ADMIN))
                 .build();
 
 
@@ -64,7 +63,7 @@ public class UserMapper {
             if(Objects.equals(userRequest.getEmail(),"Admin")){
                 user.setBuiltIn(true);
             }
-            user.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
+            user.setUserRole(userRoleService.getByRoleType(RoleType.ADMIN));
 
         } else if (userRole.equalsIgnoreCase(RoleType.MANAGER.getName())) {
             user.setUserRole(userRoleService.getByRoleType(RoleType.MANAGER));

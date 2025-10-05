@@ -24,10 +24,6 @@ public class UserRoleService {
 	}
 
 
-    public UserRole getUserRole(RoleType roleType){
-        return (UserRole) userRoleRepository.findByUserRoleType(roleType)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.ROLE_NOT_FOUND,roleType.getName())));
-    }
 
     //UserRoleService de otomatik gelmesi için Jextends JpaRepository yapmam gerekir
 //    public List<UserRole> getAllUserRoles() {
