@@ -2,6 +2,7 @@ package com.cinemax.entity.concretes.business;
 
 import com.cinemax.config.HallTypeConverter;
 import com.cinemax.entity.enums.HallType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -55,6 +56,7 @@ public class Hall {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cinema_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Cinema cinema;
 
     @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

@@ -22,4 +22,6 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
                                          @Param("now") LocalTime now);
 
 
+    boolean existsByHall_IdAndDateAndStartTime(Long hallId, java.time.LocalDate date, java.time.LocalTime startTime);
+
 }

@@ -74,9 +74,13 @@ public class MovieService {
     }
 
     @Transactional
-    public MovieResponse updateMovie(Long id, MovieRequest request) {
-        Movie existingMovie = movieRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + id));
+    public MovieResponse updateMovie(MovieRequest request) {
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("Movie ID must be provided for update");
+        }
+
+        Movie existingMovie = movieRepository.findById(request.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + request.getId()));
 
         String slug = request.getSlug();
         if (slug == null || slug.isBlank()) slug = MovieMapper.generateSlug(request.getTitle());
