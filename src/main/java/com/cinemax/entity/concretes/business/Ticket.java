@@ -14,7 +14,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "tickets")
+@Table(name = "tickets",
+        uniqueConstraints = {
+                // Aynı showTime + seatNo kombinasyonunun 2 kez satılmasını engeller
+                @UniqueConstraint(name = "uk_ticket_showtime_seatno", columnNames = {"show_time_id", "seat_no"})
+        },
+        indexes = {
+                @Index(name = "ix_ticket_show_time_id", columnList = "show_time_id"),
+                @Index(name = "ix_ticket_seat_no", columnList = "seat_no")
+        }
+)
+
+
 public class Ticket {
 
     @Id
@@ -32,6 +43,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private TicketStatus ticketStatus = TicketStatus.RESERVED;
 
     @CreationTimestamp
@@ -61,5 +73,6 @@ public class Ticket {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
 }
 

@@ -18,4 +18,6 @@ public class ShowTimeResponse {
     private String hallName;
     private Long movieId;
     private String movieTitle;
+    private Long hallId;
+    private Double price;
 }
