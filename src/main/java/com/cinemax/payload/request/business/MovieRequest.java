@@ -13,6 +13,8 @@ import java.util.List;
 @SuperBuilder
 public class MovieRequest {
 
+    private Long id;
+
     @NotBlank(message = "Title cannot be null")
     @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
     private String title;

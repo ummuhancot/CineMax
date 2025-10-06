@@ -2,6 +2,7 @@ package com.cinemax.payload.mappers;
 
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ public class MovieMapper {
                 .rating(request.getRating())
                 .director(request.getDirector())
                 .genre(request.getGenre())
+                .status(request.getStatus() != null ? request.getStatus() : MovieStatus.COMING_SOON) // burası eklendi
                 .build();
     }
 

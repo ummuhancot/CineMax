@@ -24,7 +24,7 @@ public class MovieController {
 
     private final MovieService movieService;
 
-
+    //Çalışıyor
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> movieSave(@Valid @RequestBody MovieRequest movieRequest) {
@@ -32,15 +32,18 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
+    //KOD çalışıyor ıd ile getirmeyi cıkardım
+    @PutMapping("/update")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> updateMovie(
-            @PathVariable Long id,
             @RequestBody MovieRequest movieRequest) {
-        MovieResponse updatedMovie = movieService.updateMovie(id, movieRequest);
+
+        // movieRequest içinde id olmalı
+        MovieResponse updatedMovie = movieService.updateMovie(movieRequest);
         return ResponseEntity.ok(updatedMovie);
     }
 
+    //çalışıyor
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> deleteMovie(@PathVariable Long id) {
@@ -48,6 +51,7 @@ public class MovieController {
         return ResponseEntity.ok(deletedMovie);
     }
 
+    //çalışıyor
     @GetMapping("/{id}/show-times")
     @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<MovieShowTimesResponse> getShowTimes(@PathVariable Long id) {
@@ -55,6 +59,7 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
+    //hala movie eklenmedi
     @GetMapping("/{hall}")
     public List<MovieResponse> getMoviesByHall(
             @PathVariable String hall,
@@ -66,6 +71,7 @@ public class MovieController {
         return movieService.getMoviesByHall(hall, page, size, sort, type);
     }
 
+    //hata yok response dönüyor ama uyarı var
     // 1) Sadece status ile kontrol
     @GetMapping("/in-theaters")
     public ResponseEntity<Page<MovieResponse>> getMoviesInTheaters(
@@ -74,6 +80,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheaters(pageable));
     }
 
+    //Çalışıyor
     // 2) Status + releaseDate kontrolü
     @GetMapping("/in-theaters/active")
     public ResponseEntity<Page<MovieResponse>> getActiveMoviesInTheaters(

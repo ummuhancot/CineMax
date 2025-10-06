@@ -88,6 +88,7 @@ public class ErrorMessages {
 
     //ShowTime
     public static final String SHOWTIME_NOT_FOUND = "Showtime not found."; // Gösteri saati bulunamadı. (T-1)
+    public static final String SHOWTIME_CONFLICT = "There is already a showtime for this hall at the given time!";
 
     //Ticket
     public static final String CURRENT_TICKETS_FAILED = "Failed to retrieve current tickets."; // Kimliği doğrulanmış kullanıcının kullanmadığı biletler getirilemedi. (T-1)

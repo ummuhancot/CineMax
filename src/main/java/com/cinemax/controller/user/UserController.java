@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -98,4 +99,19 @@ public class UserController {
                                   Authentication auth) {
         return userService.updateUserByAdmin(id, req, auth);
     }
+
+    @GetMapping("/getAllAdminManager")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Manager')")
+    public ResponseEntity<List<UserResponse>> getAllAdminsAndManagers() {
+        List<UserResponse> users = userService.getAllAdminsAndManagers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getAllCustomers")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Manager')")
+    public ResponseEntity<List<UserResponse>> getAllCustomers() {
+        return ResponseEntity.ok(userService.getAllCustomers());
+    }
+
+
 }
