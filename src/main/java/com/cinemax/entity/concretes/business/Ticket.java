@@ -30,6 +30,10 @@ public class Ticket {
     @Column(nullable = false)
     private Double price;
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus ticketStatus = TicketStatus.RESERVED;

@@ -95,6 +95,9 @@ public class ErrorMessages {
     public static final String PASSED_TICKETS_FAILED = "Failed to retrieve passed tickets."; // Kimliği doğrulanmış kullanıcının kullandığı biletler getirilemedi. (T-2)
     public static final String RESERVE_TICKET_FAILED = "Failed to reserve ticket."; // Bilet ayıramadı. (T-3)
     public static final String TICKET_CREATE_FAILED = "Failed to create ticket."; // Bilet oluşturulamadı. (T-4)
+    public static final String SEAT_ALREADY_RESERVED = "This seat is already reserved or sold.";
+    public static final String PAYMENT_FAILED = "Cannot reserve ticket for failed payment.";
+    public static final String PAYMENT_STATUS_NULL = "Payment status cannot be null.";
 
     //City
     public static final String CITY_NOT_FOUND = "City not found";
@@ -108,5 +111,8 @@ public class ErrorMessages {
     public static final String USER_NOT_FOUND = "User not found with email: %s";
     public static final String MOVIE_NOT_IN_FAVORITES = "The movie is not in user's favorites.";
 
+
+    //payment
+    public static final String PAYMENT_NOT_FOUND = "Payment not found with the given id.";
 
 }
