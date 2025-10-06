@@ -19,6 +19,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+
     //“Kullanıcı giriş yaptıktan sonra bir koltuğu başarıyla rezerve edebilmeli; rezervasyon süresi boyunca koltuk güvenle tutulmalı ve süresi dolduğunda koltuk otomatik olarak tekrar alınabilir hâle gelmeli.”
     @PostMapping("/reserve")
     public ResponseEntity<TicketResponse> saveRezerve(
