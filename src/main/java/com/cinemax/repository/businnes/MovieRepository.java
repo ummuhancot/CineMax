@@ -5,6 +5,8 @@ import com.cinemax.entity.enums.MovieStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -23,4 +25,14 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             LocalDate today,
             Pageable pageable
     );
+
+    // T-6: Arama + sayfalama (entity’de description yoksa sadece title’a göre arama)
+    @Query("""
+           SELECT m FROM Movie m
+           WHERE (:q IS NULL OR TRIM(:q) = '' 
+                  OR LOWER(m.title) LIKE LOWER(CONCAT('%', :q, '%')))
+           """)
+    Page<Movie> search(@Param("q") String q, Pageable pageable);
 }
+
+
