@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -22,6 +23,7 @@ public class TicketController {
 
     //“Kullanıcı giriş yaptıktan sonra bir koltuğu başarıyla rezerve edebilmeli; rezervasyon süresi boyunca koltuk güvenle tutulmalı ve süresi dolduğunda koltuk otomatik olarak tekrar alınabilir hâle gelmeli.”
     @PostMapping("/reserve")
+    @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<TicketResponse> saveRezerve(
             @RequestBody @Valid TicketRequest request,
             Principal principal

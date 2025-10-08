@@ -36,7 +36,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus ticketStatus = TicketStatus.RESERVED;
+    private TicketStatus ticketStatus = TicketStatus.EMPTY;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -62,7 +62,7 @@ public class Ticket {
     @JoinColumn(name = "hall_id", nullable = false)
     private Hall hall;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 }

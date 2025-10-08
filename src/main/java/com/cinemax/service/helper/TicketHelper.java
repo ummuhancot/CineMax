@@ -47,24 +47,24 @@ public class TicketHelper {
                 .orElseThrow(() -> new InvalidRequestException(ErrorMessages.PAYMENT_NOT_FOUND));
     }
 
-    // Payment ve TicketStatus kontrolü
     public TicketStatus getTicketStatusFromPayment(Long paymentId) {
         if (paymentId == null) return TicketStatus.RESERVED;
 
-        Payment payment = getPaymentOrThrow(paymentId);
+        Payment payment = getPaymentOrThrow(paymentId); // repository veya helper metoduyla al
+        PaymentStatus status = payment.getPaymentStatus();
 
-        if (payment.getPaymentStatus() == null) {
+        if (status == null) {
             throw new InvalidRequestException(ErrorMessages.PAYMENT_STATUS_NULL);
         }
-
-        if (payment.getPaymentStatus() == PaymentStatus.FAILED) {
+        if (status == PaymentStatus.FAILED) {
             throw new InvalidRequestException(ErrorMessages.PAYMENT_FAILED);
         }
 
-        return mapPaymentStatusToTicketStatus(payment.getPaymentStatus());
+        return mapPaymentStatusToTicketStatus(status);
     }
 
-    public TicketStatus mapPaymentStatusToTicketStatus(PaymentStatus paymentStatus) {
+
+    public static TicketStatus mapPaymentStatusToTicketStatus(PaymentStatus paymentStatus) {
         if (paymentStatus == null) return TicketStatus.RESERVED;
 
         return switch (paymentStatus) {
