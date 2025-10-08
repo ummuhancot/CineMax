@@ -1,6 +1,6 @@
 package com.cinemax.service;
 import com.cinemax.exception.EmailSendingException;
-import com.cinemax.payload.messages.MessageUtil;
+import com.cinemax.payload.utils.MessageUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
