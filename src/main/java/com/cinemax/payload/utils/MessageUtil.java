@@ -1,4 +1,4 @@
-package com.cinemax.payload.messages;
+package com.cinemax.payload.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
