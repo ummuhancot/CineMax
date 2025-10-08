@@ -79,6 +79,11 @@ public class Movie {
     @JoinColumn(name = "poster_id", nullable = false, unique = true)
     private Image poster;
 
+    //image icin eklendi
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MovieStatus status = MovieStatus.COMING_SOON;
