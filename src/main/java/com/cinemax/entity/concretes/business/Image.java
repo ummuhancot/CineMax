@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,17 +19,17 @@ public class Image {
     private Long id;
 
     @Column(nullable = false)
-    private String name;  // Resim dosya adı
+    private String name; // Dosya adı
 
     @Column(nullable = false)
-    private String type;  // MIME tipi (image/png, image/jpeg)
+    private String type; // MIME tipi (image/png, image/jpeg)
 
-    private boolean featured; // Öne çıkan resim mi?
+    private boolean featured; // Öne çıkan görsel mi?
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
-    private byte[] data;  // Sıkıştırılmış resim verisi
+    private byte[] data; // Görsel verisi (sıkıştırılmış)
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -40,12 +39,12 @@ public class Image {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // Poster olarak kullanılan resim (1:1)
+    // 🎬 Poster olarak kullanıldığı film (1:1)
     @OneToOne(mappedBy = "poster", fetch = FetchType.LAZY)
     private Movie posterOfMovie;
 
-    // Film galerisine ait resimler (n:1)
+    // 🎞️ Galeri görseli olduğu film (N:1)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie;
+    @JoinColumn(name = "movie_id", nullable = true)
+    private Movie movie; // poster görsellerde null olabilir
 }
