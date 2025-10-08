@@ -48,4 +48,3 @@ public class Image {
     @JoinColumn(name = "movie_id", nullable = true)
     private Movie movie; // poster görsellerde null olabilir
 }
-// deneme
