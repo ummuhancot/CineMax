@@ -9,11 +9,13 @@ import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
@@ -52,5 +54,10 @@ public class MovieHelper {
 
         return imageRepository.findById(posterId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POSTER_NOT_FOUND));
+    }
+
+    // 🔹 Film bulunamadığında fırlatılacak exception
+    public RuntimeException movieNotFound(Long id) {
+        return new EntityNotFoundException(String.format(ErrorMessages.MOVIE_NOT_FOUND, id));
     }
 }

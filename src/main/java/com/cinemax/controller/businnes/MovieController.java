@@ -1,6 +1,7 @@
 package com.cinemax.controller.businnes;
 
 import com.cinemax.payload.request.business.MovieRequest;
+import com.cinemax.payload.response.business.MovieAdminResponse;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.service.bussines.MovieService;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -108,4 +108,29 @@ public class MovieController {
         var list = movieService.getComingSoon(page, size, sort, type);
         return ResponseEntity.ok(list);
     }
+
+    //çalışıyor
+    @GetMapping("/getOneMovie/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
+    public ResponseEntity<MovieResponse> getMovieById(@PathVariable Long id) {
+        MovieResponse movie = movieService.getMovieById(id); // Service metodu ID ile filmi döndürür
+        return ResponseEntity.ok(movie);
+    }
+
+    //çalışıyor
+    //admine özel film özet olarak getiyor
+    @GetMapping("/{id}/admin")
+    public ResponseEntity<MovieAdminResponse> getMovieByIdAdmin(@PathVariable Long id) {
+        MovieAdminResponse movie = movieService.getMovieByIdAdmin(id);
+        return ResponseEntity.ok(movie);
+    }
+
+    @GetMapping("/getAllMovies")
+    public ResponseEntity<List<MovieResponse>> getAllMovies() {
+        List<MovieResponse> movies = movieService.getAllMovies();
+        return ResponseEntity.ok(movies);
+    }
+
+
+
 }
