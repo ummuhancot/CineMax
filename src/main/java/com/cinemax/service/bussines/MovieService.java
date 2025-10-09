@@ -6,12 +6,14 @@ import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.exception.ResourceNotFoundException;
+import com.cinemax.payload.mappers.MovieAdminMapper;
 import com.cinemax.payload.mappers.MovieMapper;
 import com.cinemax.payload.mappers.MovieShowTimesMapper;
 import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.request.business.ShowTimeRequest;
+import com.cinemax.payload.response.business.MovieAdminResponse;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.repository.businnes.HallRepository;
@@ -35,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +51,8 @@ public class MovieService {
     private final MovieHelper movieHelper;
     private final HallRepository hallRepository;
     private final ShowTimeMapper showTimeMapper;
+    private final MovieAdminMapper movieAdminMapper;
+
 
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
@@ -205,4 +210,28 @@ public class MovieService {
             return slice.stream().map(movieMapper::mapMovieToMovieResponse).toList();
         }
     }
+
+    @Transactional(readOnly = true)
+    public MovieResponse getMovieById(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> movieHelper.movieNotFound(id));
+
+        return movieMapper.mapMovieToMovieResponse(movie);
+    }
+
+    @Transactional(readOnly = true)
+    public MovieAdminResponse getMovieByIdAdmin(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() ->movieHelper.movieNotFound(id));
+        return movieAdminMapper.toAdminResponse(movie);
+    }
+
+    // Tüm filmleri döndüren method
+    @Transactional
+    public List<MovieResponse> getAllMovies() {
+        return movieRepository.findAll().stream()
+                .map(movieMapper::mapMovieToMovieResponse)
+                .toList();
+    }
+
 }
