@@ -3,6 +3,7 @@ package com.cinemax.controller.businnes;
 import com.cinemax.payload.request.business.HallRequest;
 import com.cinemax.payload.response.business.HallResponse;
 import com.cinemax.service.bussines.HallService;
+import com.cinemax.util.HallSeatCache;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,14 @@ public class HallController {
     }
 
 
-
+    /**
+     * Belirli bir hall ID için seat listesini döner.
+     * ID yanlışsa servis 404 fırlatır.
+     */
+    @GetMapping("/{id}/seats")
+    public ResponseEntity<List<String>> getHallSeats(@PathVariable Long id) {
+        List<String> seats = hallService.getSeatsForHall(id);
+        return ResponseEntity.ok(seats);
+    }
 
 }
