@@ -12,11 +12,16 @@ import com.cinemax.repository.businnes.CinemaRepository;
 import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.service.helper.HallHelper;
 import com.cinemax.service.validator.HallValidator;
+import com.cinemax.util.HallSeatCache;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,9 +46,25 @@ public class HallService {
         // Kaydet
         Hall saved = hallRepository.save(hall);
 
+        // Kaydedilen hall için seat ekle
+        addSeatsToHall(saved);
+
         // Response dön
         return hallMapper.convertHallToResponse(saved);
     }
+    /**
+     * Hall entity'sine göre seat oluşturur ve cache'e ekler.
+     */
+    // Hall için seat ekleme (entity olmadan, transient cache)
+    private void addSeatsToHall(Hall hall) {
+        List<String> seats = new ArrayList<>();
+        for (int i = 1; i <= hall.getSeatCapacity(); i++) {
+            seats.add("Seat-" + i);
+        }
+        HallSeatCache.addSeats(hall.getId(), seats); // HallSeatCache: id -> seat list
+
+    }
+
 
     public HallResponse getHallById(Long hallId) {
         // Find the hall or throw an exception if not found
@@ -96,6 +117,22 @@ public class HallService {
         Hall saved = hallRepository.save(updatedHall);
 
         return hallMapper.convertHallToResponse(saved);
+    }
+
+    /**
+     * Hall ID'ye göre seat listesini döner.
+     * Hall bulunamazsa ResourceNotFoundException fırlatır.
+     */
+    public List<String> getSeatsForHall(Long hallId) {
+        if (!HallSeatCache.hasHall(hallId)) {
+            // Hall repository’den kontrol et
+            Hall hall = hallRepository.findById(hallId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Hall not found with id: " + hallId));
+
+            // Hall bulunduysa seat ekle
+            addSeatsToHall(hall);
+        }
+        return HallSeatCache.getSeats(hallId);
     }
 
 
