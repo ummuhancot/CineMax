@@ -43,6 +43,17 @@ public class MovieController {
         return ResponseEntity.ok(updatedMovie);
     }
 
+    // >>> EKLENEN ENDPOINT: /api/movies/{id} (PathVariable ile)
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> updateMovieById(@PathVariable("id") Long movieId,
+                                                         @Valid @RequestBody MovieRequest request) {
+        // path'ten gelen id'yi request'e taşı
+        request.setId(movieId);
+        MovieResponse dto = movieService.updateMovie(request); // servisin tek parametreli metodu
+        return ResponseEntity.ok(dto);
+    }
+
     //çalışıyor
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
@@ -89,5 +100,16 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
 
+    // ... diğer endpointler ...
 
+    @GetMapping("/coming-soon")
+    public ResponseEntity<List<MovieResponse>> getComingSoon(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "releaseDate") String sort,
+            @RequestParam(required = false, defaultValue = "asc") String type) {
+
+        var list = movieService.getComingSoon(page, size, sort, type);
+        return ResponseEntity.ok(list);
+    }
 }
