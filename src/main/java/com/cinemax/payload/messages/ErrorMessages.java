@@ -118,4 +118,7 @@ public class ErrorMessages {
     //payment
     public static final String PAYMENT_NOT_FOUND = "Payment not found with the given id.";
 
+    //Utility class
+    public static final String UTILITY_CLASS_SHOULD_NOT_BE_INSTANTIATED = "Utility class — cannot be instantiated";
+
 }
