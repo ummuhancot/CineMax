@@ -57,6 +57,8 @@ public class ErrorMessages {
     public static final String IMAGE_UPLOAD_FAILED = "Failed to upload image."; // Görüntü yüklenemedi. (T-2)
     public static final String IMAGE_DELETE_FAILED = "Failed to delete image."; // Görüntü silinemedi. (T-3)
     public static final String IMAGE_UPDATE_FAILED = "Failed to update image."; // Görüntü güncellenemedi. (T-4)
+    public static final String MOVIE_POSTER_REQUIRED = "Movie poster is required";
+
 
     //Cinema
     public static final String CINEMAS_QUERY_FAILED = "Failed to retrieve cinemas based on city and special halls."; // Şehir ve özel salonlara dayalı sinemalar getirilemedi. (T-1)
@@ -106,6 +108,7 @@ public class ErrorMessages {
     //hall
     public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut
     public static final String HALL_NOT_FOUND = "Hall not found. ID: %s";
+    public static final String HALL_NOT_FOUND_FOR_SHOWTIME = "Hall not found for showtime";
 
     //favorite
     public static final String USER_NOT_FOUND = "User not found with email: %s";

@@ -1,22 +1,24 @@
 package com.cinemax.service.bussines;
 
+import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.enums.MovieStatus;
-import com.cinemax.exception.ConflictException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.MovieMapper;
 import com.cinemax.payload.mappers.MovieShowTimesMapper;
 import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.MovieRequest;
+import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
 import com.cinemax.repository.businnes.HallRepository;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
 import com.cinemax.repository.businnes.ShowTimeRepository;
-import jakarta.validation.Valid;
+import com.cinemax.service.helper.MovieHelper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -34,64 +36,47 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cinemax.payload.messages.ErrorMessages.*;
-
 @Service
 @RequiredArgsConstructor
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    private final HallRepository hallRepository;
     private final ImageRepository imageRepository;
     private final ShowTimeRepository showTimeRepository;
     private final MovieMapper movieMapper;
-    private final ShowTimeMapper showTimeMapper;
     private final MovieShowTimesMapper movieShowTimesMapper;
+    private final MovieHelper movieHelper;
+    private final HallRepository hallRepository;
+    private final ShowTimeMapper showTimeMapper;
 
-
-    // --- Var olan CRUD ve diğer metotlar (değiştirilmedi) ---
     @Transactional
-    public MovieResponse save(@Valid MovieRequest request) {
-        String slug = request.getSlug();
-        if (slug == null || slug.isBlank()) slug = MovieMapper.generateSlug(request.getTitle());
-        if (movieRepository.existsBySlug(slug)) {
-            throw new ResourceNotFoundException(ErrorMessages.MOVIE_CREATE_FAILED + " Slug already exists.");
-        }
-
-
-        Image poster = imageRepository.findById(request.getPosterId())
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.MOVIE_CREATE_FAILED + " Poster not found."));
-        Movie movie = movieMapper.mapMovieRequestToMovie(request);
-        movie.setSlug(slug);
+    public MovieResponse saveMovie(MovieRequest request) {
+        List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
+        Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
+        Image poster = movieHelper.getPosterOrThrow(request.getPosterId());
         movie.setPoster(poster);
-        Movie savedMovie = movieRepository.save(movie);
-        return movieMapper.mapMovieToMovieResponse(savedMovie);
+        movieRepository.save(movie);
+        if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
+            for (ShowTimeRequest showTimeRequest : request.getShowTimes()) {
+                Hall hall = halls.stream()
+                        .filter(h -> h.getId().equals(showTimeRequest.getHallId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.HALL_NOT_FOUND_FOR_SHOWTIME));
+
+                ShowTime showTime = showTimeMapper.toEntity(showTimeRequest, movie, hall);
+                showTimeRepository.save(showTime);
+            }
+        }
+        return movieMapper.mapMovieToMovieResponse(movie);
     }
 
-    @Transactional
     public MovieResponse updateMovie(MovieRequest request) {
-        if (request.getId() == null) {
-            throw new IllegalArgumentException("Movie ID must be provided for update");
-        }
-
-        Movie existingMovie = movieRepository.findById(request.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(MOVIE_NOT_FOUND + request.getId()));
-
-        String slug = request.getSlug();
-        if (slug == null || slug.isBlank()) slug = MovieMapper.generateSlug(request.getTitle());
-        if (!slug.equals(existingMovie.getSlug()) && movieRepository.existsBySlug(slug)) {
-            throw new ConflictException(SLUG_ALREADY_EXISTS);
-        }
-        Image poster = imageRepository.findById(request.getPosterId())
-                .orElseThrow(() -> new ResourceNotFoundException(POSTER_NOT_FOUND));
-
-
-        movieMapper.updateMovieFromRequest(existingMovie, request);
-        existingMovie.setSlug(slug);
-        existingMovie.setPoster(poster);
-
-        Movie updatedMovie = movieRepository.save(existingMovie);
-        return movieMapper.mapMovieToMovieResponse(updatedMovie);
+        Movie movie = movieHelper.getMovieOrThrow(request.getId());
+        List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
+        Image poster = movieHelper.getPosterOrThrow(request.getPosterId());
+        movieMapper.updateMovieFromRequest(movie, request, halls, poster);
+        movieRepository.save(movie);
+        return movieMapper.mapMovieToMovieResponse(movie);
     }
 
     public MovieResponse deleteById(Long id) {

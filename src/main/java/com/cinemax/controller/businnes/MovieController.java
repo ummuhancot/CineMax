@@ -27,23 +27,20 @@ public class MovieController {
     //Çalışıyor
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> movieSave(@Valid @RequestBody MovieRequest movieRequest) {
-        MovieResponse response = movieService.save(movieRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<MovieResponse> createMovie(@Valid @RequestBody MovieRequest request) {
+        MovieResponse response = movieService.saveMovie(request);
+        return ResponseEntity.ok(response);
     }
 
-    //KOD çalışıyor ıd ile getirmeyi cıkardım
+    //çalışıyor ıd ile gönderiyorum url de id görünmüyor
     @PutMapping("/update")
-    @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> updateMovie(
-            @RequestBody MovieRequest movieRequest) {
-
-        // movieRequest içinde id olmalı
-        MovieResponse updatedMovie = movieService.updateMovie(movieRequest);
-        return ResponseEntity.ok(updatedMovie);
+    public ResponseEntity<MovieResponse> updateMovie(@Valid @RequestBody MovieRequest request) {
+        MovieResponse response = movieService.updateMovie(request);
+        return ResponseEntity.ok(response);
     }
 
-    // >>> EKLENEN ENDPOINT: /api/movies/{id} (PathVariable ile)
+
+    //kodun devam yok yaz
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> updateMovieById(@PathVariable("id") Long movieId,
@@ -70,7 +67,7 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    //hala movie eklenmedi
+    //çalışıyor
     @GetMapping("/{hall}")
     public List<MovieResponse> getMoviesByHall(
             @PathVariable String hall,
@@ -82,8 +79,8 @@ public class MovieController {
         return movieService.getMoviesByHall(hall, page, size, sort, type);
     }
 
-    //hata yok response dönüyor ama uyarı var
-    // 1) Sadece status ile kontrol
+    //kodu düzelt movieIntheaters için kod yaz
+    //çalışmıyor kod bak
     @GetMapping("/in-theaters")
     public ResponseEntity<Page<MovieResponse>> getMoviesInTheaters(
             @PageableDefault(size = 10, sort = "releaseDate", direction = Sort.Direction.DESC) Pageable pageable
@@ -91,7 +88,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheaters(pageable));
     }
 
-    //Çalışıyor
+    //çalışmıyor koda bak
     // 2) Status + releaseDate kontrolü
     @GetMapping("/in-theaters/active")
     public ResponseEntity<Page<MovieResponse>> getActiveMoviesInTheaters(
@@ -100,8 +97,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
 
-    // ... diğer endpointler ...
-
+   //çalışıyor ama mantık hatası
     @GetMapping("/coming-soon")
     public ResponseEntity<List<MovieResponse>> getComingSoon(
             @RequestParam(required = false, defaultValue = "0") Integer page,
