@@ -13,8 +13,8 @@ import java.util.List;
 @SuperBuilder
 public class MovieRequest {
 
-    @NotNull(message = "Movie ID cannot be null")
-    private Long id;
+    //@NotNull(message = "Movie ID cannot be null") --> notnull diyemeyiz çünkü id otomatik oluşturulacak
+    private Long id; //id otomatik oluşacak burada eklememize gerek yok user dan id almıyoruz --TODO - güncellenmeli
 
     @NotBlank(message = "Title cannot be null")
     @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
@@ -48,7 +48,7 @@ public class MovieRequest {
     @NotBlank(message = "Genre cannot be null")
     private String genre;
 
-    @NotNull(message = "Poster ID cannot be null")
+    //@NotNull(message = "Poster ID cannot be null") --> önce film eklenmeli sonra poster.
     private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
 
     private MovieStatus status = MovieStatus.COMING_SOON;
@@ -59,10 +59,10 @@ public class MovieRequest {
     @NotNull(message = "Formats list cannot be null")
     private List<String> formats;
 
-    @NotNull(message = "Hall IDs cannot be null")
+    //@NotNull(message = "Hall IDs cannot be null")
     private List<Long> hallIds;
 
-    @NotNull(message = "ShowTimes cannot be null")
+    //@NotNull(message = "ShowTimes cannot be null")
     private List<ShowTimeRequest> showTimes;
 
 
