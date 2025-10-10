@@ -36,7 +36,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus ticketStatus = TicketStatus.RESERVED;
+    private TicketStatus ticketStatus = TicketStatus.EMPTY;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

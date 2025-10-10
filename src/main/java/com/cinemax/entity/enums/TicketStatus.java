@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum TicketStatus {
+    EMPTY("Empty"),
     RESERVED("Reserved"),
     CANCELLED("Cancelled"),
     PAID("Paid");
