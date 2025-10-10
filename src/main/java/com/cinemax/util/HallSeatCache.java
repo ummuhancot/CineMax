@@ -1,17 +1,14 @@
 package com.cinemax.util;
 
-import com.cinemax.payload.messages.ErrorMessages;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unused")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HallSeatCache {
-
-    private HallSeatCache() {
-        throw new UnsupportedOperationException(ErrorMessages.UTILITY_CLASS_SHOULD_NOT_BE_INSTANTIATED);
-    }
 
     // Hall ID -> Seat listesi
     private static final Map<Long, List<String>> hallSeats = new ConcurrentHashMap<>();
