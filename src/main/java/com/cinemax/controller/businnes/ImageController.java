@@ -19,12 +19,10 @@ package com.cinemax.controller.businnes;
  /api/images/5
 
  */
-import com.cinemax.payload.request.business.ImageRequest;
 import com.cinemax.payload.response.business.ImageResponse;
 import com.cinemax.service.bussines.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
