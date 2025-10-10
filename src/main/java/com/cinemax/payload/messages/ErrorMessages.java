@@ -1,5 +1,9 @@
 package com.cinemax.payload.messages;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorMessages {
 
     //userr
@@ -109,6 +113,11 @@ public class ErrorMessages {
     public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut
     public static final String HALL_NOT_FOUND = "Hall not found. ID: %s";
     public static final String HALL_NOT_FOUND_FOR_SHOWTIME = "Hall not found for showtime";
+    public static final String SEATS_NOT_LOADED = "No seats loaded for hallId=%d";
+    public static final String NO_AVAILABLE_SEATS = "No available seats for hallId=%d";
+    public static final String SEAT_NOT_SELECTED = "At least one seat must be selected.";
+    public static final String INVALID_SEAT_FORMAT = "Invalid seat format: ";
+
 
     //favorite
     public static final String USER_NOT_FOUND = "User not found with email: %s";

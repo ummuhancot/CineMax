@@ -1,6 +1,5 @@
 package com.cinemax.payload.request.business;
 
-import com.cinemax.entity.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,11 +8,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TicketRequest {
+
+    @NotNull(message = "User ID cannot be null")
+    private Long userId;
 
     @NotNull(message = "Movie ID cannot be null")
     private Long movieId;
@@ -33,5 +37,5 @@ public class TicketRequest {
     @NotNull(message = "Price cannot be null")
     private Double price;
 
-    private Long paymentId;
+    private List<String> seats; // örnek: ["Seat-4", "Seat-5", "Seat-6"]
 }
