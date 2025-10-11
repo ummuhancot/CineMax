@@ -45,6 +45,6 @@ public class Image {
 
     // 🎞️ Galeri görseli olduğu film (N:1)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = true)
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie; // poster görsellerde null olabilir
 }
