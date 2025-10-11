@@ -77,7 +77,7 @@ public class Movie {
 
     // Poster ilişkisi (1:1)
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "poster_id", nullable = false, unique = true)
+    @JoinColumn(name = "poster_id", nullable = true, unique = true)
     private Image poster;
 
     // Galeri görselleri (1:N)

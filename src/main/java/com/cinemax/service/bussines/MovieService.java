@@ -53,14 +53,18 @@ public class MovieService {
     private final ShowTimeMapper showTimeMapper;
     private final MovieAdminMapper movieAdminMapper;
 
-
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
+        // Hall listesi
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
+
+        // Movie oluşturma, poster opsiyonel
         Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
-        Image poster = movieHelper.getPosterOrThrow(request.getPosterId());
-        movie.setPoster(poster);
+
+        // Movie kaydet
         movieRepository.save(movie);
+
+        // ShowTime ekleme
         if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
             for (ShowTimeRequest showTimeRequest : request.getShowTimes()) {
                 Hall hall = halls.stream()
@@ -72,17 +76,32 @@ public class MovieService {
                 showTimeRepository.save(showTime);
             }
         }
+
         return movieMapper.mapMovieToMovieResponse(movie);
     }
 
     public MovieResponse updateMovie(MovieRequest request) {
+        // Mevcut movie al
         Movie movie = movieHelper.getMovieOrThrow(request.getId());
+
+        // Hall listesi
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
-        Image poster = movieHelper.getPosterOrThrow(request.getPosterId());
+
+        // Poster opsiyonel, null ise mapper’da set edilmeyecek
+        Image poster = null;
+        if (request.getPosterId() != null) {
+            poster = movieHelper.getPosterOrThrow(request.getPosterId());
+        }
+
+        // Movie güncelle
         movieMapper.updateMovieFromRequest(movie, request, halls, poster);
+
+        // Kaydet
         movieRepository.save(movie);
+
         return movieMapper.mapMovieToMovieResponse(movie);
     }
+
 
     public MovieResponse deleteById(Long id) {
         Movie movie = movieRepository.findById(id)

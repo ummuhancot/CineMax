@@ -13,7 +13,6 @@ import java.util.List;
 @SuperBuilder
 public class MovieRequest {
 
-    @NotNull(message = "Movie ID cannot be null")
     private Long id;
 
     @NotBlank(message = "Title cannot be null")
@@ -48,7 +47,6 @@ public class MovieRequest {
     @NotBlank(message = "Genre cannot be null")
     private String genre;
 
-    @NotNull(message = "Poster ID cannot be null")
     private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
 
     private MovieStatus status = MovieStatus.COMING_SOON;
