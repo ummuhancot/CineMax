@@ -20,25 +20,21 @@ public class MovieMapper {
 
     private final ShowTimeMapper showTimeMapper;
 
-    /**
-     * Title'dan URL dostu slug üretir.
-     * Örn: "The Dark Knight" → "the-dark-knight"
-     */
     public static String generateSlug(String title) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be null or empty for slug generation");
         }
         return title.toLowerCase()
                 .trim()
-                .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
-                .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
     }
 
     /**
      * MovieRequest → Movie
-     * Poster burada opsiyonel, null olabilir.
+     * Poster opsiyonel, null olabilir.
      */
-    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls) {
+    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, Image poster) {
         Movie movie = Movie.builder()
                 .title(request.getTitle())
                 .slug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()))
@@ -58,9 +54,9 @@ public class MovieMapper {
                 .genre(request.getGenre())
                 .status(request.getStatus() != null ? request.getStatus() : MovieStatus.COMING_SOON)
                 .halls(halls != null ? new ArrayList<>(halls) : new ArrayList<>())
+                .poster(poster)
                 .build();
 
-        // ShowTime ekleme
         if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
             List<ShowTime> showtimes = request.getShowTimes().stream()
                     .map(stReq -> showTimeMapper.toEntity(
@@ -78,10 +74,6 @@ public class MovieMapper {
         return movie;
     }
 
-    /**
-     * Movie → MovieResponse
-     * Poster opsiyonel, null olabilir.
-     */
     public MovieResponse mapMovieToMovieResponse(Movie movie) {
         return MovieResponse.builder()
                 .id(movie.getId())
@@ -107,14 +99,9 @@ public class MovieMapper {
                 .build();
     }
 
-    /**
-     * Movie güncelleme
-     * Poster opsiyonel, yalnızca poster entity verilirse set edilir.
-     */
     public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls, Image poster) {
         if (movie == null || request == null) return;
 
-        // Temel alanlar
         movie.setTitle(request.getTitle());
         movie.setSlug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()));
         movie.setSummary(request.getSummary());
@@ -123,20 +110,15 @@ public class MovieMapper {
         movie.setRating(request.getRating());
         movie.setDirector(request.getDirector());
         movie.setGenre(request.getGenre());
-
-        // Status opsiyonel
         movie.setStatus(request.getStatus() != null ? request.getStatus() : movie.getStatus());
 
-        // Poster opsiyonel
         if (poster != null) {
             movie.setPoster(poster);
         }
 
-        // Cast ve Formats mutable hale getiriyoruz
         movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
         movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
 
-        // Halls ve specialHalls
         if (halls != null) {
             movie.setHalls(new ArrayList<>(halls));
             String specialHalls = halls.stream()
@@ -149,9 +131,8 @@ public class MovieMapper {
             movie.setSpecialHalls(null);
         }
 
-        // ShowTimes ekleme veya güncelleme
         if (request.getShowTimes() != null && halls != null) {
-            movie.getShowTimes().clear(); // önce mevcut listeyi temizle
+            movie.getShowTimes().clear();
             List<ShowTime> showtimes = request.getShowTimes().stream()
                     .map(stReq -> showTimeMapper.toEntity(
                             stReq,
@@ -162,7 +143,7 @@ public class MovieMapper {
                                     .orElse(null)
                     ))
                     .toList();
-            movie.getShowTimes().addAll(showtimes); // ekle
+            movie.getShowTimes().addAll(showtimes);
         }
     }
 }

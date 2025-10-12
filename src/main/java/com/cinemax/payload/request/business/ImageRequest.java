@@ -11,4 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageRequest {
     private String name;
     private MultipartFile file;
+    private Long movieId; // opsiyonel
+
 }
