@@ -48,7 +48,7 @@ public class MovieRequest {
     @NotBlank(message = "Genre cannot be null")
     private String genre;
 
-    //@NotNull(message = "Poster ID cannot be null") --> önce film eklenmeli sonra poster.
+    @NotNull(message = "Poster ID cannot be null")
     private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
 
     private MovieStatus status = MovieStatus.COMING_SOON;
@@ -59,10 +59,10 @@ public class MovieRequest {
     @NotNull(message = "Formats list cannot be null")
     private List<String> formats;
 
-    //@NotNull(message = "Hall IDs cannot be null")
+    @NotNull(message = "Hall IDs cannot be null")
     private List<Long> hallIds;
 
-    //@NotNull(message = "ShowTimes cannot be null")
+    @NotNull(message = "ShowTimes cannot be null")
     private List<ShowTimeRequest> showTimes;
 
 

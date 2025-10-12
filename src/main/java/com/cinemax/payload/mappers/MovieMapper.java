@@ -10,7 +10,6 @@ import com.cinemax.payload.response.business.MovieResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +33,11 @@ public class MovieMapper {
                 .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
                 .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
     }
+
+    /**
+     * MovieRequest → Movie
+     * Poster burada opsiyonel, null olabilir.
+     */
     public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls) {
         Movie movie = Movie.builder()
                 .title(request.getTitle())
@@ -59,7 +63,9 @@ public class MovieMapper {
         // ShowTime ekleme
         if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
             List<ShowTime> showtimes = request.getShowTimes().stream()
-                    .map(stReq -> showTimeMapper.toEntity(stReq, movie,
+                    .map(stReq -> showTimeMapper.toEntity(
+                            stReq,
+                            movie,
                             halls != null ? halls.stream()
                                     .filter(h -> h.getId().equals(stReq.getHallId()))
                                     .findFirst()
@@ -72,10 +78,10 @@ public class MovieMapper {
         return movie;
     }
 
-
-
-
-    // Movie → MovieResponse (response)
+    /**
+     * Movie → MovieResponse
+     * Poster opsiyonel, null olabilir.
+     */
     public MovieResponse mapMovieToMovieResponse(Movie movie) {
         return MovieResponse.builder()
                 .id(movie.getId())
@@ -86,28 +92,25 @@ public class MovieMapper {
                 .duration(movie.getDuration())
                 .rating(movie.getRating())
                 .posterId(movie.getPoster() != null ? movie.getPoster().getId() : null)
+                .posterUrl(movie.getPoster() != null ? movie.getPoster().getName() : null)
                 .director(movie.getDirector())
-
-                // List alanlarını güvenli (mutable) hale getirdik
                 .cast(movie.getCast() != null ? new ArrayList<>(movie.getCast()) : new ArrayList<>())
                 .formats(movie.getFormats() != null ? new ArrayList<>(movie.getFormats()) : new ArrayList<>())
-
                 .genre(movie.getGenre())
                 .status(movie.getStatus())
-                .posterUrl(movie.getPoster() != null ? movie.getPoster().getName() : null)
-
-                // Hall isimlerini listeliyoruz
                 .halls(movie.getHalls() != null ? movie.getHalls().stream()
                         .map(Hall::getName)
                         .collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>())
-
-                // ShowTime bilgilerini listeliyoruz
                 .showTimes(movie.getShowTimes() != null ? movie.getShowTimes().stream()
                         .map(st -> st.getStartTime() + " - " + st.getEndTime())
                         .collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>())
                 .build();
     }
 
+    /**
+     * Movie güncelleme
+     * Poster opsiyonel, yalnızca poster entity verilirse set edilir.
+     */
     public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls, Image poster) {
         if (movie == null || request == null) return;
 
@@ -133,7 +136,7 @@ public class MovieMapper {
         movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
         movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
 
-        // Halls ve specialHalls mutable
+        // Halls ve specialHalls
         if (halls != null) {
             movie.setHalls(new ArrayList<>(halls));
             String specialHalls = halls.stream()
@@ -161,11 +164,5 @@ public class MovieMapper {
                     .toList();
             movie.getShowTimes().addAll(showtimes); // ekle
         }
-
     }
-
-
-
-
 }
-
