@@ -63,5 +63,3 @@ public class MovieRequest {
 
 
 }
-
-//posterId, hallId obsiyonel
