@@ -1,5 +1,6 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.ShowTimeResponse;
 import com.cinemax.service.bussines.ShowTimeService;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/showtime")
 @RequiredArgsConstructor
@@ -16,11 +19,27 @@ public class ShowTimeController {
 
     private final ShowTimeService showTimeService;
 
+    /**
+     * 🎟️ Yeni ShowTime oluştur
+     * Yalnızca yetkili kullanıcılar (Admin, Manager, Customer) erişebilir
+     */
     @PostMapping("/create")
-    @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
-    public ResponseEntity<ShowTimeResponse> createShowTime(@Valid @RequestBody ShowTimeRequest request) {
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<ShowTimeResponse> createShowTimeForMovie(
+            @Valid @RequestBody ShowTimeRequest request) {
+
         ShowTimeResponse response = showTimeService.createShowTime(request);
         return ResponseEntity.ok(response);
+    }
+
+    // Çoklu seans eklemek için yeni method
+    @PostMapping("/create-multiple")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<List<ShowTimeResponse>> createMultipleShowTimes(
+            @Valid @RequestBody List<ShowTimeRequest> requests) {
+
+        List<ShowTimeResponse> responses = showTimeService.createMultipleShowTimes(requests);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")

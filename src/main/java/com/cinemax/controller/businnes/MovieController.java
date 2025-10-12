@@ -39,7 +39,6 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-
     //kodun devam yok yaz
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
@@ -129,6 +128,16 @@ public class MovieController {
     public ResponseEntity<List<MovieResponse>> getAllMovies() {
         List<MovieResponse> movies = movieService.getAllMovies();
         return ResponseEntity.ok(movies);
+    }
+
+    //çalışıyor
+
+
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<List<MovieResponse>> saveMovies(@RequestBody List<MovieRequest> requests) {
+        List<MovieResponse> responses = movieService.saveMovies(requests);
+        return ResponseEntity.ok(responses);
     }
 
 

@@ -3,8 +3,8 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
-import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.enums.MovieStatus;
+import com.cinemax.exception.BadRequestException;
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.MovieAdminMapper;
 import com.cinemax.payload.mappers.MovieMapper;
@@ -12,7 +12,6 @@ import com.cinemax.payload.mappers.MovieShowTimesMapper;
 import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.MovieRequest;
-import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.MovieAdminResponse;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
@@ -37,7 +36,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,31 +50,20 @@ public class MovieService {
     private final HallRepository hallRepository;
     private final ShowTimeMapper showTimeMapper;
     private final MovieAdminMapper movieAdminMapper;
+    private final ShowTimeService showTimeService;
 
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
-        // Hall listesi
+        // 1️⃣ Hall listesi
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-        // Movie oluşturma, poster opsiyonel
+        // 2️⃣ Movie oluşturma (poster opsiyonel)
         Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
 
-        // Movie kaydet
+        // 3️⃣ Movie kaydet (showTime eklemiyoruz)
         movieRepository.save(movie);
 
-        // ShowTime ekleme
-        if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
-            for (ShowTimeRequest showTimeRequest : request.getShowTimes()) {
-                Hall hall = halls.stream()
-                        .filter(h -> h.getId().equals(showTimeRequest.getHallId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.HALL_NOT_FOUND_FOR_SHOWTIME));
-
-                ShowTime showTime = showTimeMapper.toEntity(showTimeRequest, movie, hall);
-                showTimeRepository.save(showTime);
-            }
-        }
-
+        // 4️⃣ Response döndür
         return movieMapper.mapMovieToMovieResponse(movie);
     }
 
@@ -103,11 +90,20 @@ public class MovieService {
     }
 
 
+    @Transactional
     public MovieResponse deleteById(Long id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.MOVIE_DELETE_FAILED + id));
-        return movieMapper.mapMovieToMovieResponse(movie);
+
+        MovieResponse response = movieMapper.mapMovieToMovieResponse(movie);
+
+        // Movie’yi sil
+        movieRepository.delete(movie);
+        movieRepository.flush(); // commit’i garantiye alır
+
+        return response;
     }
+
 
     public MovieShowTimesResponse getUpcomingShowTimes(Long movieId) {
         Movie movie = movieRepository.findById(movieId)
@@ -252,5 +248,32 @@ public class MovieService {
                 .map(movieMapper::mapMovieToMovieResponse)
                 .toList();
     }
+
+    @Transactional
+    public List<MovieResponse> saveMovies(List<MovieRequest> requests) {
+        List<MovieResponse> responses = new ArrayList<>();
+
+        for (MovieRequest request : requests) {
+
+            if (request.getHallIds() == null || request.getHallIds().isEmpty()) {
+                throw new BadRequestException("Movie must have at least one hall assigned.");
+            }
+
+            // 1️⃣ Hall listesi
+            List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
+
+            // 2️⃣ Movie oluşturma (poster opsiyonel)
+            Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
+
+            // 3️⃣ Movie kaydet
+            movieRepository.save(movie);
+
+            // 4️⃣ Response ekle
+            responses.add(movieMapper.mapMovieToMovieResponse(movie));
+        }
+
+        return responses;
+    }
+
 
 }

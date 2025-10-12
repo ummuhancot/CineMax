@@ -18,15 +18,14 @@ public class ShowTimeHelper {
     private final MovieRepository movieRepository;
     private final HallRepository hallRepository;
 
-
-    public Movie getMovieById(Long movieId) {
+    public Movie getMovieOrThrow(Long movieId) {
         return movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.MOVIE_NOT_FOUND + movieId));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + movieId));
     }
 
-    public Hall getHallById(Long hallId) {
+    public Hall getHallOrThrow(Long hallId) {
         return hallRepository.findById(hallId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.HALL_NOT_FOUND + hallId));
+                .orElseThrow(() -> new ResourceNotFoundException("Hall not found with id: " + hallId));
     }
 
 }
