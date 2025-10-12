@@ -39,7 +39,6 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-
     //kodun devam yok yaz
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
