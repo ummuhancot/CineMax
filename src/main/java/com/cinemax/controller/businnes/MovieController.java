@@ -32,7 +32,13 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    // 🎬 Film güncelleme (request'teki id yok artık)
+    //çalışıyor ıd ile gönderiyorum url de id görünmüyor
+    @PutMapping("/update")
+    public ResponseEntity<MovieResponse> updateMovie(@Valid @RequestBody MovieRequest request) {
+        MovieResponse response = movieService.updateMovie(request);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> updateMovieById(@PathVariable("id") Long movieId,
@@ -117,5 +123,12 @@ public class MovieController {
     public ResponseEntity<List<MovieResponse>> getAllMovies() {
         List<MovieResponse> movies = movieService.getAllMovies();
         return ResponseEntity.ok(movies);
+    }
+
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<List<MovieResponse>> saveMovies(@RequestBody List<MovieRequest> requests) {
+        List<MovieResponse> responses = movieService.saveMovies(requests);
+        return ResponseEntity.ok(responses);
     }
 }

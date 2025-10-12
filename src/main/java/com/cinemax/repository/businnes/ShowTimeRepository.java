@@ -22,6 +22,18 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
                                          @Param("now") LocalTime now);
 
 
-    boolean existsByHall_IdAndDateAndStartTime(Long hallId, java.time.LocalDate date, java.time.LocalTime startTime);
+    @Query("""
+        SELECT CASE WHEN COUNT(s) > 0 THEN TRUE ELSE FALSE END 
+        FROM ShowTime s 
+        WHERE s.hall.id = :hallId 
+          AND s.date = :date 
+          AND (
+                (s.startTime <= :endTime AND s.endTime >= :startTime)
+              )
+    """)
+    boolean existsByHallIdAndDateAndTimeOverlap(@Param("hallId") Long hallId,
+                                                @Param("date") LocalDate date,
+                                                @Param("startTime") LocalTime startTime,
+                                                @Param("endTime") LocalTime endTime);
 
 }

@@ -6,6 +6,7 @@ import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
+import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.MovieResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,10 @@ public class MovieMapper {
      */
     public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, Image poster) {
         Movie movie = Movie.builder()
+
+    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls) {
+        return Movie.builder()
+
                 .title(request.getTitle())
                 .slug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()))
                 .summary(request.getSummary())
@@ -112,6 +117,13 @@ public class MovieMapper {
         movie.setGenre(request.getGenre());
         movie.setStatus(request.getStatus() != null ? request.getStatus() : movie.getStatus());
 
+
+        // Status opsiyonel
+        if (request.getStatus() != null) {
+            movie.setStatus(request.getStatus());
+        }
+
+
         if (poster != null) {
             movie.setPoster(poster);
         }
@@ -120,7 +132,16 @@ public class MovieMapper {
         movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
 
         if (halls != null) {
+
+        // Cast ve Formats (null olabilir)
+        movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
+        movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
+
+        // Halls ve specialHalls
+        if (halls != null && !halls.isEmpty()) {
+
             movie.setHalls(new ArrayList<>(halls));
+
             String specialHalls = halls.stream()
                     .filter(h -> Boolean.TRUE.equals(h.getIsSpecial()) && h.getId() != null)
                     .map(h -> h.getId().toString())
@@ -144,6 +165,24 @@ public class MovieMapper {
                     ))
                     .toList();
             movie.getShowTimes().addAll(showtimes);
+
+        // 🎟️ ShowTimes güncelleme
+        if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
+            movie.getShowTimes().clear();
+
+            List<ShowTime> showTimes = new ArrayList<>();
+            for (ShowTimeRequest stReq : request.getShowTimes()) {
+                Hall targetHall = halls.stream()
+                        .filter(h -> h.getId().equals(stReq.getHallId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (targetHall != null) {
+                    ShowTime showTime = showTimeMapper.toEntity(stReq, movie, targetHall);
+                    showTimes.add(showTime);
+                }
+            }
+            movie.getShowTimes().addAll(showTimes);
         }
     }
 }
