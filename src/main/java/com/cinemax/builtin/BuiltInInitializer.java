@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 //role ve users eklendi
+//
 @RequiredArgsConstructor
 @Component
 public class BuiltInInitializer implements CommandLineRunner {

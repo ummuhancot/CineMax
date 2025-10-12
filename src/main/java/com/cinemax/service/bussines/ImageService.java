@@ -61,7 +61,6 @@ public class ImageService {
             throw new ImageException(String.format(messageUtil.getMessage("error.immage.not.found")));
         }
 
-
         // Verilen movieId ile film veritabanında aranır; bulunamazsa ResourceNotFoundException fırlatılır.
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(messageUtil.getMessage("error.movie.not.found"), movieId)));
