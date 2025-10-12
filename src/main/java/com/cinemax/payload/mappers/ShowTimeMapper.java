@@ -17,13 +17,14 @@ public class ShowTimeMapper {
     public ShowTimeResponse mapShowTimeToResponse(ShowTime showTime) {
         if (showTime == null) return null;
 
-        ShowTimeResponse response = new ShowTimeResponse();
-        response.setId(showTime.getId());
-        response.setStartDateTime(LocalDateTime.of(showTime.getDate(), showTime.getStartTime()));
-        response.setEndDateTime(LocalDateTime.of(showTime.getDate(), showTime.getEndTime()));
-        response.setHallName(showTime.getHall() != null ? showTime.getHall().getName() : null);
-
-        return response;
+        return ShowTimeResponse.builder()
+                .id(showTime.getId())
+                .startDateTime(LocalDateTime.of(showTime.getDate(), showTime.getStartTime()))
+                .endDateTime(LocalDateTime.of(showTime.getDate(), showTime.getEndTime()))
+                .hallName(showTime.getHall() != null ? showTime.getHall().getName() : null)
+                .movieId(showTime.getMovie() != null ? showTime.getMovie().getId() : null)
+                .movieTitle(showTime.getMovie() != null ? showTime.getMovie().getTitle() : null)
+                .build();
     }
     // Request'ten ShowTime entity oluştur
     public ShowTime toEntity(ShowTimeRequest request, Movie movie, Hall hall) {

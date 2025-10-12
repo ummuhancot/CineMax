@@ -131,6 +131,14 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    //çalışıyor
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<List<MovieResponse>> saveMovies(@RequestBody List<MovieRequest> requests) {
+        List<MovieResponse> responses = movieService.saveMovies(requests);
+        return ResponseEntity.ok(responses);
+    }
+
 
 
 }

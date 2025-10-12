@@ -60,7 +60,6 @@ public class MovieRequest {
     @NotNull(message = "Hall IDs cannot be null")
     private List<Long> hallIds;
 
-    @NotNull(message = "ShowTimes cannot be null")
     private List<ShowTimeRequest> showTimes;
 
 

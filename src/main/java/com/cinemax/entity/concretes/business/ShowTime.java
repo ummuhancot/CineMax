@@ -28,7 +28,7 @@ public class ShowTime {
     @Column(nullable = false)
     private LocalTime startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time",nullable = false)
     private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,7 +39,7 @@ public class ShowTime {
     @JoinColumn(name = "hall_id",nullable = false)
     private Hall hall;
 
-    @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "showtime", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Ticket> tickets;
 
     @CreationTimestamp
