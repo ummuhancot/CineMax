@@ -32,20 +32,17 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    //çalışıyor ıd ile gönderiyorum url de id görünmüyor
-    @PutMapping("/update")
-    public ResponseEntity<MovieResponse> updateMovie(@Valid @RequestBody MovieRequest request) {
-        MovieResponse response = movieService.updateMovie(request);
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<MovieResponse> updateMovie(
+            @PathVariable Long id,
+            @Valid @RequestBody MovieRequest request) {
+
+        MovieResponse response = movieService.updateMovie(id, request);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<MovieResponse> updateMovieById(@PathVariable("id") Long movieId,
-                                                         @Valid @RequestBody MovieRequest request) {
-        MovieResponse dto = movieService.updateMovieById(movieId, request); // serviste id + request alacak metot
-        return ResponseEntity.ok(dto);
-    }
+
 
     // 🎬 Film silme
     @DeleteMapping("/{id}")
