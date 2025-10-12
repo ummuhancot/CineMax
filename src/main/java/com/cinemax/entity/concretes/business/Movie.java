@@ -25,7 +25,7 @@ public class Movie {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String slug;
 
     @Column(nullable = false)
@@ -77,7 +77,7 @@ public class Movie {
 
     // Poster ilişkisi (1:1)
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "poster_id", nullable = true, unique = true)
+    @JoinColumn(name = "poster_id", nullable = true, unique = true) // nullable true yaptık
     private Image poster;
 
     // Galeri görselleri (1:N)

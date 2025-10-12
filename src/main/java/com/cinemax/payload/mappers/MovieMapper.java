@@ -21,26 +21,26 @@ public class MovieMapper {
 
     private final ShowTimeMapper showTimeMapper;
 
-    /**
-     * Title'dan URL dostu slug üretir.
-     * Örn: "The Dark Knight" → "the-dark-knight"
-     */
     public static String generateSlug(String title) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be null or empty for slug generation");
         }
         return title.toLowerCase()
                 .trim()
-                .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
-                .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
     }
 
     /**
      * MovieRequest → Movie
-     * Poster burada opsiyonel, null olabilir.
+     * Poster opsiyonel, null olabilir.
      */
+    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, Image poster) {
+        Movie movie = Movie.builder()
+
     public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls) {
         return Movie.builder()
+
                 .title(request.getTitle())
                 .slug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()))
                 .summary(request.getSummary())
@@ -59,13 +59,26 @@ public class MovieMapper {
                 .genre(request.getGenre())
                 .status(request.getStatus() != null ? request.getStatus() : MovieStatus.COMING_SOON)
                 .halls(halls != null ? new ArrayList<>(halls) : new ArrayList<>())
+                .poster(poster)
                 .build();
+
+        if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
+            List<ShowTime> showtimes = request.getShowTimes().stream()
+                    .map(stReq -> showTimeMapper.toEntity(
+                            stReq,
+                            movie,
+                            halls != null ? halls.stream()
+                                    .filter(h -> h.getId().equals(stReq.getHallId()))
+                                    .findFirst()
+                                    .orElse(null)
+                                    : null))
+                    .toList();
+            movie.setShowTimes(showtimes);
+        }
+
+        return movie;
     }
 
-    /**
-     * Movie → MovieResponse
-     * Poster opsiyonel, null olabilir.
-     */
     public MovieResponse mapMovieToMovieResponse(Movie movie) {
         return MovieResponse.builder()
                 .id(movie.getId())
@@ -91,14 +104,9 @@ public class MovieMapper {
                 .build();
     }
 
-    /**
-     * Movie güncelleme
-     * Poster opsiyonel, yalnızca poster entity verilirse set edilir.
-     */
     public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls, Image poster) {
         if (movie == null || request == null) return;
 
-        // Temel alanlar
         movie.setTitle(request.getTitle());
         movie.setSlug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()));
         movie.setSummary(request.getSummary());
@@ -107,16 +115,23 @@ public class MovieMapper {
         movie.setRating(request.getRating());
         movie.setDirector(request.getDirector());
         movie.setGenre(request.getGenre());
+        movie.setStatus(request.getStatus() != null ? request.getStatus() : movie.getStatus());
+
 
         // Status opsiyonel
         if (request.getStatus() != null) {
             movie.setStatus(request.getStatus());
         }
 
-        // Poster opsiyonel
+
         if (poster != null) {
             movie.setPoster(poster);
         }
+
+        movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
+        movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
+
+        if (halls != null) {
 
         // Cast ve Formats (null olabilir)
         movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
@@ -124,6 +139,7 @@ public class MovieMapper {
 
         // Halls ve specialHalls
         if (halls != null && !halls.isEmpty()) {
+
             movie.setHalls(new ArrayList<>(halls));
 
             String specialHalls = halls.stream()
@@ -135,6 +151,20 @@ public class MovieMapper {
             movie.setHalls(new ArrayList<>());
             movie.setSpecialHalls(null);
         }
+
+        if (request.getShowTimes() != null && halls != null) {
+            movie.getShowTimes().clear();
+            List<ShowTime> showtimes = request.getShowTimes().stream()
+                    .map(stReq -> showTimeMapper.toEntity(
+                            stReq,
+                            movie,
+                            halls.stream()
+                                    .filter(h -> h.getId().equals(stReq.getHallId()))
+                                    .findFirst()
+                                    .orElse(null)
+                    ))
+                    .toList();
+            movie.getShowTimes().addAll(showtimes);
 
         // 🎟️ ShowTimes güncelleme
         if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {

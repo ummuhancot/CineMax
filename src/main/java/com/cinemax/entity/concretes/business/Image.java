@@ -41,10 +41,11 @@ public class Image {
 
     // 🎬 Poster olarak kullanıldığı film (1:1)
     @OneToOne(mappedBy = "poster", fetch = FetchType.LAZY)
-    private Movie posterOfMovie;
+    private Movie posterOfMovie; // opsiyonel
+
 
     // 🎞️ Galeri görseli olduğu film (N:1)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie; // poster görsellerde null olabilir
+    @JoinColumn(name = "movie_id", nullable = true) // opsiyonel
+    private Movie movie;
 }

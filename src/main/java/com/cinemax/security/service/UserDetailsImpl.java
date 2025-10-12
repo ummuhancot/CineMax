@@ -27,15 +27,20 @@ public class UserDetailsImpl implements UserDetails {
 
     private List<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(
-			    User user) {
+    public UserDetailsImpl(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
+
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getUserRole().getName()));
+        String roleName = user.getUserRole().getName();
+        if("ROLE_ADMIN".equals(roleName)) {
+            roleName = "Admin"; // PreAuthorize ile eşleşsin
+        }
+        authorities.add(new SimpleGrantedAuthority(roleName));
         this.authorities = new ArrayList<>(authorities);
     }
+
 
     @Override
     public String getUsername() {

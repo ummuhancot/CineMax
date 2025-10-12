@@ -19,7 +19,6 @@ package com.cinemax.controller.businnes;
  /api/images/5
 
  */
-import com.cinemax.payload.request.business.ImageRequest;
 import com.cinemax.payload.response.business.ImageResponse;
 import com.cinemax.service.bussines.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImageController {
 
-
     private final ImageService imageService;
 
     /**
@@ -46,6 +44,7 @@ public class ImageController {
      */
 
     @PostMapping("/{movieId}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<List<ImageResponse>> uploadImage(
             @RequestParam("images") List<MultipartFile> images,
             @PathVariable Long movieId

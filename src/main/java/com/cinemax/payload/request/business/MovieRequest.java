@@ -13,8 +13,6 @@ import java.util.List;
 @SuperBuilder
 public class MovieRequest {
 
-    private Long id;
-
     @NotBlank(message = "Title cannot be null")
     @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
     private String title;
@@ -41,13 +39,14 @@ public class MovieRequest {
 
     @NotBlank(message = "Director cannot be null")
     @Size(min = 2, max = 50, message = "Director name must be between 2 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Director name must contain only letters and spaces")
+    @Pattern(regexp = "^[a-zA-Z \\-']+$", message = "Director name must contain only letters, spaces, hyphens or apostrophes")
     private String director;
+
 
     @NotBlank(message = "Genre cannot be null")
     private String genre;
 
-    private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
+    private Long posterId; // opsiyonel, null olabilir
 
     private MovieStatus status = MovieStatus.COMING_SOON;
 
@@ -57,7 +56,6 @@ public class MovieRequest {
     @NotNull(message = "Formats list cannot be null")
     private List<String> formats;
 
-    @NotNull(message = "Hall IDs cannot be null")
     private List<Long> hallIds;
 
     private List<ShowTimeRequest> showTimes;

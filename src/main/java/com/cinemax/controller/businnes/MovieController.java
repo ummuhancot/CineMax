@@ -24,7 +24,7 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    //Çalışıyor
+    // 🎬 Yeni film ekleme
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> createMovie(@Valid @RequestBody MovieRequest request) {
@@ -39,18 +39,15 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    //kodun devam yok yaz
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> updateMovieById(@PathVariable("id") Long movieId,
                                                          @Valid @RequestBody MovieRequest request) {
-        // path'ten gelen id'yi request'e taşı
-        request.setId(movieId);
-        MovieResponse dto = movieService.updateMovie(request); // servisin tek parametreli metodu
+        MovieResponse dto = movieService.updateMovieById(movieId, request); // serviste id + request alacak metot
         return ResponseEntity.ok(dto);
     }
 
-    //çalışıyor
+    // 🎬 Film silme
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<MovieResponse> deleteMovie(@PathVariable Long id) {
@@ -58,7 +55,7 @@ public class MovieController {
         return ResponseEntity.ok(deletedMovie);
     }
 
-    //çalışıyor
+    // 🎬 Filmin seanslarını getir
     @GetMapping("/{id}/show-times")
     @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<MovieShowTimesResponse> getShowTimes(@PathVariable Long id) {
@@ -66,7 +63,7 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    //çalışıyor
+    // 🎬 Salon bazlı filmleri getir
     @GetMapping("/{hall}")
     public List<MovieResponse> getMoviesByHall(
             @PathVariable String hall,
@@ -78,8 +75,7 @@ public class MovieController {
         return movieService.getMoviesByHall(hall, page, size, sort, type);
     }
 
-    //kodu düzelt movieIntheaters için kod yaz
-    //çalışmıyor kod bak
+    // 🎬 Gösterimdeki filmler (pageable)
     @GetMapping("/in-theaters")
     public ResponseEntity<Page<MovieResponse>> getMoviesInTheaters(
             @PageableDefault(size = 10, sort = "releaseDate", direction = Sort.Direction.DESC) Pageable pageable
@@ -87,8 +83,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheaters(pageable));
     }
 
-    //çalışmıyor koda bak
-    // 2) Status + releaseDate kontrolü
+    // 🎬 Aktif filmler (status + releaseDate kontrolü)
     @GetMapping("/in-theaters/active")
     public ResponseEntity<Page<MovieResponse>> getActiveMoviesInTheaters(
             @PageableDefault(size = 10, sort = "releaseDate", direction = Sort.Direction.DESC) Pageable pageable
@@ -96,7 +91,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMoviesInTheatersWithDateCheck(pageable));
     }
 
-   //çalışıyor ama mantık hatası
+    // 🎬 Yakında vizyona girecek filmler
     @GetMapping("/coming-soon")
     public ResponseEntity<List<MovieResponse>> getComingSoon(
             @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -108,30 +103,27 @@ public class MovieController {
         return ResponseEntity.ok(list);
     }
 
-    //çalışıyor
+    // 🎬 Tek bir filmi getir (Admin, Manager, Customer)
     @GetMapping("/getOneMovie/{id}")
     @PreAuthorize("hasAnyAuthority('Admin','Manager','Customer')")
     public ResponseEntity<MovieResponse> getMovieById(@PathVariable Long id) {
-        MovieResponse movie = movieService.getMovieById(id); // Service metodu ID ile filmi döndürür
+        MovieResponse movie = movieService.getMovieById(id);
         return ResponseEntity.ok(movie);
     }
 
-    //çalışıyor
-    //admine özel film özet olarak getiyor
+    // 🎬 Admin için detaylı film
     @GetMapping("/{id}/admin")
     public ResponseEntity<MovieAdminResponse> getMovieByIdAdmin(@PathVariable Long id) {
         MovieAdminResponse movie = movieService.getMovieByIdAdmin(id);
         return ResponseEntity.ok(movie);
     }
 
+    // 🎬 Tüm filmleri getir
     @GetMapping("/getAllMovies")
     public ResponseEntity<List<MovieResponse>> getAllMovies() {
         List<MovieResponse> movies = movieService.getAllMovies();
         return ResponseEntity.ok(movies);
     }
-
-    //çalışıyor
-
 
     @PostMapping("/bulk")
     @PreAuthorize("hasAnyAuthority('Admin','Manager')")
@@ -139,7 +131,4 @@ public class MovieController {
         List<MovieResponse> responses = movieService.saveMovies(requests);
         return ResponseEntity.ok(responses);
     }
-
-
-
 }
