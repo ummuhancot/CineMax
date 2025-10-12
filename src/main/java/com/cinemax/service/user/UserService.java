@@ -218,7 +218,7 @@ public class UserService {
 
         // Manager can only update CUSTOMER type users
         if (isManager && user.getUserRole() != null &&
-                !user.getUserRole().getRoleType().equals(RoleType.CUSTOMER)) {
+                !user.getUserRole().getRoleType().equals(RoleType.Customer)) {
             throw new BadRequestException("Manager can update only customer type users");
         }
 
@@ -242,7 +242,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAllCustomers() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getUserRole().getRoleType() == RoleType.CUSTOMER)
+                .filter(user -> user.getUserRole().getRoleType() == RoleType.Customer)
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
     }

@@ -13,7 +13,8 @@ import java.util.List;
 @SuperBuilder
 public class MovieRequest {
 
-    private Long id;
+    //@NotNull(message = "Movie ID cannot be null") --> notnull diyemeyiz çünkü id otomatik oluşturulacak
+    private Long id; //id otomatik oluşacak burada eklememize gerek yok user dan id almıyoruz --TODO - güncellenmeli
 
     @NotBlank(message = "Title cannot be null")
     @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
@@ -50,12 +51,20 @@ public class MovieRequest {
     @NotNull(message = "Poster ID cannot be null")
     private Long posterId; // OneToOne ilişki için, service’de Image entity’ye çevrilecek
 
-    // 🟢 EKLENDİ:
     private MovieStatus status = MovieStatus.COMING_SOON;
-    // Entity’de default olarak COMING_SOON var, request’te de opsiyonel olarak gönderebiliriz
-    // Eğer frontend status seçerse bunu kullanacak, yoksa default COMING_SOON
 
-    // ⚠️ DİKKAT:
-    // slug: opsiyonel, boş gelirse service’de title’dan otomatik üretilebilir
-    // rating ve specialHalls: opsiyonel, null olabilir
+    @NotNull(message = "Cast list cannot be null")
+    private List<String> cast;
+
+    @NotNull(message = "Formats list cannot be null")
+    private List<String> formats;
+
+    @NotNull(message = "Hall IDs cannot be null")
+    private List<Long> hallIds;
+
+    @NotNull(message = "ShowTimes cannot be null")
+    private List<ShowTimeRequest> showTimes;
+
+
+
 }

@@ -1,6 +1,7 @@
 package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.ShowTime;
+import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.ShowTimeRequest;
@@ -43,6 +44,12 @@ public class ShowTimeService {
     }
 
 
+    public ShowTimeResponse getShowTimeById(Long id) {
+        ShowTime showTime = showTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ShowTime not found with id: " + id));
+
+        return showTimeMapper.mapShowTimeToResponse(showTime);
+    }
 
 
 

@@ -33,17 +33,17 @@ public class BuiltInInitializer implements CommandLineRunner {
     private void initializeRoles() {
         if (userRoleRepository.count() == 0) {//role table bos ise
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.ADMIN)
+                    .roleType(RoleType.Admin)
                     .name("Admin")
                     .build());
 
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.MANAGER)
+                    .roleType(RoleType.Manager)
                     .name("Manager")
                     .build());
 
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.CUSTOMER)
+                    .roleType(RoleType.Customer)
                     .name("Customer")
                     .build());
         }
@@ -61,7 +61,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Admin123!"))
                     .birthDate(LocalDate.of(1985, 1, 1))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.ADMIN))
+                    .userRole(userRoleService.getByRoleType(RoleType.Admin))
                     .builtIn(true)
                     .build();
             userRepository.save(admin);
@@ -75,7 +75,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Manager123!"))
                     .birthDate(LocalDate.of(1988, 5, 10))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.MANAGER))
+                    .userRole(userRoleService.getByRoleType(RoleType.Manager))
                     .builtIn(true)
                     .build();
             userRepository.save(manager);
@@ -89,7 +89,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Customer123!"))
                     .birthDate(LocalDate.of(1995, 8, 15))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.CUSTOMER))
+                    .userRole(userRoleService.getByRoleType(RoleType.Customer))
                     .builtIn(true)
                     .build();
             userRepository.save(customer);

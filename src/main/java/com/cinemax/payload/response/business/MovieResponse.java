@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -22,10 +23,18 @@ public class MovieResponse {
     private LocalDate releaseDate;
     private Integer duration;
     private Double rating;
-    private String specialHalls;
     private String director;
     private String genre;
     private Long posterId;
     private MovieStatus status;
+    private String posterUrl;
+    private List<String> cast;
+    private List<String> formats;
+    private List<String> halls;
+    private Long hallId;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private List<String> showTimes;
+
 }
 

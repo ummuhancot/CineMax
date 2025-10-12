@@ -25,7 +25,7 @@ public class Movie {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String slug;
 
     @Column(nullable = false)
