@@ -131,6 +131,8 @@ public class MovieController {
     }
 
     //çalışıyor
+
+
     @PostMapping("/bulk")
     @PreAuthorize("hasAnyAuthority('Admin','Manager')")
     public ResponseEntity<List<MovieResponse>> saveMovies(@RequestBody List<MovieRequest> requests) {
