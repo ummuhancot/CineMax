@@ -2,6 +2,7 @@ package com.cinemax.entity.concretes.business;
 
 import com.cinemax.entity.enums.MovieStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -51,6 +52,12 @@ public class Movie {
 
     @Column(nullable = false)
     private String director;
+
+    @Column(name = "duration_days", nullable = false)
+    @Min(1)
+    private Integer durationDays = 10;
+
+
 
     // Oyuncular listesi
     @ElementCollection

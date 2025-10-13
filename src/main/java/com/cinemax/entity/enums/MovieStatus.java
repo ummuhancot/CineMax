@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum MovieStatus {
     COMING_SOON("Coming Soon"),
     IN_THEATERS("In Theaters"),
-    PRESALE("Presale");
+    PRESALE("Presale"),
+    FINISHED("Finished") ;
 
     private final String label;
 

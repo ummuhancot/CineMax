@@ -58,8 +58,13 @@ public class MovieRequest {
 
     private List<Long> hallIds;
 
+    private List<String> specialHalls;
+
     private List<ShowTimeRequest> showTimes;
 
+    @NotNull(message = "DurationDays cannot be null")
+    @Min(value = 1, message = "DurationDays must be at least 1")
+    private Integer durationDays = 10; // default 10 gün
 
 
 }

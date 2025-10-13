@@ -56,25 +56,27 @@ public class MovieService {
 
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
-        // 1️⃣ Hall listesi
+        // 1️⃣ Salonları al
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-        // 2️⃣ Aynı sinema kontrolü slog uniq olması için
-        movieValidator.validateSingleCinema(halls);
-
-        // 3️⃣ Aynı hall'de aynı film kontrolü kaydedilemez olması için
-        movieValidator.validateUniqueMovieInHalls(request.getTitle(), halls);
-
-        // 4️⃣ Slug üretimi
+        // 2️⃣ Benzersiz slug üret (mapper içinde kullanılacak)
         String slug = MovieValidator.generateUniqueSlug(request, halls, movieRepository);
 
-        // 5️⃣ Movie oluşturma
+        // 3️⃣ Salon bazlı kontrol (aynı film aynı salonda varsa hata fırlat)
+        for (Hall hall : halls) {
+            movieValidator.validateUniqueMovieInHalls(slug, hall);
+        }
+
+        // 4️⃣ Movie oluştur (mapper durationDays ve slug'ı set ediyor)
         Movie movie = movieMapper.mapMovieRequestToMovie(request, halls, slug);
+
+        // 5️⃣ Başlangıç durumu → IN_THEATERS
+        movie.setStatus(MovieStatus.IN_THEATERS);
 
         // 6️⃣ Kaydet
         movieRepository.save(movie);
 
-        // 7️⃣ Response mapleme
+        // 7️⃣ Cevap dön
         return movieMapper.mapMovieToMovieResponse(movie);
     }
 
@@ -134,7 +136,7 @@ public class MovieService {
     }
 
     public Page<MovieResponse> getMoviesInTheaters(Pageable pageable) {
-        return movieRepository.findByStatus(MovieStatus.IN_THEATERS, pageable)
+        return movieRepository.findByStatus(MovieStatus.IN_THEATERS,pageable)
                 .map(movieMapper::mapMovieToMovieResponse);
     }
 
@@ -156,7 +158,7 @@ public class MovieService {
         Pageable pageable = PageRequest.of(p, s, Sort.by(dir, sortField));
         // REPO’da varsa doğrudan kullan
         try {
-            Page<Movie> pageResult = movieRepository.findByStatus(MovieStatus.COMING_SOON, pageable);
+            Page<Movie> pageResult = movieRepository.findByStatus(MovieStatus.COMING_SOON,pageable);
             return pageResult.stream().map(movieMapper::mapMovieToMovieResponse).toList();
         } catch (Throwable ignore) {
             // Fallback: findAll + filtre (mevcut mantığınız)
@@ -270,17 +272,19 @@ public class MovieService {
             // 1️⃣ Hall listesi
             List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-            // 2️⃣ Aynı sinema kontrolü
-            movieValidator.validateSingleCinema(halls);
-
-            // 3️⃣ Aynı hall'de aynı film kontrolü
-            movieValidator.validateUniqueMovieInHalls(request.getTitle(), halls);
-
-            // 4️⃣ Slug üretimi
+            // 2️⃣ Benzersiz slug üret
             String slug = MovieValidator.generateUniqueSlug(request, halls, movieRepository);
 
-            // 5️⃣ Movie oluşturma (poster opsiyonel)
+            // 3️⃣ Salon bazlı kontrol (aynı film aynı salonda varsa hata fırlat)
+            for (Hall hall : halls) {
+                movieValidator.validateUniqueMovieInHalls(slug, hall);
+            }
+
+            // 4️⃣ Movie oluşturma (mapper durationDays ve slug'ı set ediyor)
             Movie movie = movieMapper.mapMovieRequestToMovie(request, halls, slug);
+
+            // 5️⃣ Başlangıç durumu → IN_THEATERS
+            movie.setStatus(MovieStatus.IN_THEATERS);
 
             // 6️⃣ Movie kaydet
             movieRepository.save(movie);
