@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.cinemax.payload.mappers.MovieMapper.generateSlug;
 
 @Service
 @RequiredArgsConstructor
