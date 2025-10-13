@@ -231,10 +231,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllAdminsAndManagers() {
-        // Role filtresi ile sadece ADMIN ve MANAGER kullanıcıları çek
         return userRepository.findAll().stream()
-                .filter(user -> user.getUserRole().getRoleType().name().equals("ADMIN") ||
-                        user.getUserRole().getRoleType().name().equals("MANAGER"))
+                .filter(user -> user.getUserRole() != null &&
+                        (user.getUserRole().getRoleType() == RoleType.Admin ||
+                                user.getUserRole().getRoleType() == RoleType.Manager))
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
     }
@@ -242,10 +242,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAllCustomers() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getUserRole().getRoleType() == RoleType.Customer)
+                .filter(user -> user.getUserRole() != null &&
+                        user.getUserRole().getRoleType() == RoleType.Customer)
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
     }
+
 }
 
 
