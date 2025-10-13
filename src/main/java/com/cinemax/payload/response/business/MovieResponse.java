@@ -35,6 +35,7 @@ public class MovieResponse {
     private LocalTime startTime;
     private LocalTime endTime;
     private List<String> showTimes;
+    private List<String> specialHalls;
 
 }
 

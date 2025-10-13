@@ -32,6 +32,12 @@ public class MovieMapper {
      * Poster burada opsiyonel, null olabilir.
      */
     public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, String slug) {
+        if (request.getSpecialHalls() != null && !request.getSpecialHalls().isEmpty()) {
+            for (Hall hall : halls) {
+                hall.setIsSpecial(request.getSpecialHalls().contains(hall.getType().name()));
+            }
+        }
+
         return Movie.builder()
                 .title(request.getTitle())
                 .slug(slug)
@@ -39,10 +45,11 @@ public class MovieMapper {
                 .releaseDate(request.getReleaseDate())
                 .duration(request.getDuration())
                 .rating(request.getRating())
+                .durationDays(request.getDurationDays() != null ? request.getDurationDays() : 30)
                 .specialHalls(halls != null ?
                         halls.stream()
                                 .filter(Hall::getIsSpecial)
-                                .map(h -> h.getId().toString())
+                                .map(h -> h.getType().name())
                                 .collect(Collectors.joining(", "))
                         : null)
                 .director(request.getDirector())
@@ -61,6 +68,7 @@ public class MovieMapper {
      */
     public MovieResponse mapMovieToMovieResponse(Movie movie) {
         return MovieResponse.builder()
+                .id(movie.getId())
                 .title(movie.getTitle())
                 .slug(movie.getSlug())
                 .summary(movie.getSummary())
@@ -76,10 +84,15 @@ public class MovieMapper {
                 .status(movie.getStatus())
                 .halls(movie.getHalls() != null ? movie.getHalls().stream()
                         .map(Hall::getName)
-                        .collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>())
+                        .collect(Collectors.toList()) : new ArrayList<>())
+                .specialHalls(movie.getHalls() != null ? movie.getHalls().stream()
+                        .filter(Hall::getIsSpecial)                   // sadece special olanları al
+                        .map(h -> h.getType().name() + ":" + h.getId()) // örn: "VIP:15"
+                        .collect(Collectors.toList())
+                        : new ArrayList<>())
                 .showTimes(movie.getShowTimes() != null ? movie.getShowTimes().stream()
                         .map(st -> st.getStartTime() + " - " + st.getEndTime())
-                        .collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>())
+                        .collect(Collectors.toList()) : new ArrayList<>())
                 .build();
     }
 

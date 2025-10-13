@@ -1,11 +1,13 @@
 package com.cinemax.service.validator;
 
 import com.cinemax.entity.concretes.business.Hall;
+import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.repository.businnes.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,23 +18,16 @@ public class MovieValidator {
 
     private final MovieRepository movieRepository;
 
-    public void validateSingleCinema(List<Hall> halls) {
-        Set<Long> cinemaIds = halls.stream()
-                .map(h -> h.getCinema().getId())
-                .collect(Collectors.toSet());
-        if (cinemaIds.size() != 1) {
-            throw new IllegalArgumentException("Tüm salonlar aynı sinemaya ait olmalı");
-        }
-    }
+    public void validateUniqueMovieInHalls(String movieSlug, Hall hall) {
+        boolean exists = movieRepository.existsByHallAndMovieSlug(
+                hall.getId(),
+                movieSlug
+        );
 
-    // 🔹 Tek hall kontrolü (aynı film birden fazla hall'e kaydedilemez)
-    public void validateUniqueMovieInHalls(String title, List<Hall> halls) {
-        for (Hall hall : halls) {
-            if (movieRepository.existsByTitleAndHalls_Id(title, hall.getId())) {
-                throw new IllegalArgumentException(
-                        "Bu film zaten '" + hall.getName() + "' salonunda kayıtlı."
-                );
-            }
+        if (exists) {
+            throw new IllegalArgumentException(
+                    "Seçilen salon (" + hall.getName() + ") için aynı film zaten mevcut!"
+            );
         }
     }
 
