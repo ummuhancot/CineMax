@@ -24,15 +24,8 @@ public class MovieMapper {
      * Title'dan URL dostu slug üretir.
      * Örn: "The Dark Knight" → "the-dark-knight"
      */
-    public static String generateSlug(String title) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("Title cannot be null or empty for slug generation");
-        }
-        return title.toLowerCase()
-                .trim()
-                .replaceAll("[^a-z0-9]+", "-")  // boşluk ve özel karakterleri '-' ile değiştir
-                .replaceAll("^-|-$", "");       // baştaki ve sondaki '-' karakterlerini temizle
-    }
+
+
 
     /**
      * MovieRequest → Movie
@@ -60,6 +53,7 @@ public class MovieMapper {
                 .halls(halls != null ? new ArrayList<>(halls) : new ArrayList<>())
                 .build();
     }
+
 
     /**
      * Movie → MovieResponse
