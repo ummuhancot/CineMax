@@ -3,11 +3,10 @@ package com.cinemax.payload.mappers;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
-import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
-import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.MovieResponse;
+import com.cinemax.repository.businnes.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +38,10 @@ public class MovieMapper {
      * MovieRequest → Movie
      * Poster burada opsiyonel, null olabilir.
      */
-    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls) {
+    public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, String slug) {
         return Movie.builder()
                 .title(request.getTitle())
-                .slug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()))
+                .slug(slug)
                 .summary(request.getSummary())
                 .releaseDate(request.getReleaseDate())
                 .duration(request.getDuration())
@@ -99,7 +98,7 @@ public class MovieMapper {
 
         // Temel alanlar
         movie.setTitle(request.getTitle());
-        movie.setSlug(request.getSlug() != null ? request.getSlug() : generateSlug(request.getTitle()));
+        movie.setSlug(request.getSlug());
         movie.setSummary(request.getSummary());
         movie.setReleaseDate(request.getReleaseDate());
         movie.setDuration(request.getDuration());
@@ -133,25 +132,6 @@ public class MovieMapper {
         } else {
             movie.setHalls(new ArrayList<>());
             movie.setSpecialHalls(null);
-        }
-
-        // 🎟️ ShowTimes güncelleme
-        if (request.getShowTimes() != null && !request.getShowTimes().isEmpty()) {
-            movie.getShowTimes().clear();
-
-            List<ShowTime> showTimes = new ArrayList<>();
-            for (ShowTimeRequest stReq : request.getShowTimes()) {
-                Hall targetHall = halls.stream()
-                        .filter(h -> h.getId().equals(stReq.getHallId()))
-                        .findFirst()
-                        .orElse(null);
-
-                if (targetHall != null) {
-                    ShowTime showTime = showTimeMapper.toEntity(stReq, movie, targetHall);
-                    showTimes.add(showTime);
-                }
-            }
-            movie.getShowTimes().addAll(showTimes);
         }
     }
 }

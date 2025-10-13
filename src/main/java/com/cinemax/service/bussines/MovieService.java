@@ -20,6 +20,7 @@ import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
 import com.cinemax.repository.businnes.ShowTimeRepository;
 import com.cinemax.service.helper.MovieHelper;
+import com.cinemax.service.validator.MovieValidator;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -51,19 +52,29 @@ public class MovieService {
     private final ShowTimeMapper showTimeMapper;
     private final MovieAdminMapper movieAdminMapper;
     private final ShowTimeService showTimeService;
+    private final MovieValidator movieValidator;
 
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
         // 1️⃣ Hall listesi
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-        // 2️⃣ Movie oluşturma (poster opsiyonel)
-        Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
+        // 2️⃣ Aynı sinema kontrolü slog uniq olması için
+        movieValidator.validateSingleCinema(halls);
 
-        // 3️⃣ Movie kaydet (showTime eklemiyoruz)
+        // 3️⃣ Aynı hall'de aynı film kontrolü kaydedilemez olması için
+        movieValidator.validateUniqueMovieInHalls(request.getTitle(), halls);
+
+        // 4️⃣ Slug üretimi
+        String slug = MovieValidator.generateUniqueSlug(request, halls, movieRepository);
+
+        // 5️⃣ Movie oluşturma
+        Movie movie = movieMapper.mapMovieRequestToMovie(request, halls, slug);
+
+        // 6️⃣ Kaydet
         movieRepository.save(movie);
 
-        // 4️⃣ Response döndür
+        // 7️⃣ Response mapleme
         return movieMapper.mapMovieToMovieResponse(movie);
     }
 
@@ -259,13 +270,22 @@ public class MovieService {
             // 1️⃣ Hall listesi
             List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-            // 2️⃣ Movie oluşturma (poster opsiyonel)
-            Movie movie = movieMapper.mapMovieRequestToMovie(request, halls);
+            // 2️⃣ Aynı sinema kontrolü
+            movieValidator.validateSingleCinema(halls);
 
-            // 3️⃣ Movie kaydet
+            // 3️⃣ Aynı hall'de aynı film kontrolü
+            movieValidator.validateUniqueMovieInHalls(request.getTitle(), halls);
+
+            // 4️⃣ Slug üretimi
+            String slug = MovieValidator.generateUniqueSlug(request, halls, movieRepository);
+
+            // 5️⃣ Movie oluşturma (poster opsiyonel)
+            Movie movie = movieMapper.mapMovieRequestToMovie(request, halls, slug);
+
+            // 6️⃣ Movie kaydet
             movieRepository.save(movie);
 
-            // 4️⃣ Response ekle
+            // 7️⃣ Response ekle
             responses.add(movieMapper.mapMovieToMovieResponse(movie));
         }
 

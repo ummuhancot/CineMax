@@ -33,6 +33,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
                   OR LOWER(m.title) LIKE LOWER(CONCAT('%', :q, '%')))
            """)
     Page<Movie> search(@Param("q") String q, Pageable pageable);
+
+    boolean existsByTitleAndHalls_Id(String title, Long id);
 }
 
 
