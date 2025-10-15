@@ -35,9 +35,6 @@ public class Movie {
     @Column(nullable = false)
     private LocalDate releaseDate;
 
-    @Column(nullable = false)
-    private Integer duration; // dakika cinsinden
-
     private Double rating; // Nullable
 
     @CreationTimestamp

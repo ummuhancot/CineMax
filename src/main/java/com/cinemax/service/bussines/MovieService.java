@@ -70,9 +70,6 @@ public class MovieService {
         // 4️⃣ Movie oluştur (mapper durationDays ve slug'ı set ediyor)
         Movie movie = movieMapper.mapMovieRequestToMovie(request, halls, slug);
 
-        // 5️⃣ Başlangıç durumu → IN_THEATERS
-        movie.setStatus(MovieStatus.IN_THEATERS);
-
         // 6️⃣ Kaydet
         movieRepository.save(movie);
 
