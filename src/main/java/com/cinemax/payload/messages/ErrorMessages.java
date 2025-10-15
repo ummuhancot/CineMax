@@ -108,6 +108,8 @@ public class ErrorMessages {
     //City
     public static final String CITY_NOT_FOUND = "City not found";
     public static final String CITY_NAME_CANNOT_BE_EMPTY = "City name cannot be empty";
+    public static final String CITY_ALREADY_EXISTS = "City with name '%s' already exists.";
+    public static final String CITY_NAME_CANNOT_BE_BLANK = "City name cannot be blank";
 
     //hall
     public static final String HALL_ALREADY_EXISTS = "Hall already exists with name: %s in this cinema";//Bu sinemada %s isminde bir salon zaten mevcut

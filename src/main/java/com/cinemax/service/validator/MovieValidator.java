@@ -35,19 +35,13 @@ public class MovieValidator {
         String cinemaName = halls.get(0).getCinema().getName();
         String hallName = halls.get(0).getName();
 
-        String baseSlug = request.getSlug() != null
+        return request.getSlug() != null
                 ? normalizeSlug(cinemaName, hallName, request.getSlug())
                 : normalizeSlug(cinemaName, hallName, request.getTitle());
 
-        String slug = baseSlug;
-        int count = 1;
-        while (movieRepository.existsBySlug(slug)) {
-            slug = baseSlug + "-" + count;
-            count++;
-        }
 
-        return slug;
     }
+
 
     // 🔹 Slug normalize methodu
     public static String normalizeSlug(String cinemaName, String hallName, String title) {
