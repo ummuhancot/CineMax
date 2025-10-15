@@ -26,10 +26,9 @@ public class MovieRequest {
     @NotNull(message = "Release date cannot be null")
     private LocalDate releaseDate;
 
-    @NotNull(message = "Duration cannot be null")
-    @Min(value = 1, message = "Duration must be at least 1 minute")
-    @Max(value = 500, message = "Duration must be less than 500 minutes")
-    private Integer duration;
+    @NotNull(message = "DurationDays cannot be null")
+    @Min(value = 1, message = "DurationDays must be at least 1")
+    private Integer durationDays = 10; // default 10 gün
 
     @DecimalMin(value = "0.0", inclusive = true, message = "Rating must be positive")
     @DecimalMax(value = "10.0", inclusive = true, message = "Rating must be at most 10.0")
@@ -61,10 +60,6 @@ public class MovieRequest {
     private List<String> specialHalls;
 
     private List<ShowTimeRequest> showTimes;
-
-    @NotNull(message = "DurationDays cannot be null")
-    @Min(value = 1, message = "DurationDays must be at least 1")
-    private Integer durationDays = 10; // default 10 gün
 
 
 }

@@ -23,18 +23,13 @@ public class MovieResponse {
     private LocalDate releaseDate;
     private Integer duration;
     private Double rating;
-    private String director;
     private String genre;
-    private Long posterId;
+    private Integer durationDays;
     private MovieStatus status;
-    private String posterUrl;
     private List<String> cast;
     private List<String> formats;
     private List<String> halls;
     private Long hallId;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private List<String> showTimes;
     private List<String> specialHalls;
 
 }

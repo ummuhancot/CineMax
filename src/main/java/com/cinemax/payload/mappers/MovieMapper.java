@@ -43,7 +43,6 @@ public class MovieMapper {
                 .slug(slug)
                 .summary(request.getSummary())
                 .releaseDate(request.getReleaseDate())
-                .duration(request.getDuration())
                 .rating(request.getRating())
                 .durationDays(request.getDurationDays() != null ? request.getDurationDays() : 30)
                 .specialHalls(halls != null ?
@@ -72,12 +71,9 @@ public class MovieMapper {
                 .title(movie.getTitle())
                 .slug(movie.getSlug())
                 .summary(movie.getSummary())
+                .duration(movie.getDurationDays())
                 .releaseDate(movie.getReleaseDate())
-                .duration(movie.getDuration())
                 .rating(movie.getRating())
-                .posterId(movie.getPoster() != null ? movie.getPoster().getId() : null)
-                .posterUrl(movie.getPoster() != null ? movie.getPoster().getName() : null)
-                .director(movie.getDirector())
                 .cast(movie.getCast() != null ? new ArrayList<>(movie.getCast()) : new ArrayList<>())
                 .formats(movie.getFormats() != null ? new ArrayList<>(movie.getFormats()) : new ArrayList<>())
                 .genre(movie.getGenre())
@@ -90,9 +86,6 @@ public class MovieMapper {
                         .map(h -> h.getType().name() + ":" + h.getId()) // örn: "VIP:15"
                         .collect(Collectors.toList())
                         : new ArrayList<>())
-                .showTimes(movie.getShowTimes() != null ? movie.getShowTimes().stream()
-                        .map(st -> st.getStartTime() + " - " + st.getEndTime())
-                        .collect(Collectors.toList()) : new ArrayList<>())
                 .build();
     }
 
@@ -108,7 +101,6 @@ public class MovieMapper {
         movie.setSlug(request.getSlug());
         movie.setSummary(request.getSummary());
         movie.setReleaseDate(request.getReleaseDate());
-        movie.setDuration(request.getDuration());
         movie.setRating(request.getRating());
         movie.setDirector(request.getDirector());
         movie.setGenre(request.getGenre());
@@ -118,15 +110,13 @@ public class MovieMapper {
             movie.setStatus(request.getStatus());
         }
 
-        // Poster opsiyonel
-        if (poster != null) {
-            movie.setPoster(poster);
-        }
-
         // Cast ve Formats (null olabilir)
         movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
         movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
 
+        if (request.getDurationDays() != null) {
+            movie.setDurationDays(request.getDurationDays());
+        }
         // Halls ve specialHalls
         if (halls != null && !halls.isEmpty()) {
             movie.setHalls(new ArrayList<>(halls));
