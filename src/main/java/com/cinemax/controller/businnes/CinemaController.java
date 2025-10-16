@@ -72,7 +72,7 @@ public class CinemaController {
     // GET /api/cinemas/{id}/halls
     /**
      * Belirtilen sinema ID'sine ait salonları listeler.
-     *
+
      * Bu endpoint yalnızca "Admin" ve "Manager" yetkisine sahip kullanıcılar tarafından erişilebilir.
      *
      * @param cinemaId Listesi alınacak sinemanın ID'si
@@ -87,7 +87,7 @@ public class CinemaController {
 
     /**
      * Belirli sinemadaki tüm özel salonları listeler.
-     *
+
      * GET /api/cinemasspecial-halls/{cinemaId}
      */
     @GetMapping("/specialhalls/{cinemaId}")
