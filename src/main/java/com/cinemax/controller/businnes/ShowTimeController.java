@@ -20,7 +20,7 @@ public class ShowTimeController {
     private final ShowTimeService showTimeService;
 
     /**
-     * 🎟️ Yeni ShowTime oluştur
+     * Yeni ShowTime oluştur
      * Yalnızca yetkili kullanıcılar (Admin, Manager, Customer) erişebilir
      */
     @PostMapping("/create")
