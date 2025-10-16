@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/image")
 @RequiredArgsConstructor
-public class ImageController {
+public class  ImageController {
 
     private final ImageService imageService;
 
