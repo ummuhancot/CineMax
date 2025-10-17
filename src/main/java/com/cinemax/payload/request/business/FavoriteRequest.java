@@ -8,12 +8,13 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class MovieFavoriteRequest {
+public class FavoriteRequest {
 
-    @NotNull(message = "E-posta cannot be null")
-    private String email;
 
     @NotNull(message = "Movie ID cannot be null")
     private Long movieId;
+
+    @NotNull(message = "Cinema ID cannot be null")
+    private Long cinemaId;
 
 }

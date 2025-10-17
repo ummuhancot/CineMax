@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FavoriteMovieResponse {
+public class FavoriteResponse {
 
-    private Long movieId;
+    private String userEmail;
+    private String cinemaName;
     private String movieTitle;
     private LocalDateTime addedAt;
 

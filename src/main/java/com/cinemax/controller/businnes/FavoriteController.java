@@ -1,7 +1,7 @@
 package com.cinemax.controller.businnes;
 
-import com.cinemax.payload.request.business.MovieFavoriteRequest;
-import com.cinemax.payload.response.business.FavoriteMovieResponse;
+import com.cinemax.payload.request.business.FavoriteRequest;
+import com.cinemax.payload.response.business.FavoriteResponse;
 import com.cinemax.service.bussines.FavoriteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,28 +17,48 @@ public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
-    @PostMapping("/movie-created")
-    public ResponseEntity<String> addFavoriteMovie(
-            @RequestBody @Valid MovieFavoriteRequest request) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<FavoriteResponse> addFavoriteMovie(
+            @PathVariable Long userId,
+            @RequestBody @Valid FavoriteRequest request) {
 
-        favoriteService.addMovieToFavorites(request);
-        return ResponseEntity.ok("Movie added to favorites successfully!");
+        FavoriteResponse response = favoriteService.addMovieToFavorites(userId, request);
+        return ResponseEntity.status(201).body(response);
     }
 
 
-    @DeleteMapping("/movie-delete")
-    public ResponseEntity<String> removeFavoriteMovie(
-            @RequestBody @Valid MovieFavoriteRequest request) {
 
-        String message = favoriteService.removeMovieFromFavorites(request);
-        return ResponseEntity.ok(message);
+    @DeleteMapping("/{userId}/favorites/{favoriteId}")
+    public ResponseEntity<FavoriteResponse> removeFavorite(
+            @PathVariable Long userId,
+            @PathVariable Long favoriteId) {
+
+        FavoriteResponse response = favoriteService.removeFavorite(userId, favoriteId);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getAll/{email}")
-    public ResponseEntity<List<FavoriteMovieResponse>> getAllFavorites(@PathVariable String email) {
-        List<FavoriteMovieResponse> favorites = favoriteService.getAllFavorites(email);
+    //bir userın tüm favorilerini getirme
+    @GetMapping("/{userId}/getAll")
+    public ResponseEntity<List<FavoriteResponse>> getAllFavorites(@PathVariable Long userId) {
+        List<FavoriteResponse> favorites = favoriteService.getAllFavorites(userId);
         return ResponseEntity.ok(favorites);
     }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<FavoriteResponse>> getAllFavorites() {
+        List<FavoriteResponse> favorites = favoriteService.getAllFavoritesForAllUsers();
+        return ResponseEntity.ok(favorites);
+    }
+
+    @GetMapping("/{userId}/favorites/{favoriteId}")
+    public ResponseEntity<FavoriteResponse> getFavorite(
+            @PathVariable Long userId,
+            @PathVariable Long favoriteId) {
+
+        FavoriteResponse response = favoriteService.getFavoriteById(userId, favoriteId);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 
