@@ -2,7 +2,7 @@ package com.cinemax.service.bussines;
 
 import com.cinemax.entity.concretes.business.Cinema;
 import com.cinemax.entity.concretes.business.Hall;
-import com.cinemax.entity.enums.HallType;
+
 import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.HallMapper;
 import com.cinemax.payload.messages.ErrorMessages;
@@ -16,11 +16,7 @@ import com.cinemax.util.HallSeatCache;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import java.util.ArrayList;
 import java.util.List;
 
