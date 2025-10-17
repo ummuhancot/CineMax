@@ -10,7 +10,7 @@ import com.cinemax.repository.businnes.CityRepository;
 import com.cinemax.service.helper.CityHelper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
