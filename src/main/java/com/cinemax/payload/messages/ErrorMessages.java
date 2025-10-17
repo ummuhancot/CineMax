@@ -124,6 +124,9 @@ public class ErrorMessages {
     //favorite
     public static final String USER_NOT_FOUND = "User not found with email: %s";
     public static final String MOVIE_NOT_IN_FAVORITES = "The movie is not in user's favorites.";
+    public static final String FAVORITE_NOT_OWNED_BY_USER = "This favorite does not belong to the user";
+    public static final String FAVORITE_NOT_FOUND = "Favorite not found";
+    public static final String FAVORITE_ALREADY_EXISTS = "This movie in this cinema is already in favorites";
 
 
     //payment
