@@ -40,45 +40,40 @@ public class TicketHelper {
     // ------------------- Entity Getters -------------------
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
+                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı. ID: " + userId));
     }
 
     public Movie getMovieOrThrow(Long movieId) {
         return movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.MOVIE_NOT_FOUND));
+                .orElseThrow(() -> new IllegalArgumentException("Film bulunamadı. ID: " + movieId));
     }
 
     public Hall getHallOrThrow(Long hallId) {
         return hallRepository.findById(hallId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.HALL_NOT_FOUND));
+                .orElseThrow(() -> new IllegalArgumentException("Salon bulunamadı. ID: " + hallId));
     }
 
     public ShowTime getShowTimeOrThrow(Long showTimeId) {
         return showTimeRepository.findById(showTimeId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.SHOWTIME_NOT_FOUND));
-    }
-
-    public Payment getPaymentOrThrow(Long paymentId) {
-        return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new InvalidRequestException(ErrorMessages.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new IllegalArgumentException("Seans bulunamadı. ID: " + showTimeId));
     }
 
     // ------------------- Payment / TicketStatus -------------------
-    public TicketStatus getTicketStatusFromPayment(Long paymentId) {
-        if (paymentId == null) return TicketStatus.RESERVED;
-
-        Payment payment = getPaymentOrThrow(paymentId);
-
-        if (payment.getPaymentStatus() == null) {
-            throw new InvalidRequestException(ErrorMessages.PAYMENT_STATUS_NULL);
-        }
-
-        if (payment.getPaymentStatus() == PaymentStatus.FAILED) {
-            throw new InvalidRequestException(ErrorMessages.PAYMENT_FAILED);
-        }
-
-        return mapPaymentStatusToTicketStatus(payment.getPaymentStatus());
-    }
+//    public TicketStatus getTicketStatusFromPayment(Long paymentId) {
+//        if (paymentId == null) return TicketStatus.RESERVED;
+//
+//        Payment payment = getPaymentOrThrow(paymentId);
+//
+//        if (payment.getPaymentStatus() == null) {
+//            throw new InvalidRequestException(ErrorMessages.PAYMENT_STATUS_NULL);
+//        }
+//
+//        if (payment.getPaymentStatus() == PaymentStatus.FAILED) {
+//            throw new InvalidRequestException(ErrorMessages.PAYMENT_FAILED);
+//        }
+//
+//        return mapPaymentStatusToTicketStatus(payment.getPaymentStatus());
+//    }
 
     public TicketStatus mapPaymentStatusToTicketStatus(PaymentStatus paymentStatus) {
         if (paymentStatus == null) {return TicketStatus.EMPTY;}

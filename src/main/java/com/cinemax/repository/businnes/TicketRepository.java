@@ -45,5 +45,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             List<TicketStatus> statuses
     );
 
-}
+    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
+            Long showtimeId,
+            String seatLetter,
+            int seatNumber,
+            TicketStatus status
+    );}
 

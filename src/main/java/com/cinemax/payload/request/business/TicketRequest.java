@@ -26,7 +26,7 @@ public class TicketRequest {
     private Long hallId;
 
     @NotNull(message = "ShowTime ID cannot be null")
-    private Long showTimeId;
+    private Long showtimeId;
 
     @NotBlank(message = "Seat letter is required")
     private String seatLetter;

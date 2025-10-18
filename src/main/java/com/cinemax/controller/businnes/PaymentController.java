@@ -1,6 +1,8 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.entity.concretes.business.Payment;
 import com.cinemax.payload.request.business.PaymentRequest;
+import com.cinemax.payload.request.business.TicketRequest;
 import com.cinemax.payload.response.business.PaymentResponse;
 import com.cinemax.service.bussines.PaymentService;
 import jakarta.validation.Valid;
@@ -15,10 +17,11 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
-    @PostMapping("/process")
-    public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest request) {
-        PaymentResponse response = paymentService.processPayment(request);
-        return ResponseEntity.ok(response);
+    // Ödeme yapma işlemi rezervasyon sonrası
+    @PostMapping("/pay")
+    public ResponseEntity<Payment> makePayment(@RequestBody PaymentRequest request) {
+        Payment payment = paymentService.makePayment(request);
+        return ResponseEntity.ok(payment);
     }
+
 }

@@ -5,7 +5,6 @@ import com.cinemax.entity.concretes.business.Ticket;
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.PaymentStatus;
 import com.cinemax.entity.enums.TicketStatus;
-import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.PaymentMapper;
 import com.cinemax.payload.request.business.PaymentRequest;
 import com.cinemax.payload.response.business.PaymentResponse;
@@ -18,6 +17,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,4 +53,37 @@ public class PaymentService {
 
         return paymentMapper.toResponse(payment);
     }
+
+
+    @Transactional
+    public Payment makePayment(PaymentRequest request) {
+
+        Ticket ticket = paymentHelper.getTicketOrThrow(request.getTicketId());
+        User user = paymentHelper.getUserOrThrow(request.getUserId());
+
+        if (ticket.getTicketStatus() != TicketStatus.RESERVED) {
+            throw new IllegalStateException("Bu bilet ödeme için uygun değil!");
+        }
+
+        // 🔐 Normalde burada gerçek ödeme işlemi yapılır (gateway vs).
+        // Biz doğrudan SUCCESS kabul edelim.
+        Payment payment = Payment.builder()
+                .user(user)
+                .ticket(ticket)
+                .amount(request.getAmount())
+                .paymentDate(LocalDateTime.now())
+                .paymentStatus(PaymentStatus.SUCCESS)
+                .build();
+
+        // Ticket güncelle
+        ticket.setTicketStatus(TicketStatus.PAID);
+        ticket.setPayment(payment);
+
+        paymentRepository.save(payment);
+        ticketRepository.save(ticket);
+
+        return payment;
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.entity.concretes.business.Ticket;
 import com.cinemax.payload.request.business.TicketRequest;
 import com.cinemax.payload.response.business.TicketResponse;
 import com.cinemax.service.bussines.TicketService;
@@ -19,13 +20,12 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-
-    //“Kullanıcı giriş yaptıktan sonra bir koltuğu başarıyla rezerve edebilmeli; rezervasyon süresi boyunca koltuk güvenle tutulmalı ve süresi dolduğunda koltuk otomatik olarak tekrar alınabilir hâle gelmeli.”
+    // 🔹 Bilet rezerve etme
+    //
     @PostMapping("/reserve")
-    @PreAuthorize("hasAnyAuthority('Manager','Admin')")
-    public ResponseEntity<TicketResponse> reserveTicket(@RequestBody @Valid TicketRequest request) {
-        TicketResponse response = ticketService.reserveTicket(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Ticket> reserveTicket(@RequestBody TicketRequest request) {
+        Ticket ticket = ticketService.reserveTicket(request);
+        return ResponseEntity.ok(ticket);
     }
 
     @GetMapping("/all/reserved")
