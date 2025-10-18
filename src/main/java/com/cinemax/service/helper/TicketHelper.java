@@ -40,112 +40,27 @@ public class TicketHelper {
     // ------------------- Entity Getters -------------------
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı. ID: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.USER_NOT_FOUND + userId));
     }
 
     public Movie getMovieOrThrow(Long movieId) {
         return movieRepository.findById(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Film bulunamadı. ID: " + movieId));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.MOVIE_NOT_FOUND + movieId));
     }
 
     public Hall getHallOrThrow(Long hallId) {
         return hallRepository.findById(hallId)
-                .orElseThrow(() -> new IllegalArgumentException("Salon bulunamadı. ID: " + hallId));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.HALL_NOT_FOUND + hallId));
     }
 
     public ShowTime getShowTimeOrThrow(Long showTimeId) {
         return showTimeRepository.findById(showTimeId)
-                .orElseThrow(() -> new IllegalArgumentException("Seans bulunamadı. ID: " + showTimeId));
-    }
-
-    // ------------------- Payment / TicketStatus -------------------
-//    public TicketStatus getTicketStatusFromPayment(Long paymentId) {
-//        if (paymentId == null) return TicketStatus.RESERVED;
-//
-//        Payment payment = getPaymentOrThrow(paymentId);
-//
-//        if (payment.getPaymentStatus() == null) {
-//            throw new InvalidRequestException(ErrorMessages.PAYMENT_STATUS_NULL);
-//        }
-//
-//        if (payment.getPaymentStatus() == PaymentStatus.FAILED) {
-//            throw new InvalidRequestException(ErrorMessages.PAYMENT_FAILED);
-//        }
-//
-//        return mapPaymentStatusToTicketStatus(payment.getPaymentStatus());
-//    }
-
-    public TicketStatus mapPaymentStatusToTicketStatus(PaymentStatus paymentStatus) {
-        if (paymentStatus == null) {return TicketStatus.EMPTY;}
-        return switch (paymentStatus) {
-            case SUCCESS -> TicketStatus.PAID;
-            case FAILED -> TicketStatus.CANCELLED;
-            case PENDING -> TicketStatus.RESERVED;
-        };
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.SHOWTIME_NOT_FOUND + showTimeId));
     }
 
 
-
-    // ------------------- Seat / Reservation -------------------
-    public void checkSeatAvailability(Long hallId, Long showTimeId, String seatLetter, int seatNumber) {
-        boolean taken = ticketRepository.existsByHallIdAndShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(
-                hallId, showTimeId, seatLetter, seatNumber, List.of(TicketStatus.RESERVED, TicketStatus.PAID)
-        );
-        if (taken) throw new InvalidRequestException(ErrorMessages.SEAT_ALREADY_RESERVED);
-    }
-    public String pickAvailableSeat(Long hallId, Long showTimeId) {
-        // 1. Koltuk listesini al ve kontrol et
-        List<String> seats = Optional.ofNullable(HallSeatCache.getSeats(hallId))
-                .orElseThrow(() -> new SeatsNotLoadedException(ErrorMessages.SEATS_NOT_LOADED + hallId));
-
-        // 2. Koltukları tek tek kontrol et
-        for (String seat : seats) {
-            Map<String, Object> parsed = parseSeat(seat);
-            String letter = (String) parsed.get("seatLetter");
-            int number = (Integer) parsed.get("seatNumber");
-
-            boolean taken = ticketRepository.existsByHallIdAndShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(
-                    hallId, showTimeId, letter, number, List.of(TicketStatus.RESERVED, TicketStatus.PAID)
-            );
-
-            if (!taken) {
-                return seat;
-            }
-        }
-
-        // 3. Hiç koltuk boş değilse özel exception fırlat
-        throw new NoAvailableSeatsException(ErrorMessages.NO_AVAILABLE_SEATS+hallId);
-    }
-
-
-    public Map<String, Object> parseSeat(String seat) {
-        String[] parts = seat.split("-");
-        if (parts.length != 2) throw new IllegalArgumentException(ErrorMessages.INVALID_SEAT_FORMAT + seat);
-        Map<String, Object> result = new HashMap<>();
-        result.put("seatLetter", parts[0]);
-        result.put("seatNumber", Integer.parseInt(parts[1]));
-        return result;
-    }
-
-    // ------------------- Expired Reservation Release -------------------
-//    @Scheduled(fixedRate = 60000)
-    @Scheduled(fixedRate = 5000) //5 saniyede bir kontrol etsin
-    @Transactional
-    public void releaseExpiredReservations() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Ticket> expired = ticketRepository.findByTicketStatusAndExpiresAtBefore(TicketStatus.RESERVED, now);
-        for (Ticket t : expired) {
-            t.setTicketStatus(TicketStatus.CANCELLED);
-            t.setExpiresAt(null);
-            ticketRepository.save(t);
-        }
-    }
-
-    public List<TicketResponse> getTicketsByStatus(Long userId, TicketStatus status) {
-        User user = getUserOrThrow(userId);
-        return ticketRepository.findByUserAndTicketStatus(user, status)
-                .stream()
-                .map(ticketMapper::mapTicketToResponse)
-                .toList();
+    public Ticket getTicketOrThrow(Long ticketId){
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.TICKET_NOT_FOUND + ticketId));
     }
 }

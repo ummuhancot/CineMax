@@ -2,6 +2,7 @@ package com.cinemax.entity.concretes.business;
 
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.TicketStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,8 +63,9 @@ public class Ticket {
     @JoinColumn(name = "hall_id", nullable = false)
     private Hall hall;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "payment_id")
+    @JsonManagedReference
     private Payment payment;
 }
 

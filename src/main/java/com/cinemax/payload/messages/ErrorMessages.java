@@ -97,6 +97,8 @@ public class ErrorMessages {
     public static final String SHOWTIME_CONFLICT = "There is already a showtime for this hall at the given time!";
 
     //Ticket
+    public static final String TICKET_NOT_FOUND = "Ticket with id %d not found.";
+    public static final String TICKET_CANNOT_BE_PAID = "Bu bilet ödenemez: Ticket durumu uygun değil. (P-2)";
     public static final String CURRENT_TICKETS_FAILED = "Failed to retrieve current tickets."; // Kimliği doğrulanmış kullanıcının kullanmadığı biletler getirilemedi. (T-1)
     public static final String PASSED_TICKETS_FAILED = "Failed to retrieve passed tickets."; // Kimliği doğrulanmış kullanıcının kullandığı biletler getirilemedi. (T-2)
     public static final String RESERVE_TICKET_FAILED = "Failed to reserve ticket."; // Bilet ayıramadı. (T-3)
@@ -131,6 +133,8 @@ public class ErrorMessages {
 
     //payment
     public static final String PAYMENT_NOT_FOUND = "Payment not found with the given id.";
+    public static final String INSUFFICIENT_PAYMENT = "Yetersiz ödeme: Eksik tutar. (P-1)";
+
 
     //Utility class
     public static final String UTILITY_CLASS_SHOULD_NOT_BE_INSTANTIATED = "Utility class — cannot be instantiated";

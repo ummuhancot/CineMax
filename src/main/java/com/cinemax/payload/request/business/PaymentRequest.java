@@ -12,12 +12,12 @@ import java.util.List;
 @SuperBuilder
 public class PaymentRequest {
 
+    @NotNull(message = "User ID cannot be null")
     private Long userId;
 
     @NotNull(message = "Ticket ID cannot be null")
     private Long ticketId;
 
+    @NotNull(message = "Amount cannot be null")
     private Double amount;
-
-    private Boolean success;
 }
