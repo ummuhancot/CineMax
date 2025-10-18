@@ -1,11 +1,8 @@
 package com.cinemax.controller.businnes;
 
-import com.cinemax.entity.concretes.business.Payment;
 import com.cinemax.payload.request.business.PaymentRequest;
-import com.cinemax.payload.request.business.TicketRequest;
 import com.cinemax.payload.response.business.PaymentResponse;
 import com.cinemax.service.bussines.PaymentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +14,22 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // Ödeme yapma işlemi rezervasyon sonrası
+    /**
+     * Rezervasyonu öder — ticket RESERVED durumundaysa PAID olur.
+     */
     @PostMapping("/pay")
-    public ResponseEntity<Payment> makePayment(@RequestBody PaymentRequest request) {
-        Payment payment = paymentService.makePayment(request);
-        return ResponseEntity.ok(payment);
+    public ResponseEntity<PaymentResponse> makePayment(@RequestBody PaymentRequest request) {
+        PaymentResponse paymentResponse = paymentService.makePayment(request);
+        return ResponseEntity.ok(paymentResponse);
+    }
+
+    /**
+        * Ödeme başarısız olur — ticket RESERVED durumundaysa CANCELLED olur.
+     *  */
+    @PostMapping("/fail/{id}")
+    public ResponseEntity<PaymentResponse> failPayment(@PathVariable Long id) {
+        PaymentResponse paymentResponse = paymentService.failPayment(id);
+        return ResponseEntity.ok(paymentResponse);
     }
 
 }

@@ -3,175 +3,77 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.*;
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.TicketStatus;
-import com.cinemax.exception.InvalidRequestException;
 import com.cinemax.payload.mappers.TicketMapper;
-import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.payload.request.business.TicketRequest;
 import com.cinemax.payload.response.business.TicketResponse;
 import com.cinemax.repository.businnes.TicketRepository;
 import com.cinemax.service.helper.TicketHelper;
+import com.cinemax.service.statusmanager.TicketStatusManager;
+import com.cinemax.service.validator.TicketValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final TicketHelper ticketHelper;
     private final TicketMapper ticketMapper;
+    private final TicketValidator ticketValidator;
+    private final TicketStatusManager statusManager;
+    private final NotificationService notificationService;
+    private final TicketHelper ticketHelper;
 
+    private final int defaultReservationMinutes = 10;
 
-    private static final int DEFAULT_RESERVATION_HOURS = 10;
-
-
+    /**
+     * Yeni bir bilet rezervasyonu oluşturur.
+     * @param request TicketRequest DTO
+     * @return Rezervasyon yapılmış Ticket entity
+     */
     @Transactional
-    public Ticket reserveTicket(TicketRequest request) {
-
-        // 1️⃣ Koltuğun dolu olup olmadığını kontrol et
-        boolean alreadyReserved = ticketRepository.existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
+    public TicketResponse reserveTicket(TicketRequest request) {
+        // Koltuk müsaitlik kontrolü
+        ticketValidator.validateSeatAvailability(
                 request.getShowtimeId(),
                 request.getSeatLetter(),
-                request.getSeatNumber(),
-                TicketStatus.CANCELLED
+                request.getSeatNumber()
         );
-
-        if (alreadyReserved) {
-            throw new IllegalArgumentException("Bu koltuk zaten rezerve edilmiş veya satılmış!");
-        }
 
         User user = ticketHelper.getUserOrThrow(request.getUserId());
         Movie movie = ticketHelper.getMovieOrThrow(request.getMovieId());
         Hall hall = ticketHelper.getHallOrThrow(request.getHallId());
-        ShowTime showTime = ticketHelper.getShowTimeOrThrow(request.getShowtimeId());
+        ShowTime showtime = ticketHelper.getShowTimeOrThrow(request.getShowtimeId());
+        // Mapper ile DTO → Entity
+        Ticket ticket = ticketMapper.toEntity(request, user, movie, hall, showtime, defaultReservationMinutes);
+        ticket.setTicketStatus(TicketStatus.RESERVED);  // 🔑 Ticket durumunu ayarla
+        ticket = ticketRepository.save(ticket);
 
-        Ticket ticket = ticketMapper.toEntity(request, user, movie, hall, showTime);
+        // Status ve expiresAt güncelle
+        ticket = statusManager.setReserved(ticket,
+                request.getDurationMinutes() != null ? request.getDurationMinutes() : defaultReservationMinutes);
 
-        ticket.setPrice(ticket.getPrice());
+        // Bildirim gönder
+        notificationService.sendReservationConfirmation(ticket);
 
-        return ticketRepository.save(ticket);
+        // ✅ TicketResponse döndür
+        return ticketMapper.toResponse(ticket);
     }
 
+    /**
+     * Rezervasyonu iptal eder.
+     * @param ticketId Bilet ID
+     * @return İptal edilmiş Ticket entity
+     */
+    @Transactional
+    public TicketResponse cancelReservation(Long ticketId) {
+        Ticket ticket = ticketHelper.getTicketOrThrow(ticketId);
 
+        ticket = statusManager.setCancelled(ticket);
 
-    //    // 🔹 2️⃣ Çoklu koltuk rezervasyonu
-//    @Transactional
-//    public List<TicketResponse> reserveTickets(TicketRequest request) {
-//        // Entity kontrolleri
-//        ticketHelper.getUserOrThrow(request.getUserId());
-//        ticketHelper.getMovieOrThrow(request.getMovieId());
-//        ticketHelper.getHallOrThrow(request.getHallId());
-//        ticketHelper.getShowTimeOrThrow(request.getShowTimeId());
-//
-//        if (request.getSeats() == null || request.getSeats().isEmpty()) {
-//            throw new InvalidRequestException(ErrorMessages.SEAT_NOT_SELECTED);
-//        }
-//
-//        List<Ticket> createdTickets = new ArrayList<>();
-//
-//        // Her koltuğu sırayla rezerve et
-//        for (String seat : request.getSeats()) {
-//            Map<String, Object> parsedSeat = ticketHelper.parseSeat(seat);
-//            String seatLetter = (String) parsedSeat.get("seatLetter");
-//            int seatNumber = (Integer) parsedSeat.get("seatNumber");
-//
-//            ticketHelper.checkSeatAvailability(request.getHallId(), request.getShowTimeId(), seatLetter, seatNumber);
-//
-//            Ticket ticket = reserveTicketInternal(
-//                    request.getMovieId(),
-//                    request.getHallId(),
-//                    request.getShowTimeId(),
-//                    request.getUserId(),
-//                    request.getPrice(),
-//                    seatLetter,
-//                    seatNumber
-//            );
-//
-//            createdTickets.add(ticket);
-//        }
-//
-//        // TicketResponse listesi dön
-//        return createdTickets.stream()
-//                .map(ticketMapper::mapTicketToResponse)
-//                .toList();
-//    }
-//
-//    // 🔹 3️⃣ Ortak internal metod
-//    @Transactional
-//    public Ticket reserveTicketInternal(Long movieId, Long hallId, Long showTimeId, Long userId,
-//                                        Double price, String seatLetter, int seatNumber) {
-//
-//        User user = ticketHelper.getUserOrThrow(userId);
-//        Movie movie = ticketHelper.getMovieOrThrow(movieId);
-//        Hall hall = ticketHelper.getHallOrThrow(hallId);
-//        ShowTime showTime = ticketHelper.getShowTimeOrThrow(showTimeId);
-//
-//        // Rezervasyon olduğu için status sabit: RESERVED
-//        TicketStatus ticketStatus = TicketStatus.RESERVED;
-//
-//        Ticket ticket = Ticket.builder()
-//                .user(user)
-//                .movie(movie)
-//                .hall(hall)
-//                .showtime(showTime)
-//                .seatLetter(seatLetter)
-//                .seatNumber(seatNumber)
-//                .ticketStatus(ticketStatus)
-//                .price(price)
-//                .expiresAt(LocalDateTime.now().plusSeconds(DEFAULT_RESERVATION_HOURS)) //plusSeconds plusHours
-//                .build();
-//
-//        return ticketRepository.save(ticket);
-//    }
-    private List<TicketResponse> getAllTicketsByStatus(TicketStatus status) {
-        return ticketRepository.findByTicketStatus(status)
-                .stream()
-                .map(ticketMapper::mapTicketToResponse)
-                .toList();
-    }
-
-
-    public List<TicketResponse> getAllReservedTickets() {
-        return getAllTicketsByStatus(TicketStatus.RESERVED);
-    }
-
-    public List<TicketResponse> getAllCancelledTickets() {
-        return getAllTicketsByStatus(TicketStatus.CANCELLED);
-    }
-
-    public List<TicketResponse> getAllPaidTickets() {
-        return getAllTicketsByStatus(TicketStatus.PAID);
-    }
-
-    // ✅ Tüm biletleri getir
-    public List<TicketResponse> getAllTickets(Long userId) {
-        User user = ticketHelper.getUserOrThrow(userId);
-        return ticketRepository.findByUser(user)
-                .stream()
-                .map(ticketMapper::mapTicketToResponse)
-                .toList();
-    }
-
-
-    // ✅ RESERVED biletleri getir
-    public List<TicketResponse> getReservedTickets(Long userId) {
-        return ticketHelper.getTicketsByStatus(userId, TicketStatus.RESERVED);
-    }
-
-    // ✅ CANCELLED biletleri getir
-    public List<TicketResponse> getCancelledTickets(Long userId) {
-        return ticketHelper.getTicketsByStatus(userId, TicketStatus.CANCELLED);
-    }
-
-    // ✅ PAID biletleri getir
-    public List<TicketResponse> getPaidTickets(Long userId) {
-        return ticketHelper.getTicketsByStatus(userId, TicketStatus.PAID);
+        // ✅ Mapper ile TicketResponse döndür
+        return ticketMapper.toResponse(ticket);
     }
 
 

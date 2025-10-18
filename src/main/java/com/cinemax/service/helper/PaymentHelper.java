@@ -6,6 +6,7 @@ import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.PaymentStatus;
 import com.cinemax.entity.enums.TicketStatus;
 import com.cinemax.exception.ResourceNotFoundException;
+import com.cinemax.payload.messages.ErrorMessages;
 import com.cinemax.repository.businnes.PaymentRepository;
 import com.cinemax.repository.businnes.TicketRepository;
 import com.cinemax.repository.user.UserRepository;
@@ -22,29 +23,19 @@ public class PaymentHelper {
 
     public Ticket getTicketOrThrow(Long ticketId) {
         return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new IllegalArgumentException("Bilet bulunamadı. ID: " + ticketId));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.TICKET_NOT_FOUND + ticketId));
     }
 
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı. ID: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.USER_NOT_FOUND + userId));
     }
 
 
 
     public Payment getPaymentOrThrow(Long paymentId) {
         return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found: " + paymentId));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.PAYMENT_NOT_FOUND + paymentId));
     }
 
-    public Payment completePaymentLogic(Payment payment, boolean success) {
-        if (success) {
-            payment.setPaymentStatus(PaymentStatus.SUCCESS);
-            payment.getTicket().setTicketStatus(TicketStatus.PAID);
-        } else {
-            payment.setPaymentStatus(PaymentStatus.FAILED);
-            payment.getTicket().setTicketStatus(TicketStatus.CANCELLED);
-        }
-        return payment;
-    }
 }

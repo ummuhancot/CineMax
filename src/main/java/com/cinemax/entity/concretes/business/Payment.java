@@ -3,7 +3,7 @@ package com.cinemax.entity.concretes.business;
 
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.PaymentStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Payment {
 
     @Id
@@ -41,8 +42,8 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToOne
-    @JoinColumn(name = "ticket_id")//payment de olabilir
+    @OneToOne(mappedBy = "payment")
+    @JsonBackReference
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)

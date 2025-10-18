@@ -1,6 +1,5 @@
 package com.cinemax.payload.response.business;
 
-import com.cinemax.entity.enums.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,12 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentResponse {
 
-    private Long userId;
-    private Long paymentId;
-    private Long ticketId;
+    private Long id;
     private Double amount;
-    private PaymentStatus paymentStatus;
+    private Double change;          // Para üstü (amount - ticket price)
+    private String paymentStatus;
     private LocalDateTime paymentDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private TicketResponse ticket;
 }

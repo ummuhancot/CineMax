@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
@@ -22,7 +23,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             TicketStatus ticketStatus,
             LocalDateTime now
     );
-
 
     boolean existsByHallIdAndShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(
             Long hallId,
@@ -45,10 +45,21 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             List<TicketStatus> statuses
     );
 
-    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
-            Long showtimeId,
-            String seatLetter,
-            int seatNumber,
-            TicketStatus status
-    );}
+//    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
+//            Long showtimeId,
+//            String seatLetter,
+//            int seatNumber,
+//            TicketStatus status
+//    );
+
+    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(Long showtimeId, String seatLetter, int seatNumber, TicketStatus statusToIgnore);
+
+    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(Long showtimeId, String seatLetter, int seatNumber, List<TicketStatus> statuses);
+
+    boolean existsByUserIdAndShowtimeIdAndSeatLetterAndSeatNumber(Long userId, Long showtimeId, String seatLetter, int seatNumber);
+
+    List<Ticket> findAllByTicketStatusAndExpiresAtBefore(TicketStatus status, LocalDateTime before);
+
+    Optional<Ticket> findById(Long id);
+}
 
