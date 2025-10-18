@@ -1,10 +1,17 @@
 package com.cinemax.payload.mappers;
 
+import com.cinemax.entity.concretes.business.Hall;
+import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.concretes.business.ShowTime;
 import com.cinemax.entity.concretes.business.Ticket;
+import com.cinemax.entity.concretes.user.User;
 import com.cinemax.entity.enums.TicketStatus;
+import com.cinemax.payload.request.business.TicketRequest;
 import com.cinemax.payload.response.business.TicketResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -49,6 +56,19 @@ public class TicketMapper {
                 .build();
     }
 
+    public Ticket toEntity(TicketRequest request, User user, Movie movie, Hall hall, ShowTime showTime) {
+        return Ticket.builder()
+                .seatLetter(request.getSeatLetter())
+                .seatNumber(request.getSeatNumber())
+                .price(request.getPrice())
+                .expiresAt(LocalDateTime.now().plusMinutes(10))  // rezervasyon süresi
+                .ticketStatus(TicketStatus.RESERVED)
+                .user(user)
+                .movie(movie)
+                .showtime(showTime)
+                .hall(hall)
+                .build();
+    }
 
 
 

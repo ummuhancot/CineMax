@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @SuperBuilder
@@ -14,6 +16,8 @@ public class PaymentRequest {
 
     @NotNull(message = "Ticket ID cannot be null")
     private Long ticketId;
+
+    private Double amount;
 
     private Boolean success;
 }

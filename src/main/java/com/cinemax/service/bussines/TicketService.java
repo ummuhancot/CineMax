@@ -30,102 +30,105 @@ public class TicketService {
 
     private static final int DEFAULT_RESERVATION_HOURS = 10;
 
-    @Transactional
-    public TicketResponse reserveTicket(TicketRequest request) {
-        ticketHelper.getUserOrThrow(request.getUserId());
-        ticketHelper.getMovieOrThrow(request.getMovieId());
-        ticketHelper.getHallOrThrow(request.getHallId());
-        ticketHelper.getShowTimeOrThrow(request.getShowTimeId());
 
-        ticketHelper.checkSeatAvailability(
-                request.getHallId(),
-                request.getShowTimeId(),
+    @Transactional
+    public Ticket reserveTicket(TicketRequest request) {
+
+        // 1️⃣ Koltuğun dolu olup olmadığını kontrol et
+        boolean alreadyReserved = ticketRepository.existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
+                request.getShowtimeId(),
                 request.getSeatLetter(),
-                request.getSeatNumber()
+                request.getSeatNumber(),
+                TicketStatus.CANCELLED
         );
 
-        Ticket ticket = reserveTicketInternal(
-                request.getMovieId(),
-                request.getHallId(),
-                request.getShowTimeId(),
-                request.getUserId(),
-                request.getPrice(),
-                request.getSeatLetter(),
-                request.getSeatNumber()
-        );
-
-        return ticketMapper.mapTicketToResponse(ticket);
-    }
-
-    // 🔹 2️⃣ Çoklu koltuk rezervasyonu
-    @Transactional
-    public List<TicketResponse> reserveTickets(TicketRequest request) {
-        // Entity kontrolleri
-        ticketHelper.getUserOrThrow(request.getUserId());
-        ticketHelper.getMovieOrThrow(request.getMovieId());
-        ticketHelper.getHallOrThrow(request.getHallId());
-        ticketHelper.getShowTimeOrThrow(request.getShowTimeId());
-
-        if (request.getSeats() == null || request.getSeats().isEmpty()) {
-            throw new InvalidRequestException(ErrorMessages.SEAT_NOT_SELECTED);
+        if (alreadyReserved) {
+            throw new IllegalArgumentException("Bu koltuk zaten rezerve edilmiş veya satılmış!");
         }
 
-        List<Ticket> createdTickets = new ArrayList<>();
+        User user = ticketHelper.getUserOrThrow(request.getUserId());
+        Movie movie = ticketHelper.getMovieOrThrow(request.getMovieId());
+        Hall hall = ticketHelper.getHallOrThrow(request.getHallId());
+        ShowTime showTime = ticketHelper.getShowTimeOrThrow(request.getShowtimeId());
 
-        // Her koltuğu sırayla rezerve et
-        for (String seat : request.getSeats()) {
-            Map<String, Object> parsedSeat = ticketHelper.parseSeat(seat);
-            String seatLetter = (String) parsedSeat.get("seatLetter");
-            int seatNumber = (Integer) parsedSeat.get("seatNumber");
+        Ticket ticket = ticketMapper.toEntity(request, user, movie, hall, showTime);
 
-            ticketHelper.checkSeatAvailability(request.getHallId(), request.getShowTimeId(), seatLetter, seatNumber);
-
-            Ticket ticket = reserveTicketInternal(
-                    request.getMovieId(),
-                    request.getHallId(),
-                    request.getShowTimeId(),
-                    request.getUserId(),
-                    request.getPrice(),
-                    seatLetter,
-                    seatNumber
-            );
-
-            createdTickets.add(ticket);
-        }
-
-        // TicketResponse listesi dön
-        return createdTickets.stream()
-                .map(ticketMapper::mapTicketToResponse)
-                .toList();
-    }
-
-    // 🔹 3️⃣ Ortak internal metod
-    @Transactional
-    public Ticket reserveTicketInternal(Long movieId, Long hallId, Long showTimeId, Long userId,
-                                        Double price, String seatLetter, int seatNumber) {
-
-        User user = ticketHelper.getUserOrThrow(userId);
-        Movie movie = ticketHelper.getMovieOrThrow(movieId);
-        Hall hall = ticketHelper.getHallOrThrow(hallId);
-        ShowTime showTime = ticketHelper.getShowTimeOrThrow(showTimeId);
-
-        // Rezervasyon olduğu için status sabit: RESERVED
-        TicketStatus ticketStatus = TicketStatus.RESERVED;
-
-        Ticket ticket = Ticket.builder()
-                .user(user)
-                .movie(movie)
-                .hall(hall)
-                .showtime(showTime)
-                .seatLetter(seatLetter)
-                .seatNumber(seatNumber)
-                .ticketStatus(ticketStatus)
-                .price(price)
-                .expiresAt(LocalDateTime.now().plusSeconds(DEFAULT_RESERVATION_HOURS)) //plusSeconds plusHours
-                .build();
+        ticket.setPrice(ticket.getPrice());
 
         return ticketRepository.save(ticket);
     }
+
+
+
+    //    // 🔹 2️⃣ Çoklu koltuk rezervasyonu
+//    @Transactional
+//    public List<TicketResponse> reserveTickets(TicketRequest request) {
+//        // Entity kontrolleri
+//        ticketHelper.getUserOrThrow(request.getUserId());
+//        ticketHelper.getMovieOrThrow(request.getMovieId());
+//        ticketHelper.getHallOrThrow(request.getHallId());
+//        ticketHelper.getShowTimeOrThrow(request.getShowTimeId());
+//
+//        if (request.getSeats() == null || request.getSeats().isEmpty()) {
+//            throw new InvalidRequestException(ErrorMessages.SEAT_NOT_SELECTED);
+//        }
+//
+//        List<Ticket> createdTickets = new ArrayList<>();
+//
+//        // Her koltuğu sırayla rezerve et
+//        for (String seat : request.getSeats()) {
+//            Map<String, Object> parsedSeat = ticketHelper.parseSeat(seat);
+//            String seatLetter = (String) parsedSeat.get("seatLetter");
+//            int seatNumber = (Integer) parsedSeat.get("seatNumber");
+//
+//            ticketHelper.checkSeatAvailability(request.getHallId(), request.getShowTimeId(), seatLetter, seatNumber);
+//
+//            Ticket ticket = reserveTicketInternal(
+//                    request.getMovieId(),
+//                    request.getHallId(),
+//                    request.getShowTimeId(),
+//                    request.getUserId(),
+//                    request.getPrice(),
+//                    seatLetter,
+//                    seatNumber
+//            );
+//
+//            createdTickets.add(ticket);
+//        }
+//
+//        // TicketResponse listesi dön
+//        return createdTickets.stream()
+//                .map(ticketMapper::mapTicketToResponse)
+//                .toList();
+//    }
+//
+//    // 🔹 3️⃣ Ortak internal metod
+//    @Transactional
+//    public Ticket reserveTicketInternal(Long movieId, Long hallId, Long showTimeId, Long userId,
+//                                        Double price, String seatLetter, int seatNumber) {
+//
+//        User user = ticketHelper.getUserOrThrow(userId);
+//        Movie movie = ticketHelper.getMovieOrThrow(movieId);
+//        Hall hall = ticketHelper.getHallOrThrow(hallId);
+//        ShowTime showTime = ticketHelper.getShowTimeOrThrow(showTimeId);
+//
+//        // Rezervasyon olduğu için status sabit: RESERVED
+//        TicketStatus ticketStatus = TicketStatus.RESERVED;
+//
+//        Ticket ticket = Ticket.builder()
+//                .user(user)
+//                .movie(movie)
+//                .hall(hall)
+//                .showtime(showTime)
+//                .seatLetter(seatLetter)
+//                .seatNumber(seatNumber)
+//                .ticketStatus(ticketStatus)
+//                .price(price)
+//                .expiresAt(LocalDateTime.now().plusSeconds(DEFAULT_RESERVATION_HOURS)) //plusSeconds plusHours
+//                .build();
+//
+//        return ticketRepository.save(ticket);
+//    }
     private List<TicketResponse> getAllTicketsByStatus(TicketStatus status) {
         return ticketRepository.findByTicketStatus(status)
                 .stream()
@@ -170,8 +173,6 @@ public class TicketService {
     public List<TicketResponse> getPaidTickets(Long userId) {
         return ticketHelper.getTicketsByStatus(userId, TicketStatus.PAID);
     }
-
-
 
 
 
