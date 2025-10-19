@@ -18,6 +18,7 @@ import com.cinemax.service.statusmanager.TicketStatusManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +77,47 @@ public class PaymentService {
         // ✅ Mapper ile PaymentResponse üret, change’i de gönder
         return paymentMapper.toResponse(payment, ticketMapper, change);
     }
+
+    @Transactional
+    public List<PaymentResponse> makeMultiplePayments(List<PaymentRequest> requests) {
+        List<PaymentResponse> responses = new ArrayList<>();
+
+        for (PaymentRequest request : requests) {
+            Ticket ticket = paymentHelper.getTicketOrThrow(request.getTicketId());
+            if (ticket.getTicketStatus() != TicketStatus.RESERVED) {
+                throw new IllegalStateException("Bu bilet ödenemez: Ticket durumu uygun değil.");
+            }
+
+            User user = paymentHelper.getUserOrThrow(request.getUserId());
+
+            Double ticketPrice = ticket.getPrice();
+            Double receivedAmount = request.getAmount();
+            Double change = receivedAmount - ticketPrice;
+
+            if (change < 0) {
+                throw new IllegalArgumentException("Yetersiz ödeme.");
+            }
+
+            // Ödeme işlemi
+            Payment payment = paymentProcessor.process(request);
+            payment.setTicket(ticket);
+            payment.setUser(user);
+            payment.setPaymentStatus(PaymentStatus.SUCCESS);
+
+            // Ticket status update
+            ticket = ticketStatusManager.setPaid(ticket);  // PAID + expiresAt null
+            ticket.setPayment(payment);
+
+            paymentRepository.save(payment);
+            ticketRepository.save(ticket);
+
+            // Response ekle
+            responses.add(paymentMapper.toResponse(payment, ticketMapper, change));
+        }
+
+        return responses;
+    }
+
 
     /**
      * Ödemeyi FAILED durumuna geçirir (simülasyon veya test amaçlı).

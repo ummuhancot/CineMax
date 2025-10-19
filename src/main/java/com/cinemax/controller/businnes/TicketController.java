@@ -28,24 +28,10 @@ public class TicketController {
     }
 
 
-    /**
-     * Çoklu rezervasyon oluşturur.
-     * @param request TicketRequest DTO, seats listesi dolu olmalı
-     * @return Rezervasyon yapılan biletlerin listesi
-     * Birkişinin birden fazla bilet alması methodu
-     */
-    @PostMapping("/multiple")
-    @PreAuthorize("hasAnyAuthority('Admin','Manager','User')")
-    public ResponseEntity<List<TicketResponse>> reserveMultipleTickets(
-            @Valid @RequestBody TicketRequest request) {
-
-        List<TicketResponse> tickets = ticketService.reserveMultipleTickets(request);
-        return ResponseEntity.ok(tickets);
-    }
 
     @PostMapping("/reserve-multiple")
     @PreAuthorize("hasAnyAuthority('Admin','Manager','User')")
-    public ResponseEntity<List<TicketResponse>> reserveMultipleTickets(
+    public ResponseEntity<List<TicketResponse>> reserveUserMultipleTickets(
             @RequestBody List<TicketRequest> requests) {
         List<TicketResponse> responses = ticketService.reserveUserMultipleTickets(requests);
         return ResponseEntity.ok(responses);

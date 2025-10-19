@@ -39,21 +39,13 @@ public class TicketMapper {
     public TicketResponse toResponse(Ticket t) {
         if (t == null) return null;
 
-        String seatInfo;
-        if (t.getSeatLetter() != null) {
-            seatInfo = t.getSeatLetter();
-        } else if (t.getHall() != null) {
-            seatInfo = "Hall Seats: " + t.getHall().getSeatCapacity();
-        } else {
-            seatInfo = null;
-        }
-
         return TicketResponse.builder()
                 .id(t.getId())
                 .username(t.getUser() != null ? t.getUser().getEmail() : null)
                 .movieTitle(t.getMovie() != null ? t.getMovie().getTitle() : null)
                 .hallName(t.getHall() != null ? t.getHall().getName() : null)
-                .seat(seatInfo)
+                .seatLetter(t.getSeatLetter())
+                .seatNumber(t.getSeatNumber())
                 .price(t.getPrice())
                 .status(t.getTicketStatus() != null ? t.getTicketStatus().name() : null)
                 .date(t.getShowtime() != null ? t.getShowtime().getDate() : null)

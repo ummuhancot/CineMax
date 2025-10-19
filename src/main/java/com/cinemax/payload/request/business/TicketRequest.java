@@ -38,6 +38,4 @@ public class TicketRequest {
     private Double price;
 
     private Integer durationMinutes;
-
-    private List<String> seats; // örnek: ["Seat-4", "Seat-5", "Seat-6"]
 }

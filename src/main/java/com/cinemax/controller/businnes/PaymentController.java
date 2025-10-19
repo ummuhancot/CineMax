@@ -24,7 +24,16 @@ public class PaymentController {
         return ResponseEntity.ok(paymentResponse);
     }
 
-    //multi-pay yapılacak
+    /**
+     * Çoklu bilet için ödeme yap
+     * Tek bir request içinde birden fazla TicketRequest gönderilir
+     */
+    @PostMapping("/pay-multiple")
+    public ResponseEntity<List<PaymentResponse>> makeMultiplePayments(
+            @RequestBody List<PaymentRequest> requests) {
+        List<PaymentResponse> responses = paymentService.makeMultiplePayments(requests);
+        return ResponseEntity.ok(responses);
+    }
 
     /**
         * Ödeme başarısız olur — ticket RESERVED durumundaysa CANCELLED olur.

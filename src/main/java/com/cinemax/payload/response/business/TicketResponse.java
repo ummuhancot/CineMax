@@ -18,7 +18,8 @@ public class TicketResponse {
     private String username;
     private String movieTitle;
     private String hallName;
-    private String seat;
+    private String seatLetter;   // A, B, C…
+    private Integer seatNumber;
     private Double price;
     private String status;       // PAID / RESERVED / CANCELLED
     private LocalDate date;

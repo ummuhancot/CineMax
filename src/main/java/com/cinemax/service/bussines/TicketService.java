@@ -67,51 +67,6 @@ public class TicketService {
         return ticketMapper.toResponse(ticket);
     }
 
-    @Transactional
-    public List<TicketResponse> reserveMultipleTickets(TicketRequest request) {
-        User user = ticketHelper.getUserOrThrow(request.getUserId());
-        Movie movie = ticketHelper.getMovieOrThrow(request.getMovieId());
-        Hall hall = ticketHelper.getHallOrThrow(request.getHallId());
-        ShowTime showtime = ticketHelper.getShowTimeOrThrow(request.getShowtimeId());
-
-        ticketValidator.validateShowtimeConsistency(showtime, movie, hall);
-
-        List<TicketResponse> responses = new ArrayList<>();
-
-        for (String seat : request.getSeats()) {
-            // Koltuk müsaitlik kontrolü
-            ticketValidator.validateSeatAvailability(
-                    request.getShowtimeId(),
-                    seat.charAt(0) + "",            // seatLetter
-                    Integer.parseInt(seat.substring(1)) // seatNumber
-            );
-
-            // Mapper ile DTO → Entity
-            Ticket ticket = ticketMapper.toEntity(
-                    request, user, movie, hall, showtime,
-                    request.getDurationMinutes() != null ? request.getDurationMinutes() : defaultReservationMinutes
-            );
-
-            ticket.setSeatLetter(seat.charAt(0) + "");
-            ticket.setSeatNumber(Integer.parseInt(seat.substring(1)));
-            ticket.setTicketStatus(TicketStatus.RESERVED);
-
-            ticket = ticketRepository.save(ticket);
-
-            // Status ve expiresAt güncelle
-            ticket = statusManager.setReserved(ticket,
-                    request.getDurationMinutes() != null ? request.getDurationMinutes() : defaultReservationMinutes
-            );
-
-            // Bildirim gönder
-            notificationService.sendReservationConfirmation(ticket);
-
-            // Response ekle
-            responses.add(ticketMapper.toResponse(ticket));
-        }
-
-        return responses;
-    }
 
     @Transactional
     public List<TicketResponse> reserveUserMultipleTickets(List<TicketRequest> requests) {
