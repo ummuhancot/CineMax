@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -20,8 +21,8 @@ public class TicketResponse {
     private String seat;
     private Double price;
     private String status;       // PAID / RESERVED / CANCELLED
-    private String date;
-    private String showTime;
+    private LocalDate date;
+    private LocalTime  showTime;
     private String createdAt;
     private Long paymentId;
     private LocalDateTime expiresAt;

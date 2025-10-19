@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
@@ -23,6 +24,8 @@ public class PaymentController {
         return ResponseEntity.ok(paymentResponse);
     }
 
+    //multi-pay yapılacak
+
     /**
         * Ödeme başarısız olur — ticket RESERVED durumundaysa CANCELLED olur.
      *  */
@@ -32,4 +35,25 @@ public class PaymentController {
         return ResponseEntity.ok(paymentResponse);
     }
 
+
+    @GetMapping("/successful")
+    public ResponseEntity<List<PaymentResponse>> getSuccessfulPayments() {
+        return ResponseEntity.ok(paymentService.getSuccessfulPayments());
+    }
+
+    @GetMapping("/successful/{id}")
+    public ResponseEntity<PaymentResponse> getSuccessfulPaymentById(@PathVariable Long id) {
+        PaymentResponse payment = paymentService.getSuccessfulPaymentById(id);
+        return ResponseEntity.ok(payment);
+    }
+
+    @GetMapping("/failed")
+    public ResponseEntity<List<PaymentResponse>> getFailedPayments() {
+        return ResponseEntity.ok(paymentService.getFailedPayments());
+    }
+
+    @GetMapping("/failed/{id}")
+    public ResponseEntity<PaymentResponse> getFailedPaymentById(@PathVariable Long id) {
+        return ResponseEntity.ok(paymentService.getFailedPaymentById(id));
+    }
 }

@@ -47,4 +47,30 @@ public class ShowTimeController {
         ShowTimeResponse response = showTimeService.getShowTimeById(id);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<ShowTimeResponse> updateShowTime(
+            @PathVariable Long id,
+            @Valid @RequestBody ShowTimeRequest request) {
+
+        ShowTimeResponse response = showTimeService.updateShowTime(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<ShowTimeResponse> deleteShowTime(@PathVariable Long id) {
+        ShowTimeResponse deleted = showTimeService.deleteShowTime(id);
+        return ResponseEntity.ok(deleted);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<List<ShowTimeResponse>> getAllShowTimes() {
+        List<ShowTimeResponse> showTimes = showTimeService.getAllShowTimes();
+        return ResponseEntity.ok(showTimes);
+    }
+
+
 }

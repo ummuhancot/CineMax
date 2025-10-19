@@ -17,46 +17,20 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-
-    // Süresi dolmuş rezervasyonları bul
-    List<Ticket> findByTicketStatusAndExpiresAtBefore(
-            TicketStatus ticketStatus,
-            LocalDateTime now
-    );
-
-    boolean existsByHallIdAndShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(
+    boolean existsByShowtimeIdAndHallIdAndSeatLetterAndSeatNumberAndTicketStatusInAndExpiresAtAfter(
+            Long showtimeId,
             Long hallId,
-            Long showTimeId,
             String seatLetter,
             int seatNumber,
-            List<TicketStatus> statuses
+            List<TicketStatus> statuses,
+            LocalDateTime currentTime
     );
 
     List<Ticket> findByTicketStatus(TicketStatus ticketStatus);
 
     List<Ticket> findByUserAndTicketStatus(User user, TicketStatus status);
 
-    List<Ticket> findByUser(User user);
-
-    // Belirli salon ve seans için birden fazla status’a sahip biletleri getir
-    List<Ticket> findByHallIdAndShowtimeIdAndTicketStatusIn(
-            Long hallId,
-            Long showTimeId,
-            List<TicketStatus> statuses
-    );
-
-//    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(
-//            Long showtimeId,
-//            String seatLetter,
-//            int seatNumber,
-//            TicketStatus status
-//    );
-
-    boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusNot(Long showtimeId, String seatLetter, int seatNumber, TicketStatus statusToIgnore);
-
     boolean existsByShowtimeIdAndSeatLetterAndSeatNumberAndTicketStatusIn(Long showtimeId, String seatLetter, int seatNumber, List<TicketStatus> statuses);
-
-    boolean existsByUserIdAndShowtimeIdAndSeatLetterAndSeatNumber(Long userId, Long showtimeId, String seatLetter, int seatNumber);
 
     List<Ticket> findAllByTicketStatusAndExpiresAtBefore(TicketStatus status, LocalDateTime before);
 

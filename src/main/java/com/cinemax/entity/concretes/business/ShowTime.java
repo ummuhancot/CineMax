@@ -1,5 +1,6 @@
 package com.cinemax.entity.concretes.business;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,12 +24,15 @@ public class ShowTime {
     private Long id;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime startTime;
 
     @Column(name = "end_time",nullable = false)
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,9 +48,11 @@ public class ShowTime {
 
     @CreationTimestamp
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt ;
 }

@@ -3,17 +3,15 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.concretes.business.ShowTime;
-import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.mappers.ShowTimeMapper;
 import com.cinemax.payload.request.business.ShowTimeRequest;
 import com.cinemax.payload.response.business.ShowTimeResponse;
 import com.cinemax.repository.businnes.ShowTimeRepository;
 import com.cinemax.service.helper.ShowTimeHelper;
 import com.cinemax.service.validator.ShowTimeValidator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalTime;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,24 +28,20 @@ public class ShowTimeService {
     @Transactional
     public ShowTimeResponse createShowTime(ShowTimeRequest request) {
 
+        // Movie ve Hall kontrolü
         Movie movie = showTimeHelper.getMovieOrThrow(request.getMovieId());
         Hall hall = showTimeHelper.getHallOrThrow(request.getHallId());
 
-        // request içindeki LocalDateTime'ları LocalTime'a çevir
-        LocalTime startTime = request.getStartTime();
-        LocalTime endTime = request.getEndTime();
+        // Validator ile seans çakışmasını kontrol et
+        showTimeValidator.checkOverlap(hall.getId(), request.getDate(), request.getStartTime(), request.getEndTime());
 
-        // validator ile çakışma kontrolü
-        showTimeValidator.checkOverlap(hall.getId(), request.getDate(), startTime, endTime);
-
-        // entity oluştur
+        // Request → Entity (mapper LocalDateTime oluşturuyor)
         ShowTime showTime = showTimeMapper.toEntity(request, movie, hall);
-        showTime.setStartTime(startTime);
-        showTime.setEndTime(endTime);
 
-        // kaydet
-        showTimeRepository.save(showTime);
+        // Kaydet
+        showTime = showTimeRepository.save(showTime);
 
+        // Entity → Response
         return showTimeMapper.toResponse(showTime);
     }
 
@@ -64,18 +58,35 @@ public class ShowTimeService {
     }
 
 
-//    public List<ShowTimeResponse> getShowTimesByMovie(Long movieId) {
-//        List<ShowTime> showTimes = showTimeRepository.findByMovieId(movieId);
-//        return showTimes.stream()
-//                .map(showTimeMapper::toResponse)
-//                .toList();
-//    }
-
     public ShowTimeResponse getShowTimeById(Long id) {
-        ShowTime showTime = showTimeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("ShowTime not found with id: " + id));
+        ShowTime showTime = showTimeHelper.getShowTimeOrThrow(id);
+        return showTimeMapper.toResponse(showTime);
+    }
 
-        return showTimeMapper.mapShowTimeToResponse(showTime);
+    @Transactional
+    public ShowTimeResponse updateShowTime(Long id, ShowTimeRequest request) {
+        ShowTime existing = showTimeHelper.getShowTimeOrThrow(id);
+        Movie movie = showTimeHelper.getMovieOrThrow(request.getMovieId());
+        Hall hall =showTimeHelper.getHallOrThrow(request.getHallId());
+        showTimeValidator.checkOverlap(hall.getId(), request.getDate(), request.getStartTime(), request.getEndTime());
+        showTimeMapper.updateEntityFromRequest(existing, request, movie, hall);
+        ShowTime updated = showTimeRepository.save(existing);
+        return showTimeMapper.toResponse(updated);
+    }
+
+    @Transactional
+    public ShowTimeResponse deleteShowTime(Long id) {
+        ShowTime existing = showTimeHelper.getShowTimeOrThrow(id);
+        showTimeRepository.delete(existing);
+        return showTimeMapper.toResponse(existing);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShowTimeResponse> getAllShowTimes() {
+        List<ShowTime> showTimes = showTimeRepository.findAll();
+        return showTimes.stream()
+                .map(showTimeMapper::toResponse)
+                .toList();
     }
 
 

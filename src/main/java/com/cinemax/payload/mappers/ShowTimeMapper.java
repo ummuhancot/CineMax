@@ -8,8 +8,6 @@ import com.cinemax.payload.response.business.ShowTimeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 @RequiredArgsConstructor
 public class ShowTimeMapper {
@@ -19,14 +17,18 @@ public class ShowTimeMapper {
 
         return ShowTimeResponse.builder()
                 .id(showTime.getId())
-                .startDateTime(LocalDateTime.of(showTime.getDate(), showTime.getStartTime()))
-                .endDateTime(LocalDateTime.of(showTime.getDate(), showTime.getEndTime()))
+                .date(showTime.getDate())
+                .startDateTime(showTime.getStartTime())
+                .endDateTime(showTime.getEndTime())
                 .hallName(showTime.getHall() != null ? showTime.getHall().getName() : null)
                 .movieId(showTime.getMovie() != null ? showTime.getMovie().getId() : null)
                 .movieTitle(showTime.getMovie() != null ? showTime.getMovie().getTitle() : null)
                 .build();
     }
-    // Request'ten ShowTime entity oluştur
+
+    /**
+     * Request → Entity
+     */
     public ShowTime toEntity(ShowTimeRequest request, Movie movie, Hall hall) {
         return ShowTime.builder()
                 .date(request.getDate())
@@ -39,17 +41,20 @@ public class ShowTimeMapper {
 
     // Entity'den Response oluştur
     public ShowTimeResponse toResponse(ShowTime showTime) {
-        if (showTime == null) return null;
+        return mapShowTimeToResponse(showTime);
+    }
 
-        return ShowTimeResponse.builder()
-                .id(showTime.getId())
-                .startDateTime(showTime.getDate() != null && showTime.getStartTime() != null
-                        ? LocalDateTime.of(showTime.getDate(), showTime.getStartTime()) : null)
-                .endDateTime(showTime.getDate() != null && showTime.getEndTime() != null
-                        ? LocalDateTime.of(showTime.getDate(), showTime.getEndTime()) : null)
-                .hallName(showTime.getHall() != null ? showTime.getHall().getName() : null)
-                .movieId(showTime.getMovie() != null ? showTime.getMovie().getId() : null)
-                .movieTitle(showTime.getMovie() != null ? showTime.getMovie().getTitle() : null)
-                .build();
+
+    /**
+     * Var olan ShowTime entity’sini request verisine göre günceller.
+     */
+    public void updateEntityFromRequest(ShowTime existing, ShowTimeRequest request, Movie movie, Hall hall) {
+        if (existing == null || request == null) return;
+
+        existing.setDate(request.getDate());
+        existing.setStartTime(request.getStartTime());
+        existing.setEndTime(request.getEndTime());
+        existing.setMovie(movie);
+        existing.setHall(hall);
     }
 }
