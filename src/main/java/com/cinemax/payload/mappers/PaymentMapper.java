@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PaymentMapper {
 
+    private final TicketMapper ticketMapper;
+
     public Payment toEntity(PaymentRequest request, User user, Ticket ticket) {
         return Payment.builder()
                 .user(user)
@@ -45,4 +47,55 @@ public class PaymentMapper {
                 .ticket(ticketResponse)
                 .build();
     }
+
+    /**
+     * Payment -> PaymentResponse (TicketResponse ile birlikte)
+     */
+    public PaymentResponse toPaymentResponse(Payment payment) {
+        if (payment == null) return null;
+
+        // Ticket null kontrolü
+        TicketResponse ticketResponse = payment.getTicket() != null
+                ? ticketMapper.toResponse(payment.getTicket())
+                : null;
+
+        // Change hesaplama (ticket varsa)
+        Double change = null;
+        if (payment.getTicket() != null && payment.getAmount() != null && payment.getTicket().getPrice() != null) {
+            change = payment.getAmount() - payment.getTicket().getPrice();
+        }
+
+        return PaymentResponse.builder()
+                .id(payment.getId())
+                .amount(payment.getAmount())
+                .change(change)
+                .paymentStatus(payment.getPaymentStatus() != null ? payment.getPaymentStatus().name() : null)
+                .paymentDate(payment.getPaymentDate())
+                .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
+                .ticket(ticketResponse)
+                .build();
+    }
+    public PaymentResponse mapToPaymentResponse(Payment payment, TicketMapper ticketMapper, Double change) {
+        if (payment == null) return null;
+
+        final TicketResponse ticketResponse = payment.getTicket() != null
+                ? ticketMapper.toResponse(payment.getTicket())
+                : null;
+
+        return PaymentResponse.builder()
+                .id(payment.getId())
+                .amount(payment.getAmount())
+                .change(change)
+                .paymentStatus(payment.getPaymentStatus() != null
+                        ? payment.getPaymentStatus().name()
+                        : null)
+                .paymentDate(payment.getPaymentDate())
+                .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
+                .ticket(ticketResponse)
+                .build();
+    }
+
+
 }

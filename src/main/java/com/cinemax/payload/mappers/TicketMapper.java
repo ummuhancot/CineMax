@@ -3,7 +3,6 @@ package com.cinemax.payload.mappers;
 import com.cinemax.entity.concretes.business.*;
 import com.cinemax.entity.concretes.user.User;
 import com.cinemax.payload.request.business.TicketRequest;
-import com.cinemax.payload.response.business.PaymentResponse;
 import com.cinemax.payload.response.business.TicketResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -40,24 +39,55 @@ public class TicketMapper {
     public TicketResponse toResponse(Ticket t) {
         if (t == null) return null;
 
+        String seatInfo;
+        if (t.getSeatLetter() != null) {
+            seatInfo = t.getSeatLetter();
+        } else if (t.getHall() != null) {
+            seatInfo = "Hall Seats: " + t.getHall().getSeatCapacity();
+        } else {
+            seatInfo = null;
+        }
+
         return TicketResponse.builder()
                 .id(t.getId())
                 .username(t.getUser() != null ? t.getUser().getEmail() : null)
                 .movieTitle(t.getMovie() != null ? t.getMovie().getTitle() : null)
                 .hallName(t.getHall() != null ? t.getHall().getName() : null)
-                .seat(t.getSeatLetter() != null ? t.getSeatLetter()
-                        : (t.getHall() != null ? "Hall Seats: " + t.getHall().getSeatCapacity() : null))
+                .seat(seatInfo)
                 .price(t.getPrice())
                 .status(t.getTicketStatus() != null ? t.getTicketStatus().name() : null)
-                .date(t.getShowtime() != null && t.getShowtime().getStartTime() != null
-                        ? t.getShowtime().getStartTime().toString()
-                        : null)
-                .showTime(t.getShowtime() != null && t.getShowtime().getStartTime() != null
-                        ? t.getShowtime().getStartTime().toString()
-                        : null)
+                .date(t.getShowtime() != null ? t.getShowtime().getDate() : null)
+                .showTime(t.getShowtime() != null ? t.getShowtime().getStartTime() : null)
                 .createdAt(t.getCreatedAt() != null ? t.getCreatedAt().toString() : null)
                 .paymentId(t.getPayment() != null ? t.getPayment().getId() : null)
                 .expiresAt(t.getExpiresAt() != null ? t.getExpiresAt() : null)
                 .build();
+
+    }
+
+
+    /**
+     * Mevcut Ticket entity'sini TicketRequest DTO ile günceller.
+     * Sadece dolu (non-null) alanlar güncellenir.
+     *
+     * @param ticket Güncellenecek Ticket entity
+     * @param request TicketRequest DTO
+     * @param showTime ShowTime entity
+     * @param hall Hall entity
+     * @param movie Movie entity
+     * @return Güncellenmiş Ticket entity
+     */
+    public Ticket updateFromRequest(Ticket ticket, TicketRequest request,
+                                    ShowTime showTime, Hall hall, Movie movie) {
+
+        if (request.getSeatLetter() != null) ticket.setSeatLetter(request.getSeatLetter());
+        if (request.getSeatNumber() > 0) ticket.setSeatNumber(request.getSeatNumber());
+
+        if (showTime != null) ticket.setShowtime(showTime);
+        if (hall != null) ticket.setHall(hall);
+        if (movie != null) ticket.setMovie(movie);
+
+        if (request.getPrice() != null) ticket.setPrice(request.getPrice());
+        return ticket;
     }
 }

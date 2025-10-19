@@ -95,6 +95,8 @@ public class ErrorMessages {
     //ShowTime
     public static final String SHOWTIME_NOT_FOUND = "Showtime not found."; // Gösteri saati bulunamadı. (T-1)
     public static final String SHOWTIME_CONFLICT = "There is already a showtime for this hall at the given time!";
+    public static final String SHOWTIME_MOVIE_MISMATCH = "Showtime (%d) bu filme ait değil! (Beklenen Movie ID: %d, Showtime'ın Movie ID: %d)";
+    public static final String SHOWTIME_HALL_MISMATCH = "Showtime (%d) bu salonda oynatılmıyor! (Beklenen Hall ID: %d, Showtime'ın Hall ID: %d)";
 
     //Ticket
     public static final String TICKET_NOT_FOUND = "Ticket with id %d not found.";

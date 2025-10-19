@@ -5,7 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +14,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShowTimeResponse {
     private Long id;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private LocalDate date;
+    private LocalTime startDateTime;
+    private LocalTime endDateTime;
     private String hallName;
     private Long movieId;
     private String movieTitle;

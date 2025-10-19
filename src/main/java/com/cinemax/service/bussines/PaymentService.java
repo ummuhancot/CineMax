@@ -15,9 +15,11 @@ import com.cinemax.repository.businnes.TicketRepository;
 import com.cinemax.service.helper.PaymentHelper;
 import com.cinemax.service.processsor.PaymentProcessor;
 import com.cinemax.service.statusmanager.TicketStatusManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Payment ile ilgili iş kurallarını tanımlar.
@@ -75,11 +77,11 @@ public class PaymentService {
         return paymentMapper.toResponse(payment, ticketMapper, change);
     }
 
-        /**
-         * Ödemeyi FAILED durumuna geçirir (simülasyon veya test amaçlı).
-         * @param paymentId Payment ID
-         * @return Güncellenmiş Payment entity
-         */
+    /**
+     * Ödemeyi FAILED durumuna geçirir (simülasyon veya test amaçlı).
+     * @param paymentId Payment ID
+     * @return Güncellenmiş Payment entity
+     */
 
     @Transactional
     public PaymentResponse failPayment(Long paymentId) {
@@ -98,4 +100,37 @@ public class PaymentService {
         return paymentMapper.toResponse(payment, ticketMapper,null);
     }
 
+    public List<PaymentResponse> getSuccessfulPayments() {
+        return paymentRepository.findByPaymentStatus(PaymentStatus.SUCCESS).stream()
+                .map(paymentMapper::toPaymentResponse)
+                .collect(Collectors.toList());
+    }
+
+    public PaymentResponse getSuccessfulPaymentById(Long id) {
+        Payment payment = paymentHelper.getPaymentOrThrow(id);
+        if (payment.getPaymentStatus() != PaymentStatus.SUCCESS) {
+            throw new IllegalStateException("Payment is not successful");
+        }
+
+        return paymentMapper.toPaymentResponse(payment);
+    }
+
+    // Başarısız ödemeleri getir
+    public List<PaymentResponse> getFailedPayments() {
+        return paymentRepository.findByPaymentStatus(PaymentStatus.FAILED).stream()
+                .map(paymentMapper::toPaymentResponse)
+                .collect(Collectors.toList());
+    }
+
+    // ID’ye göre FAILED kontrolü
+    public PaymentResponse getFailedPaymentById(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id));
+
+        if (payment.getPaymentStatus() != PaymentStatus.FAILED) {
+            throw new IllegalStateException("Payment is not failed");
+        }
+
+        return paymentMapper.toPaymentResponse(payment);
+    }
 }
