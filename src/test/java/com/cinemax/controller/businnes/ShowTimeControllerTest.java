@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+// LocalDateTime importu kaldırıldı, artık kullanılmıyor.
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -44,10 +44,12 @@ class ShowTimeControllerTest {
                 .hallId(200L)
                 .build();
 
+        // DÜZELTME: startDateTime ve endDateTime alanlarına LocalTime atandı, date alanı eklendi.
         ShowTimeResponse expected = ShowTimeResponse.builder()
                 .id(1L)
-                .startDateTime(LocalDateTime.of(date, start))
-                .endDateTime(LocalDateTime.of(date, end))
+                .date(date) // Date alanı eklendi
+                .startDateTime(start) // LocalDateTime yerine LocalTime kullanıldı
+                .endDateTime(end)     // LocalDateTime yerine LocalTime kullanıldı
                 .hallName("Hall A")
                 .movieId(100L)
                 .movieTitle("Inception")
@@ -90,19 +92,23 @@ class ShowTimeControllerTest {
 
         List<ShowTimeRequest> requests = Arrays.asList(r1, r2);
 
+        // DÜZELTME: startDateTime ve endDateTime alanlarına LocalTime atandı, date alanı eklendi.
         ShowTimeResponse s1 = ShowTimeResponse.builder()
                 .id(11L)
-                .startDateTime(LocalDateTime.of(date, r1.getStartTime()))
-                .endDateTime(LocalDateTime.of(date, r1.getEndTime()))
+                .date(date) // Date alanı eklendi
+                .startDateTime(r1.getStartTime()) // LocalDateTime yerine LocalTime kullanıldı
+                .endDateTime(r1.getEndTime())     // LocalDateTime yerine LocalTime kullanıldı
                 .hallName("Hall 20")
                 .movieId(10L)
                 .movieTitle("Matrix")
                 .build();
 
+        // DÜZELTME: startDateTime ve endDateTime alanlarına LocalTime atandı, date alanı eklendi.
         ShowTimeResponse s2 = ShowTimeResponse.builder()
                 .id(12L)
-                .startDateTime(LocalDateTime.of(date, r2.getStartTime()))
-                .endDateTime(LocalDateTime.of(date, r2.getEndTime()))
+                .date(date) // Date alanı eklendi
+                .startDateTime(r2.getStartTime()) // LocalDateTime yerine LocalTime kullanıldı
+                .endDateTime(r2.getEndTime())     // LocalDateTime yerine LocalTime kullanıldı
                 .hallName("Hall 21")
                 .movieId(10L)
                 .movieTitle("Matrix")
@@ -132,10 +138,12 @@ class ShowTimeControllerTest {
         LocalTime start = LocalTime.of(19, 30);
         LocalTime end = LocalTime.of(21, 30);
 
+        // DÜZELTME: startDateTime ve endDateTime alanlarına LocalTime atandı, date alanı eklendi.
         ShowTimeResponse expected = ShowTimeResponse.builder()
                 .id(id)
-                .startDateTime(LocalDateTime.of(date, start))
-                .endDateTime(LocalDateTime.of(date, end))
+                .date(date) // Date alanı eklendi
+                .startDateTime(start) // LocalDateTime yerine LocalTime kullanıldı
+                .endDateTime(end)     // LocalDateTime yerine LocalTime kullanıldı
                 .hallName("VIP Hall")
                 .movieId(500L)
                 .movieTitle("Interstellar")
@@ -171,3 +179,4 @@ class ShowTimeControllerTest {
         verifyNoMoreInteractions(showTimeService);
     }
 }
+//son hali hata vermedi
