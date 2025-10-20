@@ -1,6 +1,5 @@
 package com.cinemax.service.businnes;
 
-
 import com.cinemax.controller.businnes.FavoriteController;
 import com.cinemax.exception.ResourceNotFoundException; // Hata senaryosu için import
 import com.cinemax.exception.UnauthorizedException; // Hata senaryosu için import
