@@ -1,5 +1,5 @@
-//package com.cinemax.controller.user;
-//
+// package com.cinemax.controller.user;
+
 //import com.cinemax.controller.businnes.CinemaController;
 //import com.cinemax.entity.concretes.business.Cinema;
 //import com.cinemax.exception.ResourceNotFoundException;
