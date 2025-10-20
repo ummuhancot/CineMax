@@ -6,20 +6,17 @@ import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.exception.BadRequestException;
 import com.cinemax.exception.ResourceNotFoundException;
-import com.cinemax.payload.mappers.MovieAdminMapper;
-import com.cinemax.payload.mappers.MovieMapper;
-import com.cinemax.payload.mappers.MovieShowTimesMapper;
-import com.cinemax.payload.mappers.ShowTimeMapper;
+import com.cinemax.payload.mappers.*;
 import com.cinemax.payload.messages.ErrorMessages;
+import com.cinemax.payload.request.business.MovieComingSoonRequest;
 import com.cinemax.payload.request.business.MovieRequest;
-import com.cinemax.payload.response.business.MovieAdminResponse;
-import com.cinemax.payload.response.business.MovieResponse;
-import com.cinemax.payload.response.business.MovieShowTimesResponse;
-import com.cinemax.repository.businnes.HallRepository;
-import com.cinemax.repository.businnes.ImageRepository;
+import com.cinemax.payload.request.business.MovieStartRequest;
+import com.cinemax.payload.response.business.*;
 import com.cinemax.repository.businnes.MovieRepository;
 import com.cinemax.repository.businnes.ShowTimeRepository;
+import com.cinemax.scheduler.MovieFinishScheduler;
 import com.cinemax.service.helper.MovieHelper;
+import com.cinemax.scheduler.MovieComingSoonScheduler;
 import com.cinemax.service.validator.MovieValidator;
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +41,77 @@ import java.util.List;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    private final ImageRepository imageRepository;
     private final ShowTimeRepository showTimeRepository;
     private final MovieMapper movieMapper;
     private final MovieShowTimesMapper movieShowTimesMapper;
     private final MovieHelper movieHelper;
-    private final HallRepository hallRepository;
-    private final ShowTimeMapper showTimeMapper;
     private final MovieAdminMapper movieAdminMapper;
-    private final ShowTimeService showTimeService;
     private final MovieValidator movieValidator;
+    private final MovieFinishScheduler movieFinishScheduler;
+    private final MovieComingSoonScheduler movieComingSoonScheduler;
+    private final MovieComingSoonMapper movieComingSoonMapper;
+    private final MovieStartMapper movieStartMapper;
+
+    /**
+     * Film kaydı yapar ve COMING_SOON durumuna alır.
+     * Slug otomatik üretilir ve DB’de kontrol edilir.
+     */
+    @Transactional
+    public MovieResponse saveMovieComingSoon(MovieComingSoonRequest request) {
+        movieValidator.validateUniqueComingSoonTitle(request.getTitle());
+        Movie movie = movieComingSoonMapper.toEntity(request);
+        movie.setStatus(MovieStatus.COMING_SOON);
+        movieRepository.save(movie);
+        movieComingSoonScheduler.scheduleComingSoonMovie(movie);
+        return movieMapper.mapMovieToMovieResponse(movie);
+    }
+
+
+    @Transactional
+    public MovieResponse startMovieInTheaters(Long movieId, MovieStartRequest request) {
+        // 1️⃣ Movie var mı kontrol et
+        Movie movie = movieHelper.getMovieOrThrow(movieId);
+
+        // 2️⃣ Hall bilgilerini al
+        List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
+
+        // 3️⃣ Hall bazlı slug üret ve DB kontrol et
+        String slug = MovieValidator.generateUniqueSlugForTheaters(movie, halls, movieRepository);
+
+        // 4️⃣ Hall bazlı unique slug kontrolü
+        for (Hall hall : halls) {
+            movieValidator.validateUniqueMovieInHalls(slug, hall);
+        }
+
+        // 5️⃣ Movie entity'yi mapper üzerinden güncelle
+        movie = movieStartMapper.mapMovieStartRequestToMovie(movie, request, halls);
+        movie.setSlug(slug);
+        movie.setStatus(MovieStatus.IN_THEATERS);
+
+        // 6️⃣ Vizyonda kalma süresi
+        int durationDays = request.getDurationDays() != null ? request.getDurationDays() : movie.getDurationDays();
+        LocalDateTime finishDate = LocalDateTime.now().plusDays(durationDays);
+
+        // 7️⃣ Kaydet
+        movieRepository.save(movie);
+
+        // 8️⃣ Scheduler
+        movieFinishScheduler.scheduleMovieFinish(movie, finishDate);
+
+        // 9️⃣ Response dön
+        return movieMapper.mapMovieToMovieResponse(movie);
+    }
+
+
+    @Transactional
+    public MovieResponse finishMovie(Long movieId) {
+        Movie movie = movieHelper.getMovieOrThrow(movieId);
+        movie.setStatus(MovieStatus.FINISHED);
+        if (movie.getHalls() != null) movie.getHalls().clear();
+        movieRepository.save(movie);
+        return movieMapper.mapMovieToMovieResponse(movie);
+    }
+
 
     @Transactional
     public MovieResponse saveMovie(MovieRequest request) {
@@ -84,14 +143,8 @@ public class MovieService {
         // Hall listesi
         List<Hall> halls = movieHelper.getHallsOrThrow(request.getHallIds());
 
-        // Poster opsiyonel
-        Image poster = null;
-        if (request.getPosterId() != null) {
-            poster = movieHelper.getPosterOrThrow(request.getPosterId());
-        }
-
         // Movie güncelle
-        movieMapper.updateMovieFromRequest(movie, request, halls, poster);
+        movieMapper.updateMovieFromRequest(movie, request, halls);
 
         // Kaydet
         movieRepository.save(movie);

@@ -1,9 +1,9 @@
 package com.cinemax.controller.businnes;
 
+import com.cinemax.payload.request.business.MovieComingSoonRequest;
 import com.cinemax.payload.request.business.MovieRequest;
-import com.cinemax.payload.response.business.MovieAdminResponse;
-import com.cinemax.payload.response.business.MovieResponse;
-import com.cinemax.payload.response.business.MovieShowTimesResponse;
+import com.cinemax.payload.request.business.MovieStartRequest;
+import com.cinemax.payload.response.business.*;
 import com.cinemax.service.bussines.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,24 @@ import java.util.List;
 public class MovieController {
 
     private final MovieService movieService;
+
+    @PostMapping("/coming-soon")
+    public ResponseEntity<MovieResponse> saveComingSoon(@RequestBody MovieComingSoonRequest request) {
+        return ResponseEntity.ok(movieService.saveMovieComingSoon(request));
+    }
+
+    @PostMapping("/start-theaters/{movieId}")
+    public ResponseEntity<MovieResponse> startInTheaters(
+            @PathVariable Long movieId,
+            @RequestBody MovieStartRequest request) {
+        MovieResponse response = movieService.startMovieInTheaters(movieId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/finish/{movieId}")
+    public ResponseEntity<MovieResponse> finishMovie(@PathVariable Long movieId) {
+        return ResponseEntity.ok(movieService.finishMovie(movieId));
+    }
 
     // 🎬 Yeni film ekleme
     @PostMapping("/save")

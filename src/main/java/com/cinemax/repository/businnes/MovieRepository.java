@@ -45,6 +45,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "WHERE h.id = :hallId AND m.slug = :movieSlug")
     boolean existsByHallAndMovieSlug(@Param("hallId") Long hallId,
                                      @Param("movieSlug") String movieSlug);
+
+    boolean existsByTitleAndStatus(String title, MovieStatus status);
+
 }
 
 

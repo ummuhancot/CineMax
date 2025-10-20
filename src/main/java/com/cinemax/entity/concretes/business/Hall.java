@@ -49,6 +49,7 @@ public class Hall {
     private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "halls", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"halls"})
     private List<Movie> movies;
 
     @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

@@ -1,6 +1,7 @@
 package com.cinemax.entity.concretes.business;
 
 import com.cinemax.entity.enums.MovieStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
@@ -102,6 +103,7 @@ public class Movie {
 
     // Salonlar
     @ManyToMany
+    @JsonIgnoreProperties({"movies"})
     @JoinTable(
             name = "movie_halls",
             joinColumns = @JoinColumn(name = "movie_id"),

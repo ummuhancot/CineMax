@@ -6,7 +6,6 @@ import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
-import com.cinemax.repository.businnes.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -93,7 +92,7 @@ public class MovieMapper {
      * Movie güncelleme
      * Poster opsiyonel, yalnızca poster entity verilirse set edilir.
      */
-    public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls, Image poster) {
+    public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls) {
         if (movie == null || request == null) return;
 
         // Temel alanlar
