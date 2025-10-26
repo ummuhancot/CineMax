@@ -6,7 +6,6 @@ import com.cinemax.entity.enums.RoleType;
 import com.cinemax.exception.*;
 import com.cinemax.payload.mappers.UserMapper;
 import com.cinemax.payload.messages.ErrorMessages;
-import com.cinemax.payload.messages.SuccessMessages;
 import com.cinemax.payload.request.authentication.ResetPasswordRequest;
 import com.cinemax.payload.request.authentication.UserUpdateRequest;
 import com.cinemax.payload.request.user.UserRequest;
@@ -20,7 +19,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -216,9 +214,9 @@ public class UserService {
         boolean isManager = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("MANAGER"));
 
-        // Manager can only update CUSTOMER type users
+        // MANAGER can only update CUSTOMER type users
         if (isManager && user.getUserRole() != null &&
-                !user.getUserRole().getRoleType().equals(RoleType.Customer)) {
+                !user.getUserRole().getRoleType().equals(RoleType.CUSTOMER)) {
             throw new BadRequestException("Manager can update only customer type users");
         }
 
@@ -233,8 +231,8 @@ public class UserService {
     public List<UserResponse> getAllAdminsAndManagers() {
         return userRepository.findAll().stream()
                 .filter(user -> user.getUserRole() != null &&
-                        (user.getUserRole().getRoleType() == RoleType.Admin ||
-                                user.getUserRole().getRoleType() == RoleType.Manager))
+                        (user.getUserRole().getRoleType() == RoleType.ADMIN ||
+                                user.getUserRole().getRoleType() == RoleType.MANAGER))
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
     }
@@ -243,7 +241,7 @@ public class UserService {
     public List<UserResponse> getAllCustomers() {
         return userRepository.findAll().stream()
                 .filter(user -> user.getUserRole() != null &&
-                        user.getUserRole().getRoleType() == RoleType.Customer)
+                        user.getUserRole().getRoleType() == RoleType.CUSTOMER)
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
     }

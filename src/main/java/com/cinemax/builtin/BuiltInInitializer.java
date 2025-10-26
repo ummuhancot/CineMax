@@ -33,17 +33,17 @@ public class BuiltInInitializer implements CommandLineRunner {
     private void initializeRoles() {
         if (userRoleRepository.count() == 0) {//role table bos ise
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.Admin)
+                    .roleType(RoleType.ADMIN)
                     .name("Admin")
                     .build());
 
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.Manager)
+                    .roleType(RoleType.MANAGER)
                     .name("Manager")
                     .build());
 
             userRoleRepository.save(UserRole.builder()
-                    .roleType(RoleType.Customer)
+                    .roleType(RoleType.CUSTOMER)
                     .name("Customer")
                     .build());
         }
@@ -52,7 +52,7 @@ public class BuiltInInitializer implements CommandLineRunner {
 
     private void initializeUsers() {
         if (userRepository.count() == 0) {
-            // Admin
+            // ADMIN
             User admin = User.builder()
                     .name("Admin")
                     .surname("User")
@@ -61,12 +61,12 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Admin123!"))
                     .birthDate(LocalDate.of(1985, 1, 1))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.Admin))
+                    .userRole(userRoleService.getByRoleType(RoleType.ADMIN))
                     .builtIn(true)
                     .build();
             userRepository.save(admin);
 
-            // Manager
+            // MANAGER
             User manager = User.builder()
                     .name("Manager")
                     .surname("User")
@@ -75,12 +75,12 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Manager123!"))
                     .birthDate(LocalDate.of(1988, 5, 10))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.Manager))
+                    .userRole(userRoleService.getByRoleType(RoleType.MANAGER))
                     .builtIn(true)
                     .build();
             userRepository.save(manager);
 
-            // Customer
+            // CUSTOMER
             User customer = User.builder()
                     .name("Customer")
                     .surname("User")
@@ -89,7 +89,7 @@ public class BuiltInInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Customer123!"))
                     .birthDate(LocalDate.of(1995, 8, 15))
 			        .gender(Gender.OTHER)
-                    .userRole(userRoleService.getByRoleType(RoleType.Customer))
+                    .userRole(userRoleService.getByRoleType(RoleType.CUSTOMER))
                     .builtIn(true)
                     .build();
             userRepository.save(customer);
