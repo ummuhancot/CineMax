@@ -31,7 +31,7 @@ public class UserMapper {
 					       .phoneNumber(registerRequest.getPhoneNumber())
 					       .birthDate(registerRequest.getBirthDate())
 					       .gender(registerRequest.getGender())
-					       .userRole(userRoleService.getByRoleType(RoleType.CUSTOMER))
+					       .userRole(userRoleService.getByRoleType(RoleType.Customer))
 					       .build();
 	}
 
@@ -59,17 +59,17 @@ public class UserMapper {
                 .build();
 
 
-        if(userRole.equalsIgnoreCase(RoleType.ADMIN.getName())){
+        if(userRole.equalsIgnoreCase(RoleType.Admin.getName())){
             if(Objects.equals(userRequest.getEmail(),"Admin")){
                 user.setBuiltIn(true);
             }
-            user.setUserRole(userRoleService.getByRoleType(RoleType.ADMIN));
+            user.setUserRole(userRoleService.getByRoleType(RoleType.Admin));
 
-        } else if (userRole.equalsIgnoreCase(RoleType.MANAGER.getName())) {
-            user.setUserRole(userRoleService.getByRoleType(RoleType.MANAGER));
+        } else if (userRole.equalsIgnoreCase(RoleType.Manager.getName())) {
+            user.setUserRole(userRoleService.getByRoleType(RoleType.Manager));
         }
-        else if (userRole.equalsIgnoreCase(RoleType.CUSTOMER.getName())) {
-            user.setUserRole(userRoleService.getByRoleType(RoleType.CUSTOMER));
+        else if (userRole.equalsIgnoreCase(RoleType.Customer.getName())) {
+            user.setUserRole(userRoleService.getByRoleType(RoleType.Customer));
         }
         else {
             throw new ResourceNotFoundException(
