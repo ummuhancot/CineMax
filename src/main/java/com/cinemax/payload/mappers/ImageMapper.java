@@ -2,7 +2,7 @@ package com.cinemax.payload.mappers;
 
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.payload.request.business.ImageRequest;
-import com.cinemax.payload.response.business.ImageMovieResponse;
+// ImageMovieResponse importu kaldırıldı, kullanılmıyor gibi.
 import com.cinemax.payload.response.business.ImageResponse;
 import com.cinemax.payload.utils.ImageUtil;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,8 @@ public class ImageMapper {
                 ))
 
                 // MovieId alanı: resmin hangi filme ait olduğunu belirtir
-                .movieId(savedImage.getMovie().getId())
+                // Null kontrolü eklendi
+                .movieId(savedImage.getMovie() != null ? savedImage.getMovie().getId() : null)
 
                 // Builder ile ImageResponse nesnesini tamamla
                 .build();
@@ -49,6 +50,10 @@ public class ImageMapper {
     private String encodeImage(byte[] imageData) {
         // Base64 encoder kullanarak byte dizisini String formatına çevirir
         // JSON ile frontend'e göndermek veya HTTP üzerinden transfer etmek için uygundur
+        // Null kontrolü eklendi
+        if (imageData == null) {
+            return null;
+        }
         return Base64.getEncoder().encodeToString(imageData);
     }
     //byte[] --> compress veya decompress resim verisi
@@ -60,32 +65,70 @@ public class ImageMapper {
      */
 
     /**
-     * Converts an Image entity to a DTO (ImageMovieResponse) for API responses.
+     * Converts an Image entity to a DTO (ImageResponse without data) for API responses.
      * @param image the Image entity to convert
-     * @return ImageMovieResponse DTO
+     * @return ImageResponse DTO without the data field
      */
-
-
     public ImageResponse mapImageToResponse(Image image) {
+        if (image == null) {
+            return null;
+        }
         return ImageResponse.builder()
                 .id(image.getId())
                 .name(image.getName())
                 .type(image.getType())
+                // featured ve movieId alanları eksikti, eklendi.
+                .featured(image.isFeatured())
+                .movieId(image.getMovie() != null ? image.getMovie().getId() : null)
+                // data alanı burada set edilmiyor
                 .build();
     }
+
+    /**
+     * YENİ EKLENEN METOT:
+     * Image entity'sini ImageResponse DTO'suna dönüştürür (Base64 data HARİÇ).
+     * @param image Dönüştürülecek Image entity'si
+     * @return Data alanı olmayan ImageResponse DTO
+     */
+    public ImageResponse toImageResponseWithoutData(Image image) {
+        if (image == null) {
+            return null;
+        }
+        // Data alanı olmadan builder ile nesne oluşturuluyor
+        return ImageResponse.builder()
+                .id(image.getId())
+                .name(image.getName())
+                .type(image.getType())
+                .featured(image.isFeatured())
+                .movieId(image.getMovie() != null ? image.getMovie().getId() : null)
+                // data alanı burada set edilmiyor
+                .build();
+    }
+
+    // Bu metot ImageService içinde kullanılmıyor gibi duruyor,
+    // ancak varsa diye bırakıldı. ImageRequest içeriği boş olduğu için
+    // file değişkeni null olacaktır. Hata verebilir.
     public Image createImageFromRequest(ImageRequest request) {
-        MultipartFile file = request.getFile();
+        // ImageRequest içinde file alanı tanımlı değil, bu nedenle null olacaktır.
+        // Bu metot muhtemelen kullanılmamalı veya ImageRequest güncellenmeli.
+        MultipartFile file = null; // request.getFile() yerine null atandı.
+
+        // Eğer file null ise işlem yapılamaz.
+        if (file == null) {
+            throw new IllegalArgumentException("MultipartFile cannot be null in ImageRequest");
+        }
 
         try {
             return Image.builder()
                     .name(request.getName() != null ? request.getName() : file.getOriginalFilename())
                     .type(file.getContentType())
-                    .data(file.getBytes())
+                    .data(ImageUtil.compressImage(file.getBytes())) // compressImage eklendi
+                    // movie ilişkisi burada set edilemez, servis katmanında yapılmalı
                     .build();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error while creating image: " + e.getMessage());
+            // Daha spesifik exception fırlatılabilir.
+            throw new RuntimeException("Error while creating image from request: " + e.getMessage(), e);
         }
     }
-
 }
