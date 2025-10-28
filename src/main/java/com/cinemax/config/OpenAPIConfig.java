@@ -8,9 +8,16 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "Cinemax API", version = "1.0.0"),
-    security =@SecurityRequirement(name = "Bearer"))
-@SecurityScheme(name = "Bearer", type = SecuritySchemeType.HTTP, scheme ="Bearer")
+@OpenAPIDefinition(
+        info = @Info(title = "Cinemax API", version = "1.0.0"),
+        security = @SecurityRequirement(name = "bearerAuth")
+)
+@SecurityScheme(
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
+)
 public class OpenAPIConfig {
 
 }
