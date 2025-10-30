@@ -53,4 +53,14 @@ public class  ImageController {
         return ResponseEntity.ok(response);
     }
 
+
+    // 🔹 GET /api/image/movie/{movieId} → Filmin tüm resimlerini getir
+    @GetMapping("/movie/{movieId}")
+    public ResponseEntity<List<ImageResponse>> getImagesByMovie(@PathVariable Long movieId) {
+        List<ImageResponse> images = imageService.getImagesByMovieId(movieId);
+        return ResponseEntity.ok(images);
+    }
+
+
+
 }

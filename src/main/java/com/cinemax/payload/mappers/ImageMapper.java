@@ -46,7 +46,7 @@ public class ImageMapper {
     }
 
 
-    private String encodeImage(byte[] imageData) {
+    public String encodeImage(byte[] imageData) {
         // Base64 encoder kullanarak byte dizisini String formatına çevirir
         // JSON ile frontend'e göndermek veya HTTP üzerinden transfer etmek için uygundur
         return Base64.getEncoder().encodeToString(imageData);
@@ -59,33 +59,17 @@ public class ImageMapper {
      toImageResponse end
      */
 
-    /**
-     * Converts an Image entity to a DTO (ImageMovieResponse) for API responses.
-     * @param image the Image entity to convert
-     * @return ImageMovieResponse DTO
-     */
-
-
-    public ImageResponse mapImageToResponse(Image image) {
-        return ImageResponse.builder()
+    public ImageMovieResponse toImageMovieResponse(Image image) {
+        return ImageMovieResponse.builder()
                 .id(image.getId())
-                .name(image.getName())
-                .type(image.getType())
+                .fileName(image.getName())
+                .fileType(image.getType())
+                .featured(image.isFeatured())
+                .data(encodeImage(
+                        ImageUtil.decompressImage(image.getData())
+                ))
+                .movieId(image.getMovie() != null ? image.getMovie().getId() : null)
+                .movieTitle(image.getMovie() != null ? image.getMovie().getTitle() : null)
                 .build();
     }
-    public Image createImageFromRequest(ImageRequest request) {
-        MultipartFile file = request.getFile();
-
-        try {
-            return Image.builder()
-                    .name(request.getName() != null ? request.getName() : file.getOriginalFilename())
-                    .type(file.getContentType())
-                    .data(file.getBytes())
-                    .build();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error while creating image: " + e.getMessage());
-        }
-    }
-
 }

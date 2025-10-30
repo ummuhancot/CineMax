@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class MovieMapper {
 
     private final ShowTimeMapper showTimeMapper;
+    private final ImageMapper imageMapper;
 
     /**
      * Title'dan URL dostu slug üretir.
@@ -64,8 +65,9 @@ public class MovieMapper {
     /**
      * Movie → MovieResponse
      * Poster opsiyonel, null olabilir.
+     * Ayrıca Movie'nin resimleri de ekleniyor.
      */
-    public MovieResponse mapMovieToMovieResponse(Movie movie) {
+    public MovieResponse mapMovieToMovieResponse(Movie movie, List<Image> images) {
         return MovieResponse.builder()
                 .id(movie.getId())
                 .title(movie.getTitle())
@@ -82,10 +84,14 @@ public class MovieMapper {
                         .map(Hall::getName)
                         .collect(Collectors.toList()) : new ArrayList<>())
                 .specialHalls(movie.getHalls() != null ? movie.getHalls().stream()
-                        .filter(Hall::getIsSpecial)                   // sadece special olanları al
-                        .map(h -> h.getType().name() + ":" + h.getId()) // örn: "VIP:15"
+                        .filter(Hall::getIsSpecial)
+                        .map(h -> h.getType().name() + ":" + h.getId())
                         .collect(Collectors.toList())
                         : new ArrayList<>())
+                // 🎬 Yeni alan: resimler
+                .images(images != null ? images.stream()
+                        .map(imageMapper::toImageMovieResponse)
+                        .toList() : List.of())
                 .build();
     }
 

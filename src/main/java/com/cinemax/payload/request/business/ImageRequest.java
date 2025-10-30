@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @SuperBuilder
 public class ImageRequest {
-    private String name;
     private MultipartFile file;
-    private Long movieId; // opsiyonel
+    private Long movieId;
+    private boolean featured;
 
 }

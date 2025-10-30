@@ -31,6 +31,7 @@ public class MovieResponse {
     private List<String> halls;
     private Long hallId;
     private List<String> specialHalls;
+    private List<ImageMovieResponse> images;
 
 }
 

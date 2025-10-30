@@ -22,4 +22,5 @@ public class ImageResponse implements Serializable {
     private boolean featured;
     private Long movieId;
     private String data;
+    private String movieTitle;
 }

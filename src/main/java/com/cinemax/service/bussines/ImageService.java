@@ -10,9 +10,10 @@ import com.cinemax.payload.utils.MessageUtil;
 import com.cinemax.payload.response.business.ImageResponse;
 import com.cinemax.repository.businnes.ImageRepository;
 import com.cinemax.repository.businnes.MovieRepository;
-import jakarta.transaction.Transactional;
+import com.cinemax.service.helper.ImageHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class ImageService {
     private final ImageMapper imageMapper;
     private final MessageUtil messageUtil;
     private final MovieRepository movieRepository;
+    private final ImageHelper imageHelper;
 
     public Image saveImage(MultipartFile request, Long movieId) {
 
@@ -35,6 +37,8 @@ public class ImageService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format(messageUtil.getMessage("error.movie.not.found"), movieId)
                 ));
+        imageHelper.validateDuplicateImage(movie, request);
+
 
         Image image;
         try {
@@ -49,7 +53,11 @@ public class ImageService {
             throw new ImageException(e.getMessage());
         }
 
-        return imageRepository.save(image);
+        Image savedImage = imageRepository.save(image);
+
+        // Movie’ye poster olarak ata
+        movie.setPoster(savedImage);
+        return savedImage;
     }
 
 
@@ -73,7 +81,26 @@ public class ImageService {
         }
 
         List<Image> savedImage=request.stream().map(t->saveImage(t, movieId)).toList();
-        return savedImage.stream().map(imageMapper::toImageResponse).collect(Collectors.toList());
+        if (!savedImage.isEmpty()) {
+            movie.setPoster(savedImage.get(0));
+        }        return savedImage.stream().map(imageMapper::toImageResponse).collect(Collectors.toList());
 
     }
+
+    @Transactional(readOnly = true)
+    public List<ImageResponse> getImagesByMovieId(Long movieId) {
+
+        // 1️⃣ Movie var mı kontrol et (helper ile)
+        imageHelper.validateMovieExists(movieId);
+
+        // 2️⃣ Movie’ye ait tüm resimleri çek
+        List<Image> images = imageRepository.findByMovieId(movieId);
+
+        // 3️⃣ Entity → DTO dönüşümü (Base64 ve movie bilgileri dahil)
+        return images.stream()
+                .map(imageMapper::toImageResponse)
+                .toList();
+    }
+
+
 }

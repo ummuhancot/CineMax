@@ -12,7 +12,10 @@ import lombok.experimental.SuperBuilder;
 public class ImageMovieResponse {
 
     private Long id;
-    private String name;
-    private String type;
+    private String fileName;
+    private String fileType;
+    private boolean featured;
+    private String data;
+    private Long movieId;
     private String movieTitle;
 }

@@ -99,6 +99,17 @@ public class MovieController {
         var list = movieService.getComingSoon(page, size, sort, type);
         return ResponseEntity.ok(list);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> searchMovies(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "title") String sort,
+            @RequestParam(required = false, defaultValue = "ASC") String type
+    ) {
+        List<MovieResponse> results = movieService.searchMovies(q, page, size, sort, type);
+        return ResponseEntity.ok(results);
+    }
 
     // 🎬 Tek bir filmi getir (Admin, Manager, Customer)
     @GetMapping("/getOneMovie/{id}")

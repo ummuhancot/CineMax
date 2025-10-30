@@ -73,8 +73,10 @@ public class MovieService {
         // 6️⃣ Kaydet
         movieRepository.save(movie);
 
+        List<Image> images = imageRepository.findByMovieId(movie.getId());
+
         // 7️⃣ Cevap dön
-        return movieMapper.mapMovieToMovieResponse(movie);
+        return movieMapper.mapMovieToMovieResponse(movie,images);
     }
 
     public MovieResponse updateMovie(Long movieId, MovieRequest request) {
@@ -96,7 +98,9 @@ public class MovieService {
         // Kaydet
         movieRepository.save(movie);
 
-        return movieMapper.mapMovieToMovieResponse(movie);
+        List<Image> images = imageRepository.findByMovieId(movie.getId());
+
+        return movieMapper.mapMovieToMovieResponse(movie,images);
     }
 
     @Transactional
@@ -104,7 +108,8 @@ public class MovieService {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.MOVIE_DELETE_FAILED + id));
 
-        MovieResponse response = movieMapper.mapMovieToMovieResponse(movie);
+        List<Image> images = imageRepository.findByMovieId(movie.getId());
+        MovieResponse response = movieMapper.mapMovieToMovieResponse(movie,images);
 
         // Movie’yi sil
         movieRepository.delete(movie);
@@ -128,19 +133,28 @@ public class MovieService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
         return movieRepository.findByHalls_Name(hall, pageable)
                 .stream()
-                .map(movieMapper::mapMovieToMovieResponse)
+                .map(movie -> {
+                    List<Image> images = imageRepository.findByMovieId(movie.getId());
+                    return movieMapper.mapMovieToMovieResponse(movie, images);
+                })
                 .toList();
     }
 
     public Page<MovieResponse> getMoviesInTheaters(Pageable pageable) {
-        return movieRepository.findByStatus(MovieStatus.IN_THEATERS,pageable)
-                .map(movieMapper::mapMovieToMovieResponse);
+        return movieRepository.findByStatus(MovieStatus.IN_THEATERS, pageable)
+                .map(movie -> {
+                    List<Image> images = imageRepository.findByMovieId(movie.getId());
+                    return movieMapper.mapMovieToMovieResponse(movie, images);
+                });
     }
 
     public Page<MovieResponse> getMoviesInTheatersWithDateCheck(Pageable pageable) {
         LocalDate today = LocalDate.now();
         return movieRepository.findByStatusAndReleaseDateBefore(MovieStatus.IN_THEATERS, today, pageable)
-                .map(movieMapper::mapMovieToMovieResponse);
+                .map(movie -> {
+                    List<Image> images = imageRepository.findByMovieId(movie.getId());
+                    return movieMapper.mapMovieToMovieResponse(movie, images);
+                });
     }
 
     /**
@@ -153,24 +167,22 @@ public class MovieService {
         Sort.Direction dir = "desc".equalsIgnoreCase(type) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(p, s, Sort.by(dir, sortField));
-        // REPO’da varsa doğrudan kullan
         try {
-            Page<Movie> pageResult = movieRepository.findByStatus(MovieStatus.COMING_SOON,pageable);
-            return pageResult.stream().map(movieMapper::mapMovieToMovieResponse).toList();
+            Page<Movie> pageResult = movieRepository.findByStatus(MovieStatus.COMING_SOON, pageable);
+            return pageResult.stream().map(movie -> {
+                List<Image> images = imageRepository.findByMovieId(movie.getId());
+                return movieMapper.mapMovieToMovieResponse(movie, images);
+            }).toList();
         } catch (Throwable ignore) {
-            // Fallback: findAll + filtre (mevcut mantığınız)
             LocalDate today = LocalDate.now();
             var all = movieRepository.findAll(Sort.by(dir, sortField));
             var filtered = all.stream()
                     .filter(m -> {
-                        try {
-                            var st = m.getStatus();
-                            if (st == MovieStatus.COMING_SOON) return true;
-                            if (st != MovieStatus.IN_THEATERS) {
-                                LocalDate rd = m.getReleaseDate();
-                                return rd != null && rd.isAfter(today);
-                            }
-                        } catch (Exception ignored2) {
+                        MovieStatus st = m.getStatus();
+                        if (st == MovieStatus.COMING_SOON) return true;
+                        if (st != MovieStatus.IN_THEATERS) {
+                            LocalDate rd = m.getReleaseDate();
+                            return rd != null && rd.isAfter(today);
                         }
                         return false;
                     })
@@ -179,7 +191,10 @@ public class MovieService {
             int from = Math.min(p * s, filtered.size());
             int to = Math.min(from + s, filtered.size());
             return filtered.subList(from, to).stream()
-                    .map(movieMapper::mapMovieToMovieResponse)
+                    .map(movie -> {
+                        List<Image> images = imageRepository.findByMovieId(movie.getId());
+                        return movieMapper.mapMovieToMovieResponse(movie, images);
+                    })
                     .toList();
         }
     }
@@ -202,7 +217,10 @@ public class MovieService {
         try {
             Page<Movie> pageResult = movieRepository.search(q, pageable);
             return pageResult.stream()
-                    .map(movieMapper::mapMovieToMovieResponse)
+                    .map(movie -> {
+                        List<Image> images = imageRepository.findByMovieId(movie.getId());
+                        return movieMapper.mapMovieToMovieResponse(movie, images);
+                    })
                     .toList();
         } catch (Throwable ignore) {
             // 2) FALLBACK: findAll + filtre + manuel sayfalama
@@ -220,7 +238,6 @@ public class MovieService {
 
                     return needle.isEmpty() || title.contains(needle) || desc.contains(needle);
                 } catch (Exception e) {
-                    // Entity alan adları farklıysa, eşleşmeyi engelleme
                     return needle.isEmpty();
                 }
             }).toList();
@@ -229,7 +246,12 @@ public class MovieService {
             int to   = Math.min(from + s, filtered.size());
             var slice = (from <= to) ? filtered.subList(from, to) : new ArrayList<Movie>();
 
-            return slice.stream().map(movieMapper::mapMovieToMovieResponse).toList();
+            return slice.stream()
+                    .map(movie -> {
+                        List<Image> images = imageRepository.findByMovieId(movie.getId());
+                        return movieMapper.mapMovieToMovieResponse(movie, images);
+                    })
+                    .toList();
         }
     }
 
@@ -237,9 +259,10 @@ public class MovieService {
     public MovieResponse getMovieById(Long id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> movieHelper.movieNotFound(id));
-
-        return movieMapper.mapMovieToMovieResponse(movie);
+        List<Image> images = imageRepository.findByMovieId(movie.getId());
+        return movieMapper.mapMovieToMovieResponse(movie, images);
     }
+
 
     @Transactional(readOnly = true)
     public MovieAdminResponse getMovieByIdAdmin(Long id) {
@@ -248,11 +271,13 @@ public class MovieService {
         return movieAdminMapper.toAdminResponse(movie);
     }
 
-    // Tüm filmleri döndüren method
     @Transactional
     public List<MovieResponse> getAllMovies() {
         return movieRepository.findAll().stream()
-                .map(movieMapper::mapMovieToMovieResponse)
+                .map(movie -> {
+                    List<Image> images = imageRepository.findByMovieId(movie.getId());
+                    return movieMapper.mapMovieToMovieResponse(movie, images);
+                })
                 .toList();
     }
 
@@ -287,7 +312,8 @@ public class MovieService {
             movieRepository.save(movie);
 
             // 7️⃣ Response ekle
-            responses.add(movieMapper.mapMovieToMovieResponse(movie));
+            List<Image> images = imageRepository.findByMovieId(movie.getId());
+            responses.add(movieMapper.mapMovieToMovieResponse(movie,images));
         }
 
         return responses;
