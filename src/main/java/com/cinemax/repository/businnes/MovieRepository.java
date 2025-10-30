@@ -1,7 +1,7 @@
 package com.cinemax.repository.businnes;
 
-import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.enums.HallType;
 import com.cinemax.entity.enums.MovieStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +17,6 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     boolean existsBySlug(String slug);
-    Page<Movie> findByHalls_Name(String hallName, Pageable pageable);
-    // 1) Sadece status ile (vizyonda olanlar)
 
     Page<Movie> findByStatus(MovieStatus status, Pageable pageable);
 
@@ -45,6 +43,14 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "WHERE h.id = :hallId AND m.slug = :movieSlug")
     boolean existsByHallAndMovieSlug(@Param("hallId") Long hallId,
                                      @Param("movieSlug") String movieSlug);
+
+    @Query("""
+    SELECT DISTINCT m
+    FROM Movie m
+    JOIN m.halls h
+    WHERE h.type = :hallType
+""")
+    Page<Movie> findDistinctByHallType(@Param("hallType") HallType hallType, Pageable pageable);
 }
 
 

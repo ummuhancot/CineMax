@@ -60,16 +60,15 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    // 🎬 Salon bazlı filmleri getir
-    @GetMapping("/{hall}")
+    @GetMapping("/hall/{hallType}")
     public List<MovieResponse> getMoviesByHall(
-            @PathVariable String hall,
+            @PathVariable String hallType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "title") String sort,
             @RequestParam(defaultValue = "ASC") String type
     ) {
-        return movieService.getMoviesByHall(hall, page, size, sort, type);
+        return movieService.getMoviesByHallType(hallType, page, size, sort, type);
     }
 
     // 🎬 Gösterimdeki filmler (pageable)
@@ -99,6 +98,7 @@ public class MovieController {
         var list = movieService.getComingSoon(page, size, sort, type);
         return ResponseEntity.ok(list);
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<MovieResponse>> searchMovies(
             @RequestParam(required = false) String q,
@@ -125,6 +125,7 @@ public class MovieController {
         MovieAdminResponse movie = movieService.getMovieByIdAdmin(id);
         return ResponseEntity.ok(movie);
     }
+
 
     @GetMapping("/getAllMovies")
     public ResponseEntity<Page<MovieResponse>> getAllMovies(

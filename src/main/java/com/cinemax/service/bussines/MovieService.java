@@ -3,6 +3,7 @@ package com.cinemax.service.bussines;
 import com.cinemax.entity.concretes.business.Hall;
 import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
+import com.cinemax.entity.enums.HallType;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.exception.BadRequestException;
 import com.cinemax.exception.ResourceNotFoundException;
@@ -23,10 +24,7 @@ import com.cinemax.service.helper.MovieHelper;
 import com.cinemax.service.validator.MovieValidator;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,14 +126,35 @@ public class MovieService {
         return movieShowTimesMapper.mapMovieWithShowTimesToResponse(movie, showTimes);
     }
 
-    public List<MovieResponse> getMoviesByHall(String hall, int page, int size, String sort, String type) {
+    public List<MovieResponse> getMoviesByHallType(String hallTypeStr, int page, int size, String sort, String type) {
+        // 🔹 Enum dönüşümü
+        HallType hallType;
+        try {
+            hallType = HallType.valueOf(hallTypeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Geçersiz salon tipi: " + hallTypeStr);
+        }
+
+        // 🔹 Pageable oluştur
         Sort.Direction direction = type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
-        return movieRepository.findByHalls_Name(hall, pageable)
-                .stream()
+
+        // 🔹 Veritabanından doğrudan sayfalanmış şekilde çek
+        Page<Movie> pagedMovies = movieRepository.findDistinctByHallType(hallType, pageable);
+
+        // 🔹 Movie → Response map
+        return pagedMovies.stream()
                 .map(movie -> {
                     List<Image> images = imageRepository.findByMovieId(movie.getId());
-                    return movieMapper.mapMovieToMovieResponse(movie, images);
+                    MovieResponse response = movieMapper.mapMovieToMovieResponse(movie, images);
+
+                    // 🔹 İlgili salonlardan birini göster (örnek olarak ilkini alıyoruz)
+                    movie.getHalls().stream()
+                            .filter(h -> h.getType() == hallType)
+                            .findFirst()
+                            .ifPresent(hall -> response.setHalls(List.of(hall.getName())));
+
+                    return response;
                 })
                 .toList();
     }
@@ -270,6 +289,7 @@ public class MovieService {
                 .orElseThrow(() ->movieHelper.movieNotFound(id));
         return movieAdminMapper.toAdminResponse(movie);
     }
+
 
     @Transactional(readOnly = true)
     public Page<MovieResponse> getAllMovies(int page, int size, String sort, String type) {
