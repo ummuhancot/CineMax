@@ -126,7 +126,7 @@ public class MovieController {
         return ResponseEntity.ok(movie);
     }
 
-    // 🎬 Sayfalı şekilde tüm filmleri getir
+
     @GetMapping("/getAllMovies")
     public ResponseEntity<Page<MovieResponse>> getAllMovies(
             @RequestParam(defaultValue = "0") int page,
