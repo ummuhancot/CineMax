@@ -271,15 +271,22 @@ public class MovieService {
         return movieAdminMapper.toAdminResponse(movie);
     }
 
-    @Transactional
-    public List<MovieResponse> getAllMovies() {
-        return movieRepository.findAll().stream()
-                .map(movie -> {
-                    List<Image> images = imageRepository.findByMovieId(movie.getId());
-                    return movieMapper.mapMovieToMovieResponse(movie, images);
-                })
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<MovieResponse> getAllMovies(int page, int size, String sort, String type) {
+        // 🔹 Sıralama yönü belirle
+        Sort.Direction direction = type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+
+        // 🔹 Veritabanından sayfalı olarak filmleri getir
+        Page<Movie> moviePage = movieRepository.findAll(pageable);
+
+        // 🔹 Movie → MovieResponse dönüşümü
+        return moviePage.map(movie -> {
+            List<Image> images = imageRepository.findByMovieId(movie.getId());
+            return movieMapper.mapMovieToMovieResponse(movie, images);
+        });
     }
+
 
     @Transactional
     public List<MovieResponse> saveMovies(List<MovieRequest> requests) {

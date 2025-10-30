@@ -126,10 +126,14 @@ public class MovieController {
         return ResponseEntity.ok(movie);
     }
 
-    // 🎬 Tüm filmleri getir
     @GetMapping("/getAllMovies")
-    public ResponseEntity<List<MovieResponse>> getAllMovies() {
-        List<MovieResponse> movies = movieService.getAllMovies();
+    public ResponseEntity<Page<MovieResponse>> getAllMovies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title") String sort,
+            @RequestParam(defaultValue = "ASC") String type
+    ) {
+        Page<MovieResponse> movies = movieService.getAllMovies(page, size, sort, type);
         return ResponseEntity.ok(movies);
     }
 
