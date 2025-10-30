@@ -98,6 +98,7 @@ public class MovieController {
         var list = movieService.getComingSoon(page, size, sort, type);
         return ResponseEntity.ok(list);
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<MovieResponse>> searchMovies(
             @RequestParam(required = false) String q,
