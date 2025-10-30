@@ -290,6 +290,7 @@ public class MovieService {
         return movieAdminMapper.toAdminResponse(movie);
     }
 
+
     @Transactional(readOnly = true)
     public Page<MovieResponse> getAllMovies(int page, int size, String sort, String type) {
         // 🔹 Sıralama yönü belirle
