@@ -1,5 +1,6 @@
 package com.cinemax.service.businnes;
 
+import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.mappers.MovieMapper;
@@ -23,20 +24,30 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MovieServiceComingSoonTest {
 
-    @Mock private MovieRepository movieRepository;
-    @Mock private HallRepository hallRepository;               // ctor bağımlılıkları için mock
-    @Mock private ImageRepository imageRepository;
-    @Mock private ShowTimeRepository showTimeRepository;
-    @Mock private MovieMapper movieMapper;
-    @Mock private ShowTimeMapper showTimeMapper;
-    @Mock private MovieShowTimesMapper movieShowTimesMapper;
+    @Mock
+    private MovieRepository movieRepository;
+    @Mock
+    private HallRepository hallRepository;
+    @Mock
+    private ImageRepository imageRepository;
+    @Mock
+    private ShowTimeRepository showTimeRepository;
+    @Mock
+    private MovieMapper movieMapper;
+    @Mock
+    private ShowTimeMapper showTimeMapper;
+    @Mock
+    private MovieShowTimesMapper movieShowTimesMapper;
 
-    @InjectMocks private MovieService movieService;
+    @InjectMocks
+    private MovieService movieService;
 
     @Test
     void returnsOnlyComingSoon() {
@@ -53,19 +64,24 @@ class MovieServiceComingSoonTest {
         now.setStatus(MovieStatus.IN_THEATERS);
         now.setReleaseDate(LocalDate.now().minusDays(1));
 
+        // Repository sadece iki filmi döndürüyor
         when(movieRepository.findAll(any(Sort.class)))
                 .thenReturn(List.of(soon, now));
 
-        // mapper'da doğru metodu stub'la
-        when(movieMapper.mapMovieToMovieResponse(soon))
+        // Image repository her film için boş liste döndürsün
+        when(imageRepository.findByMovieId(any(Long.class)))
+                .thenReturn(List.of());
+
+        // Mapper çağrısı artık iki parametreli: Movie + List<Image>
+        when(movieMapper.mapMovieToMovieResponse(eq(soon), anyList()))
                 .thenReturn(MovieResponse.builder().id(1L).title("Soon").build());
 
         // when
-        List<MovieResponse> out =
-                movieService.getComingSoon(0, 10, "releaseDate", "asc");
+        List<MovieResponse> out = movieService.getComingSoon(0, 10, "releaseDate", "asc");
 
         // then
         assertEquals(1, out.size());
         assertEquals(1L, out.get(0).getId());
+        assertEquals("Soon", out.get(0).getTitle());
     }
 }

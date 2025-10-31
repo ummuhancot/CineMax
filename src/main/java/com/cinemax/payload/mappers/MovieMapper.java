@@ -6,7 +6,6 @@ import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieResponse;
-import com.cinemax.repository.businnes.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,15 +21,7 @@ public class MovieMapper {
     private final ImageMapper imageMapper;
 
     /**
-     * Title'dan URL dostu slug üretir.
-     * Örn: "The Dark Knight" → "the-dark-knight"
-     */
-
-
-
-    /**
      * MovieRequest → Movie
-     * Poster burada opsiyonel, null olabilir.
      */
     public Movie mapMovieRequestToMovie(MovieRequest request, List<Hall> halls, String slug) {
         if (request.getSpecialHalls() != null && !request.getSpecialHalls().isEmpty()) {
@@ -61,13 +52,22 @@ public class MovieMapper {
                 .build();
     }
 
+    /**
+     * 🔹 Yeni eklenen overload:
+     * Testler ve eski kodlar bu imzayı kullanabiliyor.
+     */
+    public MovieResponse mapMovieToMovieResponse(Movie movie) {
+        // Geriye dönük uyumluluk
+        return mapMovieToMovieResponse(movie, List.of());
+    }
 
     /**
      * Movie → MovieResponse
-     * Poster opsiyonel, null olabilir.
-     * Ayrıca Movie'nin resimleri de ekleniyor.
      */
     public MovieResponse mapMovieToMovieResponse(Movie movie, List<Image> images) {
+        if (movie == null) return null;
+        if (images == null) images = List.of();
+
         return MovieResponse.builder()
                 .id(movie.getId())
                 .title(movie.getTitle())
@@ -88,21 +88,18 @@ public class MovieMapper {
                         .map(h -> h.getType().name() + ":" + h.getId())
                         .collect(Collectors.toList())
                         : new ArrayList<>())
-                // 🎬 Yeni alan: resimler
-                .images(images != null ? images.stream()
+                .images(images.stream()
                         .map(imageMapper::toImageMovieResponse)
-                        .toList() : List.of())
+                        .toList())
                 .build();
     }
 
     /**
      * Movie güncelleme
-     * Poster opsiyonel, yalnızca poster entity verilirse set edilir.
      */
     public void updateMovieFromRequest(Movie movie, MovieRequest request, List<Hall> halls, Image poster) {
         if (movie == null || request == null) return;
 
-        // Temel alanlar
         movie.setTitle(request.getTitle());
         movie.setSlug(request.getSlug());
         movie.setSummary(request.getSummary());
@@ -111,22 +108,19 @@ public class MovieMapper {
         movie.setDirector(request.getDirector());
         movie.setGenre(request.getGenre());
 
-        // Status opsiyonel
         if (request.getStatus() != null) {
             movie.setStatus(request.getStatus());
         }
 
-        // Cast ve Formats (null olabilir)
         movie.setCast(request.getCast() != null ? new ArrayList<>(request.getCast()) : new ArrayList<>());
         movie.setFormats(request.getFormats() != null ? new ArrayList<>(request.getFormats()) : new ArrayList<>());
 
         if (request.getDurationDays() != null) {
             movie.setDurationDays(request.getDurationDays());
         }
-        // Halls ve specialHalls
+
         if (halls != null && !halls.isEmpty()) {
             movie.setHalls(new ArrayList<>(halls));
-
             String specialHalls = halls.stream()
                     .filter(h -> Boolean.TRUE.equals(h.getIsSpecial()) && h.getId() != null)
                     .map(h -> h.getId().toString())
