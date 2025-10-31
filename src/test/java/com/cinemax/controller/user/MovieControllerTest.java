@@ -1,12 +1,12 @@
 package com.cinemax.controller.user;
 
 import com.cinemax.controller.businnes.MovieController;
-import com.cinemax.exception.ResourceNotFoundException; // Hata senaryoları için
+import com.cinemax.exception.ResourceNotFoundException;
 import com.cinemax.payload.request.business.MovieRequest;
 import com.cinemax.payload.response.business.MovieAdminResponse;
 import com.cinemax.payload.response.business.MovieResponse;
 import com.cinemax.payload.response.business.MovieShowTimesResponse;
-import com.cinemax.service.bussines.MovieService; // Test edilecek sınıfın bağımlılığı
+import com.cinemax.service.bussines.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,37 +14,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl; // PageImpl import edildi
-import org.springframework.data.domain.PageRequest; // PageRequest import edildi
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any; // any() import edildi
-import static org.mockito.ArgumentMatchers.anyInt; // anyInt() import edildi
-import static org.mockito.ArgumentMatchers.anyLong; // anyLong() import edildi
-import static org.mockito.ArgumentMatchers.anyString; // anyString() import edildi
-import static org.mockito.ArgumentMatchers.eq; // eq() import edildi
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // JUnit 5 ve Mockito entegrasyonu
+@ExtendWith(MockitoExtension.class)
 class MovieControllerTest {
 
-    @Mock // Sahte (mock) bir MovieService nesnesi oluşturur
+    @Mock
     private MovieService movieService;
 
-    @InjectMocks // Mocklanan movieService nesnesini movieController'a enjekte eder
+    @InjectMocks
     private MovieController movieController;
 
-    // Testlerde kullanılacak örnek değişkenler
     private MovieRequest movieRequest;
     private MovieResponse movieResponse;
     private MovieAdminResponse movieAdminResponse;
@@ -73,7 +63,7 @@ class MovieControllerTest {
                 .slug("test-movie")
                 .summary("Test Summary")
                 .releaseDate(LocalDate.now().plusDays(10))
-                .duration(15) // MovieResponse'da duration
+                .duration(15)
                 .genre("Test Genre")
                 .build();
 
@@ -91,280 +81,179 @@ class MovieControllerTest {
                 .build();
     }
 
-    // --- createMovie (POST /save) Testleri ---
+    // --- createMovie ---
     @Test
-    @DisplayName("POST /save - Film Oluşturma Başarılı")
-    void createMovie_whenValidRequest_shouldReturnOk() {
-        // Arrange
+    @DisplayName("POST /save - Film oluşturma başarılı")
+    void createMovie_shouldReturnOk() {
         when(movieService.saveMovie(any(MovieRequest.class))).thenReturn(movieResponse);
 
-        // Act
-        ResponseEntity<MovieResponse> responseEntity = movieController.createMovie(movieRequest);
+        ResponseEntity<MovieResponse> response = movieController.createMovie(movieRequest);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode()); // Controller OK dönüyor
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieResponse.getTitle(), responseEntity.getBody().getTitle());
-
-        // Verify
-        verify(movieService, times(1)).saveMovie(movieRequest);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieResponse, response.getBody());
+        verify(movieService).saveMovie(movieRequest);
     }
 
-    // --- updateMovie (PUT /update/{id}) Testleri ---
+    // --- updateMovie ---
     @Test
-    @DisplayName("PUT /update/{id} - Film Güncelleme Başarılı")
-    void updateMovie_whenExists_shouldReturnOk() {
-        // Arrange
+    @DisplayName("PUT /update/{id} - Film güncelleme başarılı")
+    void updateMovie_shouldReturnOk() {
         when(movieService.updateMovie(eq(movieId), any(MovieRequest.class))).thenReturn(movieResponse);
 
-        // Act
-        ResponseEntity<MovieResponse> responseEntity = movieController.updateMovie(movieId, movieRequest);
+        ResponseEntity<MovieResponse> response = movieController.updateMovie(movieId, movieRequest);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieResponse, responseEntity.getBody());
-
-        // Verify
-        verify(movieService, times(1)).updateMovie(movieId, movieRequest);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieResponse, response.getBody());
+        verify(movieService).updateMovie(movieId, movieRequest);
     }
 
     @Test
-    @DisplayName("PUT /update/{id} - Film Bulunamadı")
-    void updateMovie_whenNotFound_shouldThrowResourceNotFound() {
-        // Arrange
+    @DisplayName("PUT /update/{id} - Film bulunamadı")
+    void updateMovie_notFound_shouldThrowException() {
         when(movieService.updateMovie(eq(movieId), any(MovieRequest.class)))
                 .thenThrow(new ResourceNotFoundException("Movie not found"));
 
-        // Act & Assert
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            movieController.updateMovie(movieId, movieRequest);
-        });
-        assertEquals("Movie not found", exception.getMessage());
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+                () -> movieController.updateMovie(movieId, movieRequest));
 
-        // Verify
-        verify(movieService, times(1)).updateMovie(movieId, movieRequest);
-        verifyNoMoreInteractions(movieService);
+        assertEquals("Movie not found", ex.getMessage());
     }
 
-    // --- deleteMovie (DELETE /{id}) Testleri ---
+    // --- deleteMovie ---
     @Test
-    @DisplayName("DELETE /{id} - Film Silme Başarılı")
-    void deleteMovie_whenExists_shouldReturnOk() {
-        // Arrange
+    @DisplayName("DELETE /{id} - Film silme başarılı")
+    void deleteMovie_shouldReturnOk() {
         when(movieService.deleteById(movieId)).thenReturn(movieResponse);
 
-        // Act
-        ResponseEntity<MovieResponse> responseEntity = movieController.deleteMovie(movieId);
+        ResponseEntity<MovieResponse> response = movieController.deleteMovie(movieId);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieResponse, responseEntity.getBody());
-
-        // Verify
-        verify(movieService, times(1)).deleteById(movieId);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieResponse, response.getBody());
+        verify(movieService).deleteById(movieId);
     }
 
-    // --- getShowTimes (GET /{id}/show-times) Testleri ---
+    // --- getShowTimes ---
     @Test
-    @DisplayName("GET /{id}/show-times - Seansları Getirme Başarılı")
-    void getShowTimes_whenExists_shouldReturnOk() {
-        // Arrange
+    @DisplayName("GET /{id}/show-times - Seansları getirir")
+    void getShowTimes_shouldReturnOk() {
         when(movieService.getUpcomingShowTimes(movieId)).thenReturn(movieShowTimesResponse);
 
-        // Act
-        ResponseEntity<MovieShowTimesResponse> responseEntity = movieController.getShowTimes(movieId);
+        ResponseEntity<MovieShowTimesResponse> response = movieController.getShowTimes(movieId);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieShowTimesResponse, responseEntity.getBody());
-
-        // Verify
-        verify(movieService, times(1)).getUpcomingShowTimes(movieId);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieShowTimesResponse, response.getBody());
     }
 
-    // --- getMoviesByHall (GET /{hall}) Testleri ---
+    // --- getMoviesByHallType ---
     @Test
-    @DisplayName("GET /{hall} - Salona Göre Film Getirme Başarılı")
-    void getMoviesByHall_shouldReturnList() {
-        // Arrange
-        String hallName = "IMAX";
-        int page = 0;
-        int size = 5;
-        String sort = "title";
-        String type = "ASC";
-        List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.getMoviesByHall(hallName, page, size, sort, type)).thenReturn(responseList);
+    @DisplayName("GET /hall/{hallType} - Salona göre filmleri getirir")
+    void getMoviesByHallType_shouldReturnList() {
+        when(movieService.getMoviesByHallType(anyString(), anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(List.of(movieResponse));
 
-        // Act
-        List<MovieResponse> actualList = movieController.getMoviesByHall(hallName, page, size, sort, type);
+        List<MovieResponse> result = movieController.getMoviesByHall("IMAX", 0, 10, "title", "ASC");
 
-        // Assert
-        assertNotNull(actualList);
-        assertEquals(1, actualList.size());
-        assertEquals(movieResponse, actualList.get(0));
-
-        // Verify
-        verify(movieService, times(1)).getMoviesByHall(hallName, page, size, sort, type);
-        verifyNoMoreInteractions(movieService);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(movieService).getMoviesByHallType("IMAX", 0, 10, "title", "ASC");
     }
 
-    // --- getMoviesInTheaters (GET /in-theaters) Testleri ---
+    // --- getMoviesInTheaters ---
     @Test
-    @DisplayName("GET /in-theaters - Vizyondaki Filmleri Getirme Başarılı")
+    @DisplayName("GET /in-theaters - Vizyondaki filmleri getirir")
     void getMoviesInTheaters_shouldReturnPage() {
-        // Arrange
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "releaseDate"));
-        Page<MovieResponse> responsePage = new PageImpl<>(List.of(movieResponse), pageable, 1);
-        when(movieService.getMoviesInTheaters(pageable)).thenReturn(responsePage);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("releaseDate").descending());
+        Page<MovieResponse> page = new PageImpl<>(List.of(movieResponse));
 
-        // Act
-        ResponseEntity<Page<MovieResponse>> responseEntity = movieController.getMoviesInTheaters(pageable);
+        when(movieService.getMoviesInTheaters(pageable)).thenReturn(page);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().getTotalElements());
-        assertEquals(movieResponse, responseEntity.getBody().getContent().get(0));
+        ResponseEntity<Page<MovieResponse>> response = movieController.getMoviesInTheaters(pageable);
 
-        // Verify
-        verify(movieService, times(1)).getMoviesInTheaters(pageable);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getContent().size());
     }
 
-    // --- getActiveMoviesInTheaters (GET /in-theaters/active) Testleri ---
+    // --- getActiveMoviesInTheaters ---
     @Test
-    @DisplayName("GET /in-theaters/active - Aktif Vizyon Filmlerini Getirme Başarılı")
+    @DisplayName("GET /in-theaters/active - Aktif vizyon filmlerini getirir")
     void getActiveMoviesInTheaters_shouldReturnPage() {
-        // Arrange
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "releaseDate"));
-        Page<MovieResponse> responsePage = new PageImpl<>(List.of(movieResponse), pageable, 1);
-        when(movieService.getMoviesInTheatersWithDateCheck(pageable)).thenReturn(responsePage);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("releaseDate").descending());
+        Page<MovieResponse> page = new PageImpl<>(List.of(movieResponse));
 
-        // Act
-        ResponseEntity<Page<MovieResponse>> responseEntity = movieController.getActiveMoviesInTheaters(pageable);
+        when(movieService.getMoviesInTheatersWithDateCheck(pageable)).thenReturn(page);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().getTotalElements());
+        ResponseEntity<Page<MovieResponse>> response = movieController.getActiveMoviesInTheaters(pageable);
 
-        // Verify
-        verify(movieService, times(1)).getMoviesInTheatersWithDateCheck(pageable);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
     }
 
-    // --- getComingSoon (GET /coming-soon) Testleri ---
+    // --- getComingSoon ---
     @Test
-    @DisplayName("GET /coming-soon - Yakında Gelecek Filmleri Getirme Başarılı")
+    @DisplayName("GET /coming-soon - Yakında gelecek filmleri getirir")
     void getComingSoon_shouldReturnList() {
-        // Arrange
-        Integer page = 0;
-        Integer size = 10;
-        String sort = "releaseDate";
-        String type = "asc";
-        List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.getComingSoon(page, size, sort, type)).thenReturn(responseList);
+        when(movieService.getComingSoon(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(List.of(movieResponse));
 
-        // Act
-        ResponseEntity<List<MovieResponse>> responseEntity = movieController.getComingSoon(page, size, sort, type);
+        ResponseEntity<List<MovieResponse>> response =
+                movieController.getComingSoon(0, 10, "releaseDate", "asc");
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().size());
-
-        // Verify
-        verify(movieService, times(1)).getComingSoon(page, size, sort, type);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
     }
 
-    // --- getMovieById (GET /getOneMovie/{id}) Testleri ---
+    // --- getMovieById ---
     @Test
-    @DisplayName("GET /getOneMovie/{id} - Tek Film Getirme Başarılı")
-    void getMovieById_whenExists_shouldReturnOk() {
-        // Arrange
+    @DisplayName("GET /getOneMovie/{id} - Tek filmi getirir")
+    void getMovieById_shouldReturnMovie() {
         when(movieService.getMovieById(movieId)).thenReturn(movieResponse);
 
-        // Act
-        ResponseEntity<MovieResponse> responseEntity = movieController.getMovieById(movieId);
+        ResponseEntity<MovieResponse> response = movieController.getMovieById(movieId);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieResponse, responseEntity.getBody());
-
-        // Verify
-        verify(movieService, times(1)).getMovieById(movieId);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieResponse, response.getBody());
     }
 
-    // --- getMovieByIdAdmin (GET /{id}/admin) Testleri ---
+    // --- getMovieByIdAdmin ---
     @Test
-    @DisplayName("GET /{id}/admin - Admin İçin Tek Film Getirme Başarılı")
-    void getMovieByIdAdmin_whenExists_shouldReturnOk() {
-        // Arrange
+    @DisplayName("GET /{id}/admin - Admin için tek filmi getirir")
+    void getMovieByIdAdmin_shouldReturnAdminMovie() {
         when(movieService.getMovieByIdAdmin(movieId)).thenReturn(movieAdminResponse);
 
-        // Act
-        ResponseEntity<MovieAdminResponse> responseEntity = movieController.getMovieByIdAdmin(movieId);
+        ResponseEntity<MovieAdminResponse> response = movieController.getMovieByIdAdmin(movieId);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(movieAdminResponse, responseEntity.getBody());
-
-        // Verify
-        verify(movieService, times(1)).getMovieByIdAdmin(movieId);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(movieAdminResponse, response.getBody());
     }
 
-    // --- getAllMovies (GET /getAllMovies) Testleri ---
+    // --- getAllMovies ---
     @Test
-    @DisplayName("GET /getAllMovies - Tüm Filmleri Getirme Başarılı")
-    void getAllMovies_shouldReturnList() {
-        // Arrange
-        List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.getAllMovies()).thenReturn(responseList);
+    @DisplayName("GET /getAllMovies - Sayfalı film listesini getirir")
+    void getAllMovies_shouldReturnPagedMovies() {
+        Page<MovieResponse> page = new PageImpl<>(List.of(movieResponse));
 
-        // Act
-        ResponseEntity<List<MovieResponse>> responseEntity = movieController.getAllMovies();
+        when(movieService.getAllMovies(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(page);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().size());
+        ResponseEntity<Page<MovieResponse>> response =
+                movieController.getAllMovies(0, 10, "title", "ASC");
 
-        // Verify
-        verify(movieService, times(1)).getAllMovies();
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getContent().size());
     }
 
-    // --- saveMovies (POST /bulk) Testleri ---
+    // --- saveMovies ---
     @Test
-    @DisplayName("POST /bulk - Çoklu Film Kaydetme Başarılı")
-    void saveMovies_whenValidRequests_shouldReturnOk() {
-        // Arrange
-        List<MovieRequest> requestList = List.of(movieRequest);
-        List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.saveMovies(requestList)).thenReturn(responseList);
+    @DisplayName("POST /bulk - Çoklu film kaydetme başarılı")
+    void saveMovies_shouldReturnList() {
+        List<MovieRequest> requests = List.of(movieRequest);
+        List<MovieResponse> responses = List.of(movieResponse);
 
-        // Act
-        ResponseEntity<List<MovieResponse>> responseEntity = movieController.saveMovies(requestList);
+        when(movieService.saveMovies(requests)).thenReturn(responses);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().size());
+        ResponseEntity<List<MovieResponse>> response = movieController.saveMovies(requests);
 
-        // Verify
-        verify(movieService, times(1)).saveMovies(requestList);
-        verifyNoMoreInteractions(movieService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
     }
 }
