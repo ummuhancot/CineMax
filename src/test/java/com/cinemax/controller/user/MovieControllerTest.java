@@ -194,16 +194,18 @@ class MovieControllerTest {
     @DisplayName("GET /{hall} - Salona Göre Film Getirme Başarılı")
     void getMoviesByHall_shouldReturnList() {
         // Arrange
-        String hallName = "IMAX";
+        String hallType = "IMAX"; // DÜZELTME: Değişken adı
         int page = 0;
         int size = 5;
         String sort = "title";
         String type = "ASC";
         List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.getMoviesByHall(hallName, page, size, sort, type)).thenReturn(responseList);
+
+        // DÜZELTME: Metot adı 'getMoviesByHall' -> 'getMoviesByHallType' olarak değiştirildi
+        when(movieService.getMoviesByHallType(hallType, page, size, sort, type)).thenReturn(responseList);
 
         // Act
-        List<MovieResponse> actualList = movieController.getMoviesByHall(hallName, page, size, sort, type);
+        List<MovieResponse> actualList = movieController.getMoviesByHall(hallType, page, size, sort, type);
 
         // Assert
         assertNotNull(actualList);
@@ -211,7 +213,8 @@ class MovieControllerTest {
         assertEquals(movieResponse, actualList.get(0));
 
         // Verify
-        verify(movieService, times(1)).getMoviesByHall(hallName, page, size, sort, type);
+        // DÜZELTME: Metot adı 'getMoviesByHall' -> 'getMoviesByHallType' olarak değiştirildi
+        verify(movieService, times(1)).getMoviesByHallType(hallType, page, size, sort, type);
         verifyNoMoreInteractions(movieService);
     }
 
@@ -328,21 +331,29 @@ class MovieControllerTest {
     // --- getAllMovies (GET /getAllMovies) Testleri ---
     @Test
     @DisplayName("GET /getAllMovies - Tüm Filmleri Getirme Başarılı")
-    void getAllMovies_shouldReturnList() {
+    void getAllMovies_shouldReturnPage() { // DÜZELTME: İsim
         // Arrange
-        List<MovieResponse> responseList = List.of(movieResponse);
-        when(movieService.getAllMovies()).thenReturn(responseList);
+        // DÜZELTME: Parametreler eklendi
+        int page = 0;
+        int size = 10;
+        String sort = "title";
+        String type = "ASC";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sort));
+        Page<MovieResponse> responsePage = new PageImpl<>(List.of(movieResponse), pageable, 1);
+
+        when(movieService.getAllMovies(page, size, sort, type)).thenReturn(responsePage);
 
         // Act
-        ResponseEntity<List<MovieResponse>> responseEntity = movieController.getAllMovies();
+        ResponseEntity<Page<MovieResponse>> responseEntity = movieController.getAllMovies(page, size, sort, type);
 
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().size());
+        assertEquals(1, responseEntity.getBody().getTotalElements()); // Page olarak doğrulandı
 
         // Verify
-        verify(movieService, times(1)).getAllMovies();
+        verify(movieService, times(1)).getAllMovies(page, size, sort, type); // Parametreler eklendi
         verifyNoMoreInteractions(movieService);
     }
 

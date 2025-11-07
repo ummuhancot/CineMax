@@ -1,5 +1,6 @@
 package com.cinemax.service.businnes;
 
+import com.cinemax.entity.concretes.business.Image;
 import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.entity.enums.MovieStatus;
 import com.cinemax.payload.mappers.MovieMapper;
@@ -16,14 +17,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq; // <-- HATA BURADAYDI, BU SATIR EKLENDİ
 
 @ExtendWith(MockitoExtension.class)
 class MovieServiceComingSoonTest {
@@ -47,17 +53,22 @@ class MovieServiceComingSoonTest {
         soon.setStatus(MovieStatus.COMING_SOON);
         soon.setReleaseDate(LocalDate.now().plusDays(7));
 
-        Movie now = new Movie();
+        Movie now = new Movie(); // Bu film (IN_THEATERS) DAHİL EDİLMEMELİ
         now.setId(2L);
         now.setTitle("Now");
         now.setStatus(MovieStatus.IN_THEATERS);
         now.setReleaseDate(LocalDate.now().minusDays(1));
 
-        when(movieRepository.findAll(any(Sort.class)))
-                .thenReturn(List.of(soon, now));
+        Page<Movie> moviePage = new PageImpl<>(List.of(soon));
 
-        // mapper'da doğru metodu stub'la
-        when(movieMapper.mapMovieToMovieResponse(soon))
+        // 'eq' fonksiyonu artık import edildiği için bu satır çalışacaktır
+        when(movieRepository.findByStatus(eq(MovieStatus.COMING_SOON), any(Pageable.class)))
+                .thenReturn(moviePage);
+
+        List<Image> emptyImageList = Collections.emptyList();
+        when(imageRepository.findByMovieId(soon.getId())).thenReturn(emptyImageList);
+
+        when(movieMapper.mapMovieToMovieResponse(soon, emptyImageList))
                 .thenReturn(MovieResponse.builder().id(1L).title("Soon").build());
 
         // when

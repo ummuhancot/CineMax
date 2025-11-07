@@ -65,9 +65,15 @@ class MovieServiceTest {
     // MovieValidator statik metotlarını mocklamak için
     private MockedStatic<MovieValidator> movieValidatorStaticMocked;
 
+    // DÜZELTME: Testlerde kullanılacak boş bir resim listesi
+    private List<Image> emptyImageList;
+
+
     @BeforeEach
     void setup() {
         movieValidatorStaticMocked = Mockito.mockStatic(MovieValidator.class);
+        // DÜZELTME: Boş listeyi başlat
+        emptyImageList = Collections.emptyList();
     }
 
     @AfterEach
@@ -133,7 +139,7 @@ class MovieServiceTest {
         List<Hall> mockHalls = List.of(mockHall);
         String mockSlug = "mock-cinema-salon-1-inception";
 
-        Movie movieEntity = Movie.builder().title("Inception").slug(mockSlug).halls(mockHalls).build();
+        Movie movieEntity = Movie.builder().id(10L).title("Inception").slug(mockSlug).halls(mockHalls).build(); // ID eklendi
         MovieResponse responseDto = MovieResponse.builder().id(10L).title("Inception").slug(mockSlug).build();
 
         when(movieHelper.getHallsOrThrow(request.getHallIds())).thenReturn(mockHalls);
@@ -142,7 +148,11 @@ class MovieServiceTest {
         doNothing().when(movieValidator).validateUniqueMovieInHalls(eq(mockSlug), eq(mockHall));
         when(movieMapper.mapMovieRequestToMovie(eq(request), eq(mockHalls), eq(mockSlug))).thenReturn(movieEntity);
         when(movieRepository.save(movieEntity)).thenReturn(movieEntity);
-        when(movieMapper.mapMovieToMovieResponse(movieEntity)).thenReturn(responseDto);
+
+        // DÜZELTME: ImageRepository mock'u eklendi
+        when(imageRepository.findByMovieId(movieEntity.getId())).thenReturn(emptyImageList);
+        // DÜZELTME: Mapper çağrısı 2 parametre ile yapıldı
+        when(movieMapper.mapMovieToMovieResponse(movieEntity, emptyImageList)).thenReturn(responseDto);
 
         MovieResponse response = movieService.saveMovie(request);
 
@@ -155,7 +165,11 @@ class MovieServiceTest {
         verify(movieValidator).validateUniqueMovieInHalls(eq(mockSlug), eq(mockHall));
         verify(movieMapper).mapMovieRequestToMovie(eq(request), eq(mockHalls), eq(mockSlug));
         verify(movieRepository).save(movieEntity);
-        verify(movieMapper).mapMovieToMovieResponse(movieEntity);
+
+        // DÜZELTME: verify çağrıları güncellendi
+        verify(imageRepository).findByMovieId(movieEntity.getId());
+        verify(movieMapper).mapMovieToMovieResponse(movieEntity, emptyImageList);
+
         verifyNoMoreInteractions(movieRepository, movieMapper, movieHelper, imageRepository, showTimeRepository, movieShowTimesMapper);
         verifyNoMoreInteractions(movieValidator);
     }
@@ -219,7 +233,11 @@ class MovieServiceTest {
         when(movieHelper.getPosterOrThrow(request.getPosterId())).thenReturn(poster);
         doNothing().when(movieMapper).updateMovieFromRequest(eq(existingMovie), eq(request), eq(mockHalls), eq(poster));
         when(movieRepository.save(existingMovie)).thenReturn(existingMovie);
-        when(movieMapper.mapMovieToMovieResponse(existingMovie)).thenReturn(responseDto);
+
+        // DÜZELTME: ImageRepository mock'u eklendi
+        when(imageRepository.findByMovieId(movieId)).thenReturn(emptyImageList);
+        // DÜZELTME: Mapper çağrısı 2 parametre ile yapıldı
+        when(movieMapper.mapMovieToMovieResponse(existingMovie, emptyImageList)).thenReturn(responseDto);
 
         MovieResponse result = movieService.updateMovie(movieId, request);
 
@@ -231,7 +249,11 @@ class MovieServiceTest {
         verify(movieHelper).getPosterOrThrow(request.getPosterId());
         verify(movieMapper).updateMovieFromRequest(eq(existingMovie), eq(request), eq(mockHalls), eq(poster));
         verify(movieRepository).save(existingMovie);
-        verify(movieMapper).mapMovieToMovieResponse(existingMovie);
+
+        // DÜZELTME: verify çağrıları güncellendi
+        verify(imageRepository).findByMovieId(movieId);
+        verify(movieMapper).mapMovieToMovieResponse(existingMovie, emptyImageList);
+
         verifyNoMoreInteractions(movieRepository, movieMapper, movieHelper, imageRepository);
         verifyNoInteractions(movieValidator);
         movieValidatorStaticMocked.verifyNoInteractions();
@@ -279,7 +301,11 @@ class MovieServiceTest {
         MovieResponse responseDto = MovieResponse.builder().id(movieId).title("Inception").build();
 
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
-        when(movieMapper.mapMovieToMovieResponse(movie)).thenReturn(responseDto);
+
+        // DÜZELTME: ImageRepository mock'u eklendi
+        when(imageRepository.findByMovieId(movieId)).thenReturn(emptyImageList);
+        // DÜZELTME: Mapper çağrısı 2 parametre ile yapıldı
+        when(movieMapper.mapMovieToMovieResponse(movie, emptyImageList)).thenReturn(responseDto);
 
         MovieResponse result = movieService.deleteById(movieId);
 
@@ -287,10 +313,12 @@ class MovieServiceTest {
         assertEquals("Inception", result.getTitle());
 
         verify(movieRepository).findById(movieId);
-        verify(movieMapper).mapMovieToMovieResponse(movie);
+        // DÜZELTME: verify çağrıları güncellendi
+        verify(imageRepository).findByMovieId(movieId);
+        verify(movieMapper).mapMovieToMovieResponse(movie, emptyImageList);
         verify(movieRepository).delete(movie);
         verify(movieRepository).flush();
-        verifyNoMoreInteractions(movieRepository, movieMapper);
+        verifyNoMoreInteractions(movieRepository, movieMapper, imageRepository); // imageRepo eklendi
         verifyNoInteractions(movieHelper, movieValidator);
         movieValidatorStaticMocked.verifyNoInteractions();
     }
@@ -308,7 +336,7 @@ class MovieServiceTest {
         verify(movieRepository).findById(movieId);
         verify(movieRepository, never()).delete(any());
         verify(movieRepository, never()).flush();
-        verifyNoInteractions(movieMapper, movieHelper, movieValidator);
+        verifyNoInteractions(movieMapper, movieHelper, movieValidator, imageRepository); // imageRepo eklendi
         movieValidatorStaticMocked.verifyNoInteractions();
     }
 }

@@ -18,9 +18,13 @@
 	<name>CineMax</name>
 	<description>CineMax Project</description>
 
-	<properties>
-		<java.version>17</java.version>
-	</properties>
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+
 
 	<dependencies>
 		<!-- Spring Boot Starter -->
@@ -92,6 +96,7 @@
             <version>5.12.0</version>
             <scope>test</scope>
         </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
