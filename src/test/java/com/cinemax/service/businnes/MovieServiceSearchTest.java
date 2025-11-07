@@ -1,5 +1,6 @@
 package com.cinemax.service.businnes;
 
+import com.cinemax.entity.concretes.business.Image; // DÜZELTME: Image import edildi
 import com.cinemax.entity.concretes.business.Movie;
 import com.cinemax.payload.mappers.MovieMapper;
 import com.cinemax.payload.response.business.MovieResponse;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
+import java.util.Collections; // DÜZELTME: Collections import edildi
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,9 +58,14 @@ class MovieServiceSearchTest {
 
         when(movieRepository.search(anyString(), any(Pageable.class))).thenReturn(page);
 
-        when(movieMapper.mapMovieToMovieResponse(m1))
+        // DÜZELTME: ImageRepository mock'u eklendi
+        List<Image> emptyImageList = Collections.emptyList();
+        when(imageRepository.findByMovieId(anyLong())).thenReturn(emptyImageList);
+
+        // DÜZELTME: Mapper çağrısı 2 parametre ile yapıldı
+        when(movieMapper.mapMovieToMovieResponse(m1, emptyImageList))
                 .thenReturn(MovieResponse.builder().id(1L).title("Maria").build());
-        when(movieMapper.mapMovieToMovieResponse(m2))
+        when(movieMapper.mapMovieToMovieResponse(m2, emptyImageList))
                 .thenReturn(MovieResponse.builder().id(2L).title("Another Maria").build());
 
         // act
